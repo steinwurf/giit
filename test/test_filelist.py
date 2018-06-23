@@ -8,7 +8,6 @@ import shutil
 
 import giit.fileinfo
 import giit.filelist
-import giit.sftp_transfer
 import giit.copy_directory
 
 
@@ -48,36 +47,6 @@ def test_copydirectory(testdirectory):
     assert file2 in files
     assert file3 in files
     assert file4 in files
-
-
-def test_filetransfer(testdirectory):
-
-    a_dir = testdirectory.mkdir('a')
-
-    a_dir.write_text(filename='helloworld.txt',
-                     data=u'hello', encoding='utf-8')
-    b_dir = a_dir.mkdir('b')
-
-    b_dir.write_text(filename='helloworld.txt',
-                     data=u'hello', encoding='utf-8')
-
-    ssh = paramiko.SSHClient()
-
-    filetransfer = giit.sftp_transfer.SFTPTransfer(ssh=ssh)
-    filetransfer.connect(hostname='buildbot.steinwurf.dk', username='buildbot')
-
-    filetransfer.transfer(local_path=testdirectory.path(),
-                          remote_path='/tmp',
-                          exclude_patterns=[])
-
-
-def test_filetransfer_path_split():
-
-    path, filename = giit.sftp_transfer.SFTPTransfer._path_split(
-        remote_file='/www/var/file.txt')
-
-    assert path == ['/', 'www', 'var']
-    assert filename == 'file.txt'
 
 
 def mkdir_layout(parent_dir):
