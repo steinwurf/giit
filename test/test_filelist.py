@@ -156,10 +156,10 @@ def test_filelist(testdirectory):
     assert file3 in local_result
     assert file4 in local_result
 
-    file1 = os.path.join('/var', 'www', 'b', 'b.txt')
-    file2 = os.path.join('/var', 'www', 'b', 'c', 'b_c.txt')
-    file3 = os.path.join('/var', 'www', 'c', 'c.txt')
-    file4 = os.path.join('/var', 'www', 'd', 'd.txt')
+    file1 = os.path.join(os.path.sep, 'var', 'www', 'b', 'b.txt')
+    file2 = os.path.join(os.path.sep, 'var', 'www', 'b', 'c', 'b_c.txt')
+    file3 = os.path.join(os.path.sep, 'var', 'www', 'c', 'c.txt')
+    file4 = os.path.join(os.path.sep, 'var', 'www', 'd', 'd.txt')
 
     assert file1 in remote_result
     assert file2 in remote_result
