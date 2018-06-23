@@ -1,0 +1,10 @@
+{
+    "docs": {
+        "type": "python",
+        "scripts": [
+            "sphinx-build -b html . ${build_path}"
+        ],
+        "cwd": "${source_path}/docs",
+        "requirements": "${source_path}/docs/requirements.txt"
+    }
+}
