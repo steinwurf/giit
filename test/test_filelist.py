@@ -22,8 +22,8 @@ def test_copydirectory(testdirectory):
     directory = giit.copy_directory.CopyDirectory()
 
     excludes = [
-        os.path.join(from_dir.path(), 'c/d/*'),
-        os.path.join(from_dir.path(), 'a/*')
+        os.path.join(from_dir.path(), 'c', 'd', '*'),
+        os.path.join(from_dir.path(), 'a', '*')
     ]
 
     directory.copy(from_path=from_dir.path(),
@@ -39,10 +39,10 @@ def test_copydirectory(testdirectory):
 
     assert len(files) == 4
 
-    file1 = os.path.join(to_dir.path(), 'b/b.txt')
-    file2 = os.path.join(to_dir.path(), 'b/c/b_c.txt')
-    file3 = os.path.join(to_dir.path(), 'c/c.txt')
-    file4 = os.path.join(to_dir.path(), 'd/d.txt')
+    file1 = os.path.join(to_dir.path(), 'b', 'b.txt')
+    file2 = os.path.join(to_dir.path(), 'b', 'c', 'b_c.txt')
+    file3 = os.path.join(to_dir.path(), 'c', 'c.txt')
+    file4 = os.path.join(to_dir.path(), 'd', 'd.txt')
 
     assert file1 in files
     assert file2 in files
@@ -128,8 +128,8 @@ def test_filelist(testdirectory):
     mkdir_layout(parent_dir=testdirectory)
 
     excludes = [
-        os.path.join(testdirectory.path(), 'c/d/*'),
-        os.path.join(testdirectory.path(), 'a/*')
+        os.path.join(testdirectory.path(), 'c', 'd', '*'),
+        os.path.join(testdirectory.path(), 'a', '*')
     ]
 
     filelist = giit.filelist.FileList(
@@ -146,10 +146,10 @@ def test_filelist(testdirectory):
     assert len(local_result) == 4
     assert len(remote_result) == 4
 
-    file1 = os.path.join(testdirectory.path(), 'b/b.txt')
-    file2 = os.path.join(testdirectory.path(), 'b/c/b_c.txt')
-    file3 = os.path.join(testdirectory.path(), 'c/c.txt')
-    file4 = os.path.join(testdirectory.path(), 'd/d.txt')
+    file1 = os.path.join(testdirectory.path(), 'b', 'b.txt')
+    file2 = os.path.join(testdirectory.path(), 'b', 'c', 'b_c.txt')
+    file3 = os.path.join(testdirectory.path(), 'c', 'c.txt')
+    file4 = os.path.join(testdirectory.path(), 'd', 'd.txt')
 
     assert file1 in local_result
     assert file2 in local_result
