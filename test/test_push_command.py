@@ -61,18 +61,18 @@ def test_push_command(testdirectory):
     cwd = os.path.join(tempfile.gettempdir(), 'giit_push')
 
     calls = [
-        mock.call.run(command=["git", "init"], cwd='/tmp/giit_push'),
-        mock.call.run(command=["git", "add", "."], cwd='/tmp/giit_push'),
+        mock.call.run(command=["git", "init"], cwd=cwd),
+        mock.call.run(command=["git", "add", "."], cwd=cwd),
         mock.call.run(
             command=["git", "-c", "user.name='Giit Bot'",
                      "-c", "user.email='deploy@giit.bot'",
                      "commit", "-m", "'giit push'"],
-            cwd='/tmp/giit_push'),
+            cwd=cwd),
         mock.call.run(
             command=['git', 'push', '--force',
                      "git@github.com:org/project.git",
                      'master:gh-pages'],
-            cwd='/tmp/giit_push')
+            cwd=cwd)
     ]
 
     prompt.assert_has_calls(calls)
