@@ -103,7 +103,7 @@ def test_filelist(testdirectory):
 
     filelist = giit.filelist.FileList(
         local_path=testdirectory.path(),
-        remote_path='/var/www',
+        remote_path=os.path.join(os.path.sep, 'var', 'www'),
         exclude_patterns=excludes)
 
     result = list(filelist)

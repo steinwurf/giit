@@ -23,6 +23,10 @@ def test_filetransfer(testdirectory):
     b_file = b_dir.write_text(filename='helloworld.txt',
                               data=u'hello', encoding='utf-8')
 
+    # The following mock objects model the paramiko SSH / SFTP API
+    # such that the ssh mock could be directly replaced by paramiko.SSHClient()
+    #
+    # http://docs.paramiko.org/en/2.4/api/client.html
     ssh = mock.Mock()
     sftp = mock.Mock()
     ctx = mock.Mock()
