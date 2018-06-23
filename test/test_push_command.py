@@ -9,22 +9,22 @@ import giit.push_command
 
 def test_push_command_to_path(testdirectory):
 
-    assert '/tmp/git' == giit.push_command.PushCommand._to_path(
+    assert os.path.join('/tmp', 'git') == giit.push_command.PushCommand._to_path(
         repository_path='/tmp', to_path='/git/')
 
-    assert '/tmp/git' == giit.push_command.PushCommand._to_path(
+    assert os.path.join('/tmp', 'git') == giit.push_command.PushCommand._to_path(
         repository_path='/tmp', to_path='./git/')
 
-    assert '/tmp/git' == giit.push_command.PushCommand._to_path(
+    assert os.path.join('/tmp', 'git') == giit.push_command.PushCommand._to_path(
         repository_path='/tmp', to_path='git')
 
-    assert '/tmp/git' == giit.push_command.PushCommand._to_path(
+    assert os.path.join('/tmp', 'git') == giit.push_command.PushCommand._to_path(
         repository_path='/tmp', to_path='git/')
 
-    assert '/tmp' == giit.push_command.PushCommand._to_path(
+    assert os.path.join('/tmp') == giit.push_command.PushCommand._to_path(
         repository_path='/tmp', to_path='.')
 
-    assert '/tmp' == giit.push_command.PushCommand._to_path(
+    assert os.path.join('/tmp') == giit.push_command.PushCommand._to_path(
         repository_path='/tmp', to_path='/')
 
 
