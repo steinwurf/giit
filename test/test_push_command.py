@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
 import mock
-
+import tempfile
 
 import giit.push_command
 
@@ -56,6 +57,8 @@ def test_push_command(testdirectory):
     }
 
     command.run(context=context)
+
+    cwd = os.path.join(tempfile.gettempdir(), 'giit_push')
 
     calls = [
         mock.call.run(command=["git", "init"], cwd='/tmp/giit_push'),
