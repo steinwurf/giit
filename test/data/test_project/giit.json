@@ -33,9 +33,9 @@
     },
     "publish": {
         "type": "sftp",
-        "hostname": "buildbot.steinwurf.dk",
-        "username": "buildbot",
-        "remote_path": "/tmp/www/docs/stub",
+        "hostname": "files.build.com",
+        "username": "giit",
+        "remote_path": "/tmp/www/docs/",
         "local_path": "${build_path}/docs",
         "exclude_patterns": [
             "${build_path}/workingtree/*"

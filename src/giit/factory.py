@@ -35,9 +35,12 @@ class Factory(object):
     def set_default_build(self, default_build):
         self.default_build = default_build
 
-    def provide_value(self, name, value):
+    def provide_value(self, name, value, override=False):
 
-        assert name not in self.providers
+        if override:
+            assert name in self.providers
+        else:
+            assert name not in self.providers
 
         def call():
             return value

@@ -1,6 +1,7 @@
 import logging
 import shutil
 import os
+import mock
 
 import giit.build
 import giit.git
@@ -15,7 +16,7 @@ class FakeGit(giit.git.Git):
         self.directory = directory
 
     def remote_origin_url(self, cwd):
-        return "https://github.com/steinwurf/giit.git"
+        return "https://github.com/fake/fake.git"
 
     def clone(self, repository, directory, cwd):
 
@@ -49,6 +50,16 @@ class FakeBuild(giit.build.Build):
 
         factory.provide_function(
             name='git', function=require_fake_git, override=True)
+
+        return factory
+
+    def build_factory(self, build_type):
+
+        factory = super(FakeBuild, self).build_factory(build_type)
+
+        if build_type == 'sftp':
+            self.sftp = mock.Mock()
+            factory.provide_value(name='sftp', value=self.sftp, override=True)
 
         return factory
 
@@ -92,6 +103,17 @@ def test_project(testdirectory, caplog):
                       build_path=build_dir.path(), data_path=giit_dir.path())
 
     build.run()
+
+    build.sftp.connect.assert_called_once_with(
+        hostname="files.build.com", username="giit")
+
+    local_path = os.path.join(build_dir.path(), u'docs')
+    remote_path = u'/tmp/www/docs/'
+    exclude_patterns = [os.path.join(build_dir.path(), u'workingtree', '*')]
+
+    build.sftp.transfer.assert_called_once_with(
+        local_path=local_path, remote_path=remote_path,
+        exclude_patterns=exclude_patterns)
 
     # cmd = ['giit', 'docs', project_dir.path(),
     #        '--build_path', build_dir.path(),

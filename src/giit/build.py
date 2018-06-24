@@ -111,7 +111,7 @@ class Build(object):
         # actions
         build_type = config[self.step]['type']
 
-        factory = giit.factory.build_factory(build_type=build_type)
+        factory = self.build_factory(build_type=build_type)
 
         # Provide the different needed by the factory
         factory.provide_value(name='config', value=config[self.step])
@@ -139,3 +139,6 @@ class Build(object):
         return giit.factory.cache_factory(
             data_path=self.data_path,
             unique_name=unique_name)
+
+    def build_factory(self, build_type):
+        return giit.factory.build_factory(build_type=build_type)
