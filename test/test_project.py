@@ -109,7 +109,7 @@ def test_project(testdirectory, caplog):
 
     local_path = os.path.join(build_dir.path(), u'docs')
     remote_path = u'/tmp/www/docs/'
-    exclude_patterns = [os.path.join(build_dir.path(), u'workingtree', '*')]
+    exclude_patterns = [build_dir.path() + u'/workingtree/*']
 
     build.sftp.transfer.assert_called_once_with(
         local_path=local_path, remote_path=remote_path,
