@@ -134,3 +134,49 @@ def test_filelist(testdirectory):
     assert file2 in remote_result
     assert file3 in remote_result
     assert file4 in remote_result
+
+
+def test_filelist_excludes_config(testdirectory):
+    # When the excludes come from the giit.json they will not have
+    # been nicely joined by os.path.join. We have to work with them anyway
+
+    mkdir_layout(parent_dir=testdirectory)
+
+    excludes = [
+        testdirectory.path() + '/c/d/*',
+        testdirectory.path() + '/a/*'
+    ]
+
+    filelist = giit.filelist.FileList(
+        local_path=testdirectory.path(),
+        remote_path=os.path.join(os.path.sep, 'var', 'www'),
+        exclude_patterns=excludes)
+
+    result = list(filelist)
+
+    local_result = [f.local_file for f in result]
+    remote_result = [f.remote_file for f in result]
+
+    # There should be 4 files
+    assert len(local_result) == 4
+    assert len(remote_result) == 4
+
+    file1 = os.path.join(testdirectory.path(), 'b', 'b.txt')
+    file2 = os.path.join(testdirectory.path(), 'b', 'c', 'b_c.txt')
+    file3 = os.path.join(testdirectory.path(), 'c', 'c.txt')
+    file4 = os.path.join(testdirectory.path(), 'd', 'd.txt')
+
+    assert file1 in local_result
+    assert file2 in local_result
+    assert file3 in local_result
+    assert file4 in local_result
+
+    file1 = os.path.join(os.path.sep, 'var', 'www', 'b', 'b.txt')
+    file2 = os.path.join(os.path.sep, 'var', 'www', 'b', 'c', 'b_c.txt')
+    file3 = os.path.join(os.path.sep, 'var', 'www', 'c', 'c.txt')
+    file4 = os.path.join(os.path.sep, 'var', 'www', 'd', 'd.txt')
+
+    assert file1 in remote_result
+    assert file2 in remote_result
+    assert file3 in remote_result
+    assert file4 in remote_result
