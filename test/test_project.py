@@ -107,7 +107,9 @@ def test_project(testdirectory, caplog):
     build.sftp.connect.assert_called_once_with(
         hostname="files.build.com", username="giit")
 
-    local_path = os.path.join(build_dir.path(), u'docs')
+    # We don't use os.path.join here since this is not what the variable
+    # substitution would do when taking the value from giit.json
+    local_path = build_dir.path() + u'/docs'
     remote_path = u'/tmp/www/docs/'
     exclude_patterns = [build_dir.path() + u'/workingtree/*']
 
