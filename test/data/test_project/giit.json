@@ -11,6 +11,7 @@
             "source_branch",
             "workingtree"
         ],
+        "tag_semver_filter": ">2.1.2",
         "variables": {
             "source_branch:master:output_path": "${build_path}/docs/latest",
             "source_branch:output_path": "${build_path}/sphinx/experiments/${name}",

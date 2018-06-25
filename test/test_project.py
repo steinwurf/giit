@@ -83,6 +83,7 @@ def mkdir_project(directory):
     project_dir.run(['git', 'add', '.'])
     project_dir.run(['git', '-c', 'user.name=John', '-c',
                      'user.email=doe@email.org', 'commit', '-m', 'oki'])
+    project_dir.run(['git', 'tag', '2.1.2'])
     project_dir.run(['git', 'tag', '3.1.2'])
     project_dir.run(['git', 'tag', '3.2.0'])
     project_dir.run(['git', 'tag', '3.3.0'])
@@ -109,6 +110,8 @@ def test_project(testdirectory, caplog):
     build.run()
 
     assert build_dir.contains_file('docs/latest/docs.txt')
+    # We have a tag filter that whould remove this tag
+    assert not build_dir.contains_file('docs/2.1.2/docs.txt')
     assert build_dir.contains_file('docs/3.1.2/docs.txt')
     assert build_dir.contains_file('docs/3.2.0/docs.txt')
     assert build_dir.contains_file('docs/3.3.0/docs.txt')

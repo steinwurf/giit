@@ -169,7 +169,8 @@ def require_task_generator(factory):
 
         git_tag_generator = giit.tasks.GitTagGenerator(
             git=git, git_repository=git_repository,
-            command=command, build_path=build_path)
+            command=command, build_path=build_path,
+            tag_semver_filter=command_config.tag_semver_filter)
 
         task_generator.add_generator(git_tag_generator)
 

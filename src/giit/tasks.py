@@ -3,6 +3,7 @@ import os
 import shutil
 import hashlib
 import sys
+import semantic_version
 
 
 class WorkingtreeTask(object):
@@ -100,25 +101,36 @@ class GitBranchGenerator(object):
             'source_path': self.git_repository.repository_path
         }
 
-        task = GitTask(git=self.git, context=context, command=self.command)
+        task = GitTask(git=self.git, context=context,
+                       command=self.command)
 
         return [task]
 
 
 class GitTagGenerator(object):
 
-    def __init__(self, git, git_repository, command, build_path):
+    def __init__(self, git, git_repository, command, build_path,
+                 tag_semver_filter):
 
         self.git = git
         self.git_repository = git_repository
         self.command = command
         self.build_path = build_path
+        self.tag_semver_filter = tag_semver_filter
 
     def tasks(self):
 
         tasks = []
 
-        for tag in self.git_repository.tags():
+        tags = self.git_repository.tags()
+
+        if self.tag_semver_filter:
+
+            spec = semantic_version.Spec(self.tag_semver_filter)
+            versions = [semantic_version.Version(t) for t in tags]
+            tags = [str(tag) for tag in spec.filter(versions)]
+
+        for tag in tags:
 
             context = {
                 'scope': 'tag',
@@ -127,7 +139,8 @@ class GitTagGenerator(object):
                 'source_path': self.git_repository.repository_path
             }
 
-            task = GitTask(git=self.git, context=context, command=self.command)
+            task = GitTask(git=self.git, context=context,
+                           command=self.command)
 
             tasks.append(task)
 
