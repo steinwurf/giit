@@ -7,7 +7,7 @@ import hashlib
 import shutil
 import logging
 
-import prompt
+import wurflib.prompt
 
 
 URL = 'https://github.com/pypa/virtualenv.git'
