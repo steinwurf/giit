@@ -7,7 +7,7 @@ import hashlib
 import shutil
 import logging
 
-import wurflib.prompt
+import giit.prompt
 
 
 URL = 'https://github.com/pypa/virtualenv.git'
@@ -75,7 +75,7 @@ class VirtualEnv(object):
         env = dict(os.environ)
         env.update({'PYTHONPATH': repo_path})
 
-        p = prompt.Prompt(env=env)
+        p = giit.prompt.Prompt(env=env)
 
         return VirtualEnv(prompt=p, log=log)
 
