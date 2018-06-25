@@ -4,19 +4,27 @@ import os
 class PythonConfig(object):
 
     def __init__(self, config):
+        """ Initialize the config.
+
+        :param config: Dict with all the config values initialized.
+        """
         self.config = config
 
     def __getattr__(self, attribute):
+        """ Allow config.attribute access.
 
-        if not attribute in self.config:
-            raise AttributeError("Not found")
-
-        return self.config[attribute]
+        :return: The value of the attribute
+        """
+        return self[attribute]
 
     def __getitem__(self, key):
+        """ Allow config.key access.
 
+        :return: The value of the attribute
+        """
         if not key in self.config:
-            raise AttributeError("Not found")
+            raise AttributeError("{} not found, keys are {}".format(
+                key, self.config.keys()))
 
         return self.config[key]
 

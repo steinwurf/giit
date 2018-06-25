@@ -61,6 +61,19 @@ class FakeBuild(giit.build.Build):
             self.sftp = mock.Mock()
             factory.provide_value(name='sftp', value=self.sftp, override=True)
 
+        if build_type == 'push':
+
+            def push_config(factory):
+                config = factory.require(name='config')
+                config['git_url'] = self.directory
+
+                return giit.push_config.PushConfig.from_dict(
+                    config=config)
+
+            factory.provide_function(
+                name='command_config', function=push_config,
+                override=True)
+
         return factory
 
 
@@ -86,29 +99,44 @@ def test_project(testdirectory, caplog):
     build_dir = testdirectory.mkdir('build')
     giit_dir = testdirectory.mkdir('giit')
 
-    build = FakeBuild(directory=project_dir.path(),
-                      step='docs', repository=project_dir.path(),
-                      build_path=build_dir.path(), data_path=giit_dir.path())
+    # Run the "docs" step
+
+    build = FakeBuild(
+        directory=project_dir.path(),
+        step='docs', repository=project_dir.path(),
+        build_path=build_dir.path(), data_path=giit_dir.path())
 
     build.run()
 
-    build = FakeBuild(directory=project_dir.path(),
-                      step='landing_page', repository=project_dir.path(),
-                      build_path=build_dir.path(), data_path=giit_dir.path())
+    # Run the "landing_page" step
+
+    build = FakeBuild(
+        directory=project_dir.path(),
+        step='landing_page', repository=project_dir.path(),
+        build_path=build_dir.path(), data_path=giit_dir.path())
 
     build.run()
 
-    build = FakeBuild(directory=project_dir.path(),
-                      step='publish', repository=project_dir.path(),
-                      build_path=build_dir.path(), data_path=giit_dir.path())
+    # Run the "publish" step
+
+    build = FakeBuild(
+        directory=project_dir.path(),
+        step='publish', repository=project_dir.path(),
+        build_path=build_dir.path(), data_path=giit_dir.path())
 
     build.run()
 
     build.sftp.connect.assert_called_once_with(
         hostname="files.build.com", username="giit")
 
-    # We don't use os.path.join here since this is not what the variable
-    # substitution would do when taking the value from giit.json
+    # We don't use os.path.join here since this is not what the
+    # variable substitution would do when taking the value from
+    # giit.json
+    #
+    # Note, to future testing geeks. It would probably be better
+    # to mock out at the paramiko.SSHClient() point instead.
+    # Since, then we would include a bit more of our own functionality
+    # in this integration test
     local_path = build_dir.path() + u'/docs'
     remote_path = u'/tmp/www/docs/'
     exclude_patterns = [build_dir.path() + u'/workingtree/*']
@@ -117,17 +145,10 @@ def test_project(testdirectory, caplog):
         local_path=local_path, remote_path=remote_path,
         exclude_patterns=exclude_patterns)
 
-    # cmd = ['giit', 'docs', project_dir.path(),
-    #        '--build_path', build_dir.path(),
-    #        '--data_path', giit_dir.path(),
-    #        '--source_branch', 'origin/add-docs']
+    # Run the "gh_pages" step
 
-    # testdirectory.run(cmd)
+    build = FakeBuild(directory=project_dir.path(),
+                      step='gh_pages', repository=project_dir.path(),
+                      build_path=build_dir.path(), data_path=giit_dir.path())
 
-    # cmd = ['giit', 'landing_page', url,
-    #        '--build_path', build_dir.path(),
-    #        '--data_path', giit_dir.path(),
-    #        '--json_config', config_file,
-    #        '--source_branch', 'origin/add-docs']
-
-    # testdirectory.run(cmd)
+    build.run()

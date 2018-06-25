@@ -4,31 +4,27 @@ import os
 class PushConfig(object):
 
     def __init__(self, config):
-        """ Create a new instance.
+        """ Initialize the config.
 
-        :param config: A valid PushConfig as a dict.
+        :param config: Dict with all the config values initialized.
         """
         self.config = config
 
     def __getattr__(self, attribute):
-        """ Access an entry in the config.
+        """ Allow config.attribute access.
 
-        :param attribute: The entry to access as a string
+        :return: The value of the attribute
         """
-
-        if not attribute in self.config:
-            raise AttributeError("Not found")
-
-        return self.config[attribute]
+        return self[attribute]
 
     def __getitem__(self, key):
-        """ Access an entry in the config.
+        """ Allow config.key access.
 
-        :param key: The entry to access as a string
+        :return: The value of the attribute
         """
-
         if not key in self.config:
-            raise AttributeError("Not found")
+            raise AttributeError("{} not found, keys are {}".format(
+                key, self.config.keys()))
 
         return self.config[key]
 
@@ -42,7 +38,7 @@ class PushConfig(object):
     def from_dict(config):
         """ Take a user provided dict and ensure the correct keys are there
 
-        :return A SFTPConfig object with the valid key
+        :return A PushConfig object with the valid key
         """
 
         # Mandatory
