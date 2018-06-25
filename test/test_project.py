@@ -1,0 +1,177 @@
+import logging
+import shutil
+import os
+import mock
+
+import giit.build
+import giit.git
+
+
+class FakeGit(giit.git.Git):
+
+    def __init__(self, directory, **kwargs):
+
+        super(FakeGit, self).__init__(**kwargs)
+
+        self.directory = directory
+
+    def remote_origin_url(self, cwd):
+        return "https://github.com/fake/fake.git"
+
+    def clone(self, repository, directory, cwd):
+
+        # os.makedirs(self.directory)
+        shutil.copytree(src=self.directory, dst=directory)
+
+
+def require_fake_git(factory):
+
+    prompt = factory.require(name='prompt')
+    git_binary = factory.require(name='git_binary')
+    fake_project_path = factory.require(name='fake_project_path')
+
+    return FakeGit(git_binary=git_binary, prompt=prompt,
+                   directory=fake_project_path)
+
+
+class FakeBuild(giit.build.Build):
+
+    def __init__(self, directory, **kwargs):
+
+        super(FakeBuild, self).__init__(**kwargs)
+
+        self.directory = directory
+
+    def resolve_factory(self):
+
+        factory = super(FakeBuild, self).resolve_factory()
+
+        factory.provide_value(name='fake_project_path', value=self.directory)
+
+        factory.provide_function(
+            name='git', function=require_fake_git, override=True)
+
+        return factory
+
+    def build_factory(self, build_type):
+
+        factory = super(FakeBuild, self).build_factory(build_type)
+
+        if build_type == 'sftp':
+            self.sftp = mock.Mock()
+            factory.provide_value(name='sftp', value=self.sftp, override=True)
+
+        if build_type == 'push':
+
+            def push_config(factory):
+                config = factory.require(name='config')
+                config['git_url'] = self.directory
+
+                return giit.push_config.PushConfig.from_dict(
+                    config=config)
+
+            factory.provide_function(
+                name='command_config', function=push_config,
+                override=True)
+
+        return factory
+
+
+def mkdir_project(directory):
+    project_dir = directory.copy_dir(directory='test/data/test_project')
+    project_dir.run(['git', 'init'])
+    project_dir.run(['git', 'add', '.'])
+    project_dir.run(['git', '-c', 'user.name=John', '-c',
+                     'user.email=doe@email.org', 'commit', '-m', 'oki'])
+    project_dir.run(['git', 'tag', '2.1.2'])
+    project_dir.run(['git', 'tag', '3.1.2'])
+    project_dir.run(['git', 'tag', '3.2.0'])
+    project_dir.run(['git', 'tag', '3.3.0'])
+    project_dir.run(['git', 'tag', '3.3.1'])
+
+    return project_dir
+
+
+def test_project(testdirectory, caplog):
+
+    caplog.set_level(logging.DEBUG)
+
+    project_dir = mkdir_project(testdirectory)
+    build_dir = testdirectory.mkdir('build')
+    giit_dir = testdirectory.mkdir('giit')
+
+    # Run the "docs" step
+
+    build = FakeBuild(
+        directory=project_dir.path(),
+        step='docs', repository=project_dir.path(),
+        build_path=build_dir.path(), data_path=giit_dir.path())
+
+    build.run()
+
+    assert build_dir.contains_file('docs/latest/docs.txt')
+    # We have a tag filter that whould remove this tag
+    assert not build_dir.contains_file('docs/2.1.2/docs.txt')
+    assert build_dir.contains_file('docs/3.1.2/docs.txt')
+    assert build_dir.contains_file('docs/3.2.0/docs.txt')
+    assert build_dir.contains_file('docs/3.3.0/docs.txt')
+    assert build_dir.contains_file('docs/3.3.1/docs.txt')
+    assert build_dir.contains_file('workingtree/sphinx/docs.txt')
+
+    # Run the "landing_page" step
+
+    build = FakeBuild(
+        directory=project_dir.path(),
+        step='landing_page', repository=project_dir.path(),
+        build_path=build_dir.path(), data_path=giit_dir.path())
+
+    build.run()
+
+    assert build_dir.contains_file('docs/landing.txt')
+    assert build_dir.contains_file('workingtree/landingpage/landing.txt')
+
+    # Run the "publish" step
+
+    build = FakeBuild(
+        directory=project_dir.path(),
+        step='publish', repository=project_dir.path(),
+        build_path=build_dir.path(), data_path=giit_dir.path())
+
+    build.run()
+
+    build.sftp.connect.assert_called_once_with(
+        hostname="files.build.com", username="giit")
+
+    # We don't use os.path.join here since this is not what the
+    # variable substitution would do when taking the value from
+    # giit.json
+    #
+    # Note, to future testing geeks. It would probably be better
+    # to mock out at the paramiko.SSHClient() point instead.
+    # Since, then we would include a bit more of our own functionality
+    # in this integration test
+    local_path = build_dir.path() + u'/docs'
+    remote_path = u'/tmp/www/docs/'
+    exclude_patterns = [build_dir.path() + u'/workingtree/*']
+
+    build.sftp.transfer.assert_called_once_with(
+        local_path=local_path, remote_path=remote_path,
+        exclude_patterns=exclude_patterns)
+
+    # Run the "gh_pages" step
+
+    build = FakeBuild(directory=project_dir.path(),
+                      step='gh_pages', repository=project_dir.path(),
+                      build_path=build_dir.path(), data_path=giit_dir.path())
+
+    build.run()
+
+    # Switch to the brach where we have push'ed the files
+    project_dir.run(['git', 'checkout', 'gh-pages'])
+
+    assert project_dir.contains_file('docs/latest/docs.txt')
+    assert project_dir.contains_file('docs/3.1.2/docs.txt')
+    assert project_dir.contains_file('docs/3.2.0/docs.txt')
+    assert project_dir.contains_file('docs/3.3.0/docs.txt')
+    assert project_dir.contains_file('docs/3.3.1/docs.txt')
+    assert project_dir.contains_file('docs/landing.txt')

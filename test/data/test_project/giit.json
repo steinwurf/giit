@@ -1,0 +1,59 @@
+{
+    "docs": {
+        "type": "python",
+        "scripts": [
+            "python scripts.py --out ${output_path}"
+        ],
+        "cwd": "${source_path}/docs",
+        "requirements": "${source_path}/docs/requirements.txt",
+        "scope": [
+            "tag",
+            "source_branch",
+            "workingtree"
+        ],
+        "tag_semver_filter": ">2.1.2",
+        "variables": {
+            "source_branch:master:output_path": "${build_path}/docs/latest",
+            "source_branch:output_path": "${build_path}/sphinx/experiments/${name}",
+            "tag:output_path": "${build_path}/docs/${name}",
+            "workingtree:output_path": "${build_path}/workingtree/sphinx"
+        }
+    },
+    "landing_page": {
+        "type": "python",
+        "scripts": [
+            "python scripts.py --out ${output_path}"
+        ],
+        "cwd": "${source_path}/landing_page",
+        "requirements": "${source_path}/landing_page/requirements.txt",
+        "scope": [
+            "source_branch",
+            "workingtree"
+        ],
+        "variables": {
+            "source_branch:master:output_path": "${build_path}/docs",
+            "source_branch:output_path": "${build_path}/landing_page/experiments/${name}",
+            "workingtree:output_path": "${build_path}/workingtree/landingpage"
+        }
+    },
+    "publish": {
+        "type": "sftp",
+        "hostname": "files.build.com",
+        "username": "giit",
+        "remote_path": "/tmp/www/docs/",
+        "local_path": "${build_path}/docs",
+        "exclude_patterns": [
+            "${build_path}/workingtree/*"
+        ]
+    },
+    "gh_pages": {
+        "type": "push",
+        "target_branch": "gh-pages",
+        "to_path": ".",
+        "from_path": "${build_path}",
+        "git_url": "git@github.com:build/project.git",
+        "exclude_patterns": [
+            "${build_path}/workingtree/*"
+        ]
+    }
+}
