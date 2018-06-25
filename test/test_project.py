@@ -108,6 +108,13 @@ def test_project(testdirectory, caplog):
 
     build.run()
 
+    assert build_dir.contains_file('docs/latest/docs.txt')
+    assert build_dir.contains_file('docs/3.1.2/docs.txt')
+    assert build_dir.contains_file('docs/3.2.0/docs.txt')
+    assert build_dir.contains_file('docs/3.3.0/docs.txt')
+    assert build_dir.contains_file('docs/3.3.1/docs.txt')
+    assert build_dir.contains_file('workingtree/sphinx/docs.txt')
+
     # Run the "landing_page" step
 
     build = FakeBuild(
@@ -116,6 +123,9 @@ def test_project(testdirectory, caplog):
         build_path=build_dir.path(), data_path=giit_dir.path())
 
     build.run()
+
+    assert build_dir.contains_file('docs/landing.txt')
+    assert build_dir.contains_file('workingtree/landingpage/landing.txt')
 
     # Run the "publish" step
 
@@ -152,3 +162,13 @@ def test_project(testdirectory, caplog):
                       build_path=build_dir.path(), data_path=giit_dir.path())
 
     build.run()
+
+    # Switch to the brach where we have push'ed the files
+    project_dir.run(['git', 'checkout', 'gh-pages'])
+
+    assert project_dir.contains_file('docs/latest/docs.txt')
+    assert project_dir.contains_file('docs/3.1.2/docs.txt')
+    assert project_dir.contains_file('docs/3.2.0/docs.txt')
+    assert project_dir.contains_file('docs/3.3.0/docs.txt')
+    assert project_dir.contains_file('docs/3.3.1/docs.txt')
+    assert project_dir.contains_file('docs/landing.txt')

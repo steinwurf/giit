@@ -25,6 +25,10 @@
         ],
         "cwd": "${source_path}/landing_page",
         "requirements": "${source_path}/landing_page/requirements.txt",
+        "scope": [
+            "source_branch",
+            "workingtree"
+        ],
         "variables": {
             "source_branch:master:output_path": "${build_path}/docs",
             "source_branch:output_path": "${build_path}/landing_page/experiments/${name}",
