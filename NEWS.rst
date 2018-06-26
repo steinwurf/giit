@@ -6,7 +6,7 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Patch: Simplify exception handling logic in PythonCommand.
 
 1.0.1
 -----
