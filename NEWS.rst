@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+1.0.3
+-----
 * Patch: Add support for writing a .nojekyll file in the push step.
 
 1.0.2
