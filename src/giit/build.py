@@ -89,8 +89,15 @@ class Build(object):
 
         # Get the command
         if not self.json_config:
-            self.json_config = os.path.join(
-                git_repository.repository_path, 'giit.json')
+
+            if git_repository.workingtree_path:
+
+                self.json_config = os.path.join(
+                    git_repository.workingtree_path, 'giit.json')
+            else:
+
+                self.json_config = os.path.join(
+                    git_repository.repository_path, 'giit.json')
 
         with open(self.json_config, 'r') as config_file:
             config = json.load(config_file)
