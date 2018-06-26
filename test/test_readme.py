@@ -1,4 +1,4 @@
-def test_godot(testdirectory):
+def test_urllib3(testdirectory):
 
     config_file = testdirectory.copy_file('test/data/urllib3_giit.json')
 

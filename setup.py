@@ -63,7 +63,7 @@ VERSION = find_version()
 setup(
     name='giit',
     version=VERSION,
-    description=("Wrapper for Sphinx's sphinx-build command."),
+    description=("Wrapper git to automate running scripts."),
     long_description=long_description,
     url='https://github.com/steinwurf/',
     author='Steinwurf ApS',

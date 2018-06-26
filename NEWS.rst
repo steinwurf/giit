@@ -6,7 +6,9 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Patch: Fix the handling of the source branch. The behavior now is
+  to ensure we switch to the source branch before we read the config
+  file.
 
 1.0.0
 -----

@@ -85,6 +85,13 @@ class GitRepository(object):
             self.git.clone(repository=git_url,
                            directory=self.repository_path, cwd=self.clone_path)
 
+        # Make sure we start on the source branch, we will
+        # read the giit.json file from here
+        self.git.checkout(branch=self.source_branch,
+                          cwd=self.repository_path)
+
+        self.git.pull(cwd=self.repository_path)
+
     def tags(self):
         """ :return: The tags specified for the repository """
         return self.git.tags(cwd=self.repository_path)

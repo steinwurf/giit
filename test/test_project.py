@@ -21,7 +21,19 @@ class FakeGit(giit.git.Git):
     def clone(self, repository, directory, cwd):
 
         # os.makedirs(self.directory)
-        shutil.copytree(src=self.directory, dst=directory)
+        #shutil.copytree(src=self.directory, dst=directory)
+
+        print("repository={} directory={}".format(self.directory,
+                                                  directory))
+
+        super(FakeGit, self).clone(repository=self.directory,
+                                   directory=directory, cwd=self.directory)
+
+        # Emulate that we cloned from a URL
+        super(FakeGit, self).checkout(branch='master', cwd=directory)
+        # self.git.clone(
+        #     repository=self.directory,
+        #     directory=directory, cwd=self.directory)
 
 
 def require_fake_git(factory):
@@ -77,9 +89,25 @@ class FakeBuild(giit.build.Build):
         return factory
 
 
-def mkdir_project(directory):
-    project_dir = directory.copy_dir(directory='test/data/test_project')
+def commit_file(directory, filename, content):
+    directory.write_text(filename, content, encoding='utf-8')
+    directory.run(['git', 'add', '.'])
+    directory.run(['git', '-c', 'user.name=John', '-c',
+                   'user.email=doe@email.org', 'commit', '-m', 'oki'])
+
+
+def mkdir_project(directory, giit_branch):
+
+    project_dir = directory.mkdir('test_project')
+
     project_dir.run(['git', 'init'])
+
+    commit_file(directory=project_dir, filename='ok.txt',
+                content=u'hello world')
+
+    project_dir.copy_dir(directory='test/data/test_project/docs')
+    project_dir.copy_dir(directory='test/data/test_project/landing_page')
+
     project_dir.run(['git', 'add', '.'])
     project_dir.run(['git', '-c', 'user.name=John', '-c',
                      'user.email=doe@email.org', 'commit', '-m', 'oki'])
@@ -89,6 +117,17 @@ def mkdir_project(directory):
     project_dir.run(['git', 'tag', '3.3.0'])
     project_dir.run(['git', 'tag', '3.3.1'])
 
+    # We add the giit.json on a branch but this should work
+    # since we build with giit passing a path to the directory
+    # where this branch is currently checkout out. It should
+    # become the source branch
+    if giit_branch:
+        project_dir.run(['git', 'checkout', '-b', giit_branch])
+    project_dir.copy_file(filename='test/data/test_project/giit.json')
+    project_dir.run(['git', 'add', '.'])
+    project_dir.run(['git', '-c', 'user.name=John', '-c',
+                     'user.email=doe@email.org', 'commit', '-m', 'oki'])
+
     return project_dir
 
 
@@ -96,7 +135,7 @@ def test_project(testdirectory, caplog):
 
     caplog.set_level(logging.DEBUG)
 
-    project_dir = mkdir_project(testdirectory)
+    project_dir = mkdir_project(testdirectory, giit_branch='add-giit')
     build_dir = testdirectory.mkdir('build')
     giit_dir = testdirectory.mkdir('giit')
 
@@ -109,7 +148,9 @@ def test_project(testdirectory, caplog):
 
     build.run()
 
-    assert build_dir.contains_file('docs/latest/docs.txt')
+    # The project is on the "add-giit" branch
+
+    assert build_dir.contains_file('sphinx/add-giit/docs.txt')
     # We have a tag filter that whould remove this tag
     assert not build_dir.contains_file('docs/2.1.2/docs.txt')
     assert build_dir.contains_file('docs/3.1.2/docs.txt')
@@ -127,7 +168,7 @@ def test_project(testdirectory, caplog):
 
     build.run()
 
-    assert build_dir.contains_file('docs/landing.txt')
+    assert build_dir.contains_file('landing_page/add-giit/landing.txt')
     assert build_dir.contains_file('workingtree/landingpage/landing.txt')
 
     # Run the "publish" step
@@ -159,6 +200,65 @@ def test_project(testdirectory, caplog):
         exclude_patterns=exclude_patterns)
 
     # Run the "gh_pages" step
+
+    build = FakeBuild(directory=project_dir.path(),
+                      step='gh_pages', repository=project_dir.path(),
+                      build_path=build_dir.path(), data_path=giit_dir.path())
+
+    build.run()
+
+    # Switch to the brach where we have push'ed the files
+    project_dir.run(['git', 'checkout', 'gh-pages'])
+
+    #assert project_dir.contains_file('docs/latest/docs.txt')
+    assert project_dir.contains_file('docs/3.1.2/docs.txt')
+    assert project_dir.contains_file('docs/3.2.0/docs.txt')
+    assert project_dir.contains_file('docs/3.3.0/docs.txt')
+    assert project_dir.contains_file('docs/3.3.1/docs.txt')
+    #assert project_dir.contains_file('docs/landing.txt')
+
+
+def test_project_master(testdirectory, caplog):
+    # When building the master branch the output locations
+    # of the different pieces change
+
+    caplog.set_level(logging.DEBUG)
+
+    project_dir = mkdir_project(testdirectory, giit_branch=None)
+    build_dir = testdirectory.mkdir('build')
+    giit_dir = testdirectory.mkdir('giit')
+
+    # Run the "docs" step
+
+    build = FakeBuild(source_branch='master',
+                      directory=project_dir.path(),
+                      step='docs', repository=project_dir.path(),
+                      build_path=build_dir.path(), data_path=giit_dir.path())
+
+    build.run()
+
+    # The project is on the "add-giit" branch
+
+    assert build_dir.contains_file('docs/latest/docs.txt')
+    # We have a tag filter that would remove this tag
+    assert not build_dir.contains_file('docs/2.1.2/docs.txt')
+    assert build_dir.contains_file('docs/3.1.2/docs.txt')
+    assert build_dir.contains_file('docs/3.2.0/docs.txt')
+    assert build_dir.contains_file('docs/3.3.0/docs.txt')
+    assert build_dir.contains_file('docs/3.3.1/docs.txt')
+    assert build_dir.contains_file('workingtree/sphinx/docs.txt')
+
+    # Run the "landing_page" step
+
+    build = FakeBuild(source_branch='master',
+                      directory=project_dir.path(),
+                      step='landing_page', repository=project_dir.path(),
+                      build_path=build_dir.path(), data_path=giit_dir.path())
+
+    build.run()
+
+    assert build_dir.contains_file('docs/landing.txt')
+    assert build_dir.contains_file('workingtree/landingpage/landing.txt')
 
     build = FakeBuild(directory=project_dir.path(),
                       step='gh_pages', repository=project_dir.path(),
