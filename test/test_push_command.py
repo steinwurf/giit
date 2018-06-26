@@ -48,6 +48,7 @@ def test_push_command(testdirectory):
     config['target_branch'] = 'gh-pages'
     config['commit_name'] = 'Giit Bot'
     config['commit_email'] = 'deploy@giit.bot'
+    config['nojekyll'] = True
 
     command = giit.push_command.PushCommand(
         prompt=prompt, config=config, log=log)
@@ -78,3 +79,5 @@ def test_push_command(testdirectory):
     ]
 
     prompt.assert_has_calls(calls)
+
+    assert os.path.isfile(os.path.join(cwd, '.nojekyll'))

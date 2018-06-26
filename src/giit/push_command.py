@@ -53,6 +53,10 @@ class PushCommand(object):
                        to_path=to_path,
                        exclude_patterns=exclude_patterns)
 
+        if reader.nojekyll:
+            nojekyll_path = os.path.join(temp_path, '.nojekyll')
+            open(nojekyll_path, 'a').close()
+
         command = ["git", "init"]
         self.prompt.run(command=command, cwd=temp_path)
 

@@ -63,6 +63,9 @@ class PushConfig(object):
         if not 'tag_semver_filter' in config:
             config['tag_semver_filter'] = None
 
+        if not 'nojekyll' in config:
+            config['nojekyll'] = False
+
         if not 'variables' in config:
             config['variables'] = ''
 
