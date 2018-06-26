@@ -6,7 +6,9 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Patch: Simplify exception handling logic in PythonCommand.
+* Patch: If building from a workingtree (local directory), then
+  read from config from there.
 
 1.0.1
 -----

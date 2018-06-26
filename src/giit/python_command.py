@@ -34,23 +34,14 @@ class PythonCommand(object):
                 requirements=reader.requirements,
                 pip_packages=reader.pip_packages)
 
-        except Exception:
-
-            if reader.allow_failure:
-                self.log.exception('Create environment')
-            else:
-                raise
-
-        for script in reader.scripts:
-
-            try:
+            for script in reader.scripts:
                 self.log.info('Python: %s', script)
                 self.prompt.run(command=script, cwd=reader.cwd,
                                 env=env)
 
-            except Exception:
+        except Exception:
 
-                if reader.allow_failure:
-                    self.log.exception('Run command')
-                else:
-                    raise
+            if reader.allow_failure:
+                self.log.exception('PythonCommand')
+            else:
+                raise
