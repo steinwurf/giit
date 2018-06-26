@@ -275,3 +275,4 @@ def test_project_master(testdirectory, caplog):
     assert project_dir.contains_file('docs/3.3.0/docs.txt')
     assert project_dir.contains_file('docs/3.3.1/docs.txt')
     assert project_dir.contains_file('docs/landing.txt')
+    assert project_dir.contains_file('.nojekyll')
