@@ -1,6 +1,9 @@
 Introduction
 ============
 
+.. image:: https://ci.appveyor.com/api/projects/status/mld0fa79ox939fex/branch/master?svg=true
+.. image:: https://travis-ci.org/steinwurf/giit.svg?branch=master
+
 The Git Iterator ``giit`` is a small tool for running commands on
 branches and tags of a git repository.
 
@@ -173,7 +176,7 @@ variable.
 
 Let walk though the different values ``output_path`` can take.
 
-* If scope is ``source_branch`` and the branch is ``master`` then
+* If scope is ``branch`` and the branch is ``master`` then
   ``output_path`` will be ``${build_path}/docs/latest``.
 * For all other branches ``output_path`` will be
   ``${build_path}/sphinx/${name}`` where ``${name}`` will be the
