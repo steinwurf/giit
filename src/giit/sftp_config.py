@@ -53,10 +53,13 @@ class SFTPConfig(object):
             config['exclude_patterns'] = []
 
         if not 'scope' in config:
-            config['scope'] = ['source_branch']
+            config['scope'] = ['branch']
 
         if not 'tag_semver_filter' in config:
             config['tag_semver_filter'] = None
+
+        if not 'branches' in config:
+            config['branches'] = []
 
         if not 'variables' in config:
             config['variables'] = ''

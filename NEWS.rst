@@ -6,7 +6,11 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Major: Remove source_branch scope for a more general branch scope
+* Minor: Add a branches attribute to allow certain branches to
+  always run.
+* Patch: Add a --clean_build option to remove the build directory
+  before building.
 
 1.0.3
 -----

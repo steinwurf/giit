@@ -96,7 +96,7 @@ If enabled a step will run in a number of different "scopes":
     local path.
   * This allows a user to run steps without having to first
     push to the remote git repository.
-* ``source_branch``:
+* ``branch``:
   * The source branch scope will default to ``master``.
   * If a user passes a path to ``giit`` the source branch will be whatever
     branch the local repository is on.
@@ -106,7 +106,7 @@ If enabled a step will run in a number of different "scopes":
   * A default ``giit`` will run the step for each tag on the repository
     in this scope.
 
-As a default all steps default to only run in the ``source_branch``
+As a default all steps default to only run in the ``branch``
 scope. This can be change with the ``scope`` step attribute.
 
 Step built-in variables
@@ -160,8 +160,8 @@ the following example::
             ],
             ...
             "variables": {
-                "source_branch:master:output_path": "${build_path}/docs/latest",
-                "source_branch:output_path": "${build_path}/sphinx/${name}",
+                "branch:master:output_path": "${build_path}/docs/latest",
+                "branch:output_path": "${build_path}/sphinx/${name}",
                 "tag:output_path": "${build_path}/docs/${name}",
                 "workingtree:output_path": "${build_path}/workingtree/sphinx"
             }

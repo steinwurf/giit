@@ -8,13 +8,13 @@
         "requirements": "${source_path}/docs/requirements.txt",
         "scope": [
             "tag",
-            "source_branch",
+            "branch",
             "workingtree"
         ],
         "tag_semver_filter": ">2.1.2",
         "variables": {
-            "source_branch:master:output_path": "${build_path}/docs/latest",
-            "source_branch:output_path": "${build_path}/sphinx/${name}",
+            "branch:master:output_path": "${build_path}/docs/latest",
+            "branch:output_path": "${build_path}/sphinx/${name}",
             "tag:output_path": "${build_path}/docs/${name}",
             "workingtree:output_path": "${build_path}/workingtree/sphinx"
         }
@@ -27,12 +27,12 @@
         "cwd": "${source_path}/landing_page",
         "requirements": "${source_path}/landing_page/requirements.txt",
         "scope": [
-            "source_branch",
+            "branch",
             "workingtree"
         ],
         "variables": {
-            "source_branch:master:output_path": "${build_path}/docs",
-            "source_branch:output_path": "${build_path}/landing_page/${name}",
+            "branch:master:output_path": "${build_path}/docs",
+            "branch:output_path": "${build_path}/landing_page/${name}",
             "workingtree:output_path": "${build_path}/workingtree/landingpage"
         }
     },

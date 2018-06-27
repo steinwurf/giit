@@ -85,26 +85,50 @@ class GitTask(object):
 
 class GitBranchGenerator(object):
 
-    def __init__(self, git, git_repository, command, build_path):
+    def __init__(self, git, repository_path, command, build_path,
+                 source_branch, branches):
+        """ Create a branch generator.
+
+        :param git: A giit.git.Git instance
+        :param repository_path: Path to where the repository is.
+        :param command: The command to run e.g.
+            giit.python_command.PythonCommand
+        :param build_path: The build path as a string
+        :param source_branch: The source branch as a string
+        :param branches: The list of branches to build
+        """
 
         self.git = git
-        self.git_repository = git_repository
+        self.source_branch = source_branch
+        self.repository_path = repository_path
         self.command = command
         self.build_path = build_path
+        self.branches = branches
 
     def tasks(self):
 
-        context = {
-            'scope': 'source_branch',
-            'name': self.git_repository.source_branch,
-            'build_path': self.build_path,
-            'source_path': self.git_repository.repository_path
-        }
+        # Create a task for the source branch if it is not already
+        # included in the branches list
+        if self.source_branch not in self.branches:
+            self.branches.append(self.source_branch)
 
-        task = GitTask(git=self.git, context=context,
-                       command=self.command)
+        tasks = []
 
-        return [task]
+        for branch in self.branches:
+
+            context = {
+                'scope': 'branch',
+                'name': branch,
+                'build_path': self.build_path,
+                'source_path': self.repository_path
+            }
+
+            task = GitTask(git=self.git, context=context,
+                           command=self.command)
+
+            tasks.append(task)
+
+        return tasks
 
 
 class GitTagGenerator(object):

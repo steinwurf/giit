@@ -43,13 +43,16 @@ class PythonConfig(object):
 
         # Optional
         if not 'scope' in config:
-            config['scope'] = ['source_branch']
+            config['scope'] = ['branch']
 
         if not 'tag_semver_filter' in config:
             config['tag_semver_filter'] = None
 
         if not 'variables' in config:
             config['variables'] = ''
+
+        if not 'branches' in config:
+            config['branches'] = []
 
         if not 'requirements' in config:
             config['requirements'] = None

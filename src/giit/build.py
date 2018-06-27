@@ -5,6 +5,7 @@ import os
 import logging
 import json
 import sys
+import shutil
 
 import giit.factory
 
@@ -14,6 +15,7 @@ class Build(object):
     def __init__(self, step,
                  repository,
                  build_path=None,
+                 clean_build=False,
                  data_path=None,
                  json_config=None,
                  source_branch=None):
@@ -21,6 +23,7 @@ class Build(object):
         self.step = step
         self.repository = repository
         self.build_path = build_path
+        self.clean_build = clean_build
         self.data_path = data_path
         self.json_config = json_config
         self.source_branch = source_branch
@@ -69,7 +72,7 @@ class Build(object):
         log.debug('json_config=%s', self.json_config)
         log.debug('source_branch=%s', self.source_branch)
 
-        log.info('Lets go!')
+        log.info('Lets go: %s', self.step)
 
         # Resolve the repository
         factory = self.resolve_factory()
@@ -82,8 +85,12 @@ class Build(object):
             self.build_path = os.path.join(giit_path, 'build',
                                            git_repository.unique_name)
 
-            if not os.path.isdir(self.build_path):
-                os.makedirs(self.build_path)
+        if self.clean_build:
+            if os.path.isdir(self.build_path):
+                shutil.rmtree(self.build_path, ignore_errors=True)
+
+        if not os.path.isdir(self.build_path):
+            os.makedirs(self.build_path)
 
         log.info("Building into: %s", self.build_path)
 

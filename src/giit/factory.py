@@ -157,11 +157,13 @@ def require_task_generator(factory):
 
         task_generator.add_generator(workingtree_generator)
 
-    if 'source_branch' in command_config.scope:
+    if 'branch' in command_config.scope:
 
         git_branch_generator = giit.tasks.GitBranchGenerator(
-            git=git, git_repository=git_repository,
-            command=command, build_path=build_path)
+            git=git, repository_path=git_repository.repository_path,
+            source_branch=git_repository.source_branch,
+            command=command, build_path=build_path,
+            branches=command_config.branches)
 
         task_generator.add_generator(git_branch_generator)
 

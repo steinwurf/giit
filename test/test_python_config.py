@@ -22,4 +22,5 @@ def test_python_config():
     assert config_out.requirements == None
     assert config_out.variables == ''
     assert config_out.allow_failure == False
-    assert config_out.scope == ['source_branch']
+    assert config_out.scope == ['branch']
+    assert config_out.branches == []

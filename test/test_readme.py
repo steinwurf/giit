@@ -4,7 +4,7 @@ def test_urllib3(testdirectory):
 
     url = 'https://github.com/urllib3/urllib3.git'
 
-    cmd = ['giit', 'docs', url,
+    cmd = ['giit', 'docs', url, '--clean_build',
            '--json_config', config_file]
 
     print(testdirectory.run(cmd))
