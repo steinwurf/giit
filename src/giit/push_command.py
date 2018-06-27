@@ -100,7 +100,7 @@ class PushCommand(object):
 
                 filename = os.path.normpath(fileinfo.remote_file)
 
-                if not filename.endswith('index.html'):
+                if not filename.endswith('/index.html'):
                     continue
 
                 url = os.path.join(url_base, filename)
