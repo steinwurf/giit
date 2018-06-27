@@ -46,6 +46,9 @@ class GitRepository(object):
 
         self._ensure_clone_path()
 
+        self.log.info("Using git version: %s",
+                      self.git.version(cwd=self.clone))
+
         # Get the URL to the repository
         if os.path.isdir(repository):
             self.workingtree_path = os.path.abspath(
