@@ -44,11 +44,7 @@ class GitRepository(object):
 
         assert repository
 
-        self.clone_path = os.path.abspath(
-            os.path.expanduser(self.clone_path))
-
-        if not os.path.isdir(self.clone_path):
-            os.makedirs(self.clone_path)
+        self._ensure_clone_path()
 
         # Get the URL to the repository
         if os.path.isdir(repository):
@@ -66,13 +62,22 @@ class GitRepository(object):
                 # If we don't have a source branch we use 'master
                 self.source_branch = 'master'
 
-        self.log.info("Using git repository: %s", git_url)
+        # Select the clone URL
+        if self.workingtree_path:
+            clone_url = self.workingtree_path
+        else:
+            clone_url = git_url
+
+        self.log.info("Using git repository: %s", clone_url)
 
         # Compute the clone path
         git_info = self.git_url_parser.parse(url=git_url)
 
         url_hash = hashlib.sha1(git_url.encode('utf-8')).hexdigest()[:6]
         self.unique_name = git_info.name + '-' + url_hash
+
+        if self.workingtree_path:
+            self.unique_name = self.unique_name + '-local'
 
         self.repository_path = os.path.join(self.clone_path, self.unique_name)
 
@@ -82,7 +87,7 @@ class GitRepository(object):
             self.git.fetch(cwd=self.repository_path, all=True)
         else:
             self.log.info('Running: git clone in %s', self.repository_path)
-            self.git.clone(repository=git_url,
+            self.git.clone(repository=clone_url,
                            directory=self.repository_path, cwd=self.clone_path)
 
         # Make sure we start on the source branch, we may
@@ -95,3 +100,11 @@ class GitRepository(object):
     def tags(self):
         """ :return: The tags specified for the repository """
         return self.git.tags(cwd=self.repository_path)
+
+    def _ensure_clone_path(self):
+        """ Make sure the directory for the clones exist """
+        self.clone_path = os.path.abspath(
+            os.path.expanduser(self.clone_path))
+
+        if not os.path.isdir(self.clone_path):
+            os.makedirs(self.clone_path)
