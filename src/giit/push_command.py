@@ -93,14 +93,17 @@ class PushCommand(object):
 
             filelist = giit.filelist.FileList(
                 local_path=from_path,
-                remote_path=to_path,
+                remote_path='.',
                 exclude_patterns=exclude_patterns)
 
             for fileinfo in filelist:
-                if not fileinfo.remote_file.endswith('index.html'):
+
+                filename = os.path.normpath(fileinfo.remote_file)
+
+                if not filename.endswith('index.html'):
                     continue
 
-                url = os.path.join(url_base, fileinfo.remote_file)
+                url = os.path.join(url_base, filename)
                 self.log.info("Available URL: %s", url)
 
     @staticmethod

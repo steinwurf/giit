@@ -180,3 +180,19 @@ def test_filelist_excludes_config(testdirectory):
     assert file2 in remote_result
     assert file3 in remote_result
     assert file4 in remote_result
+
+
+def test_filelist(testdirectory):
+    a_dir = testdirectory.mkdir('a')
+    a_dir.write_text(filename='a.txt', data=u'a', encoding='utf-8')
+
+    filelist = giit.filelist.FileList(
+        local_path=testdirectory.path(),
+        remote_path='.',
+        exclude_patterns=[])
+
+    result = list(filelist)
+
+    assert len(result) == 1
+
+    assert 'a/a.txt' == os.path.normpath(result[0].remote_file)
