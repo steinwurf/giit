@@ -49,7 +49,7 @@ def test_push_command(testdirectory):
     config['commit_name'] = 'Giit Bot'
     config['commit_email'] = 'deploy@giit.bot'
     config['nojekyll'] = True
-    config['url_base'] = 'http://fake.github.io/fake/'
+    config['publish_url'] = 'http://fake.github.io/fake/'
 
     command = giit.push_command.PushCommand(
         prompt=prompt, config=config, log=log)

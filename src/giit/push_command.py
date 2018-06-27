@@ -86,10 +86,10 @@ class PushCommand(object):
         self.prompt.run(command=command, cwd=temp_path)
 
         # Print the available URLs
-        if reader.url_base:
+        if reader.publish_url:
 
             # Remove slash if present
-            url_base = reader.url_base.rstrip('/')
+            publish_url = reader.publish_url.rstrip('/')
 
             filelist = giit.filelist.FileList(
                 from_path=temp_path,
@@ -103,7 +103,7 @@ class PushCommand(object):
                 if not filename.endswith('index.html'):
                     continue
 
-                url = '/'.join([url_base, filename])
+                url = '/'.join([publish_url, filename])
                 self.log.info("Available URL: %s", url)
 
     @staticmethod
