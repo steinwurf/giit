@@ -85,6 +85,24 @@ class PushCommand(object):
 
         self.prompt.run(command=command, cwd=temp_path)
 
+        # Print the available URLs
+        if reader.url_base:
+
+            # Remove slash if present
+            url_base = reader.url_base.rstrip('/')
+
+            filelist = giit.filelist.FileList(
+                local_path=from_path,
+                remote_path=to_path,
+                exclude_patterns=exclude_patterns)
+
+            for fileinfo in filelist:
+                if not fileinfo.remote_file.endswith('index.html'):
+                    continue
+
+                url = os.path.join(url_base, fileinfo.remote_file)
+                self.log.info("Available URL: %s", url)
+
     @staticmethod
     def _to_path(repository_path, to_path):
 
