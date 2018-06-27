@@ -48,7 +48,9 @@ class GitRepository(object):
 
         # Get the URL to the repository
         if os.path.isdir(repository):
-            self.workingtree_path = repository
+            self.workingtree_path = os.path.abspath(
+                os.path.expanduser(repository))
+
             git_url = self.git.remote_origin_url(cwd=repository)
 
             if not self.source_branch:
