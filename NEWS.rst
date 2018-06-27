@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+2.0.0
+-----
 * Major: Remove source_branch scope for a more general branch scope
 * Minor: Add a branches attribute to allow certain branches to
   always run.
