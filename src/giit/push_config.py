@@ -69,6 +69,9 @@ class PushConfig(object):
         if not 'nojekyll' in config:
             config['nojekyll'] = False
 
+        if not 'publish_url' in config:
+            config['publish_url'] = False
+
         if not 'variables' in config:
             config['variables'] = ''
 

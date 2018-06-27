@@ -6,6 +6,35 @@ import giit.fileinfo
 
 class FileList(object):
 
+    def __init__(self, from_path, exclude_patterns=[]):
+        self.from_path = from_path
+        self.exclude_patterns = exclude_patterns
+
+    def __iter__(self):
+        for root, dirs, files in os.walk(self.from_path, topdown=True):
+
+            for f in files:
+                filename = os.path.join(root, f)
+
+                if not self._exclude(filename=filename):
+
+                    relative_path = os.path.relpath(
+                        path=filename, start=self.from_path)
+
+                    yield relative_path
+
+    def _exclude(self, filename):
+
+        for e in self.exclude_patterns:
+
+            if fnmatch.fnmatch(filename, e):
+                return True
+
+        return False
+
+
+class FileMapper(object):
+
     def __init__(self, local_path, remote_path, exclude_patterns=[]):
         self.local_path = local_path
         self.remote_path = remote_path

@@ -18,22 +18,22 @@ class FakeGit(giit.git.Git):
     def remote_origin_url(self, cwd):
         return "https://github.com/fake/fake.git"
 
-    def clone(self, repository, directory, cwd):
+    # def clone(self, repository, directory, cwd):
 
-        # os.makedirs(self.directory)
-        #shutil.copytree(src=self.directory, dst=directory)
+    #     # os.makedirs(self.directory)
+    #     #shutil.copytree(src=self.directory, dst=directory)
 
-        print("repository={} directory={}".format(self.directory,
-                                                  directory))
+    #     print("repository={} directory={}".format(self.directory,
+    #                                               directory))
 
-        super(FakeGit, self).clone(repository=self.directory,
-                                   directory=directory, cwd=self.directory)
+    #     super(FakeGit, self).clone(repository=self.directory,
+    #                                directory=directory, cwd=self.directory)
 
-        # Emulate that we cloned from a URL
-        super(FakeGit, self).checkout(branch='master', cwd=directory)
-        # self.git.clone(
-        #     repository=self.directory,
-        #     directory=directory, cwd=self.directory)
+    #     # Emulate that we cloned from a URL
+    #     super(FakeGit, self).checkout(branch='master', cwd=directory)
+    #     # self.git.clone(
+    #     #     repository=self.directory,
+    #     #     directory=directory, cwd=self.directory)
 
 
 def require_fake_git(factory):

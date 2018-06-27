@@ -153,7 +153,8 @@ class Git(object):
         # * (HEAD detached at waf-1.9.7)
         return current.startswith('(') and current.endswith(')')
 
-    def checkout(self, branch, cwd, worktree=None, orphan=False):
+    def checkout(self, branch, cwd, force=False, worktree=None,
+                 orphan=False):
         """
         Runs 'git checkout branch'
         """
@@ -168,6 +169,9 @@ class Git(object):
 
         if orphan:
             args.append('--orphan')
+
+        if force:
+            args.append('--force')
 
         args.append(branch)
 
