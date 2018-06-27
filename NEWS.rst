@@ -6,7 +6,9 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Minor: Better support build building local branches (which does
+  not yet exist on the remote).
+* Minor: Clone from path if available.
 
 2.0.0
 -----
