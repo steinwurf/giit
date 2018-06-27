@@ -92,7 +92,7 @@ class PushCommand(object):
             url_base = reader.url_base.rstrip('/')
 
             filelist = giit.filelist.FileList(
-                local_path=from_path,
+                local_path=temp_path,
                 remote_path='.',
                 exclude_patterns=exclude_patterns)
 
