@@ -57,7 +57,7 @@ class GitTask(object):
 
         # The git reset fails if the branch is only on the remote
         # so we first do a checkout
-        self.git.checkout(branch=checkout, force=True, cwd=cwd)
+        #self.git.checkout(branch=checkout, force=True, cwd=cwd)
 
         # https://stackoverflow.com/a/8888015/1717320
         self.git.reset(branch=checkout, hard=True, cwd=cwd)
