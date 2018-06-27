@@ -101,7 +101,7 @@ def test_filelist(testdirectory):
         os.path.join(testdirectory.path(), 'a', '*')
     ]
 
-    filelist = giit.filelist.FileList(
+    filelist = giit.filelist.FileMapper(
         local_path=testdirectory.path(),
         remote_path=os.path.join(os.path.sep, 'var', 'www'),
         exclude_patterns=excludes)
@@ -147,7 +147,7 @@ def test_filelist_excludes_config(testdirectory):
         testdirectory.path() + '/a/*'
     ]
 
-    filelist = giit.filelist.FileList(
+    filelist = giit.filelist.FileMapper(
         local_path=testdirectory.path(),
         remote_path=os.path.join(os.path.sep, 'var', 'www'),
         exclude_patterns=excludes)
@@ -187,12 +187,11 @@ def test_filelist(testdirectory):
     a_dir.write_text(filename='a.txt', data=u'a', encoding='utf-8')
 
     filelist = giit.filelist.FileList(
-        local_path=testdirectory.path(),
-        remote_path='.',
+        from_path=testdirectory.path(),
         exclude_patterns=[])
 
     result = list(filelist)
 
     assert len(result) == 1
 
-    assert 'a/a.txt' == os.path.normpath(result[0].remote_file)
+    assert os.path.join('a', 'a.txt') == result[0]

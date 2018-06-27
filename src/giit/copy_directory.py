@@ -8,7 +8,7 @@ class CopyDirectory(object):
 
     def copy(self, from_path, to_path, exclude_patterns):
 
-        filelist = giit.filelist.FileList(
+        filelist = giit.filelist.FileMapper(
             local_path=from_path,
             remote_path=to_path,
             exclude_patterns=exclude_patterns)

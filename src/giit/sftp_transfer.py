@@ -35,7 +35,7 @@ class SFTPTransfer(object):
             be copied.
         """
 
-        filelist = giit.filelist.FileList(
+        filelist = giit.filelist.FileMapper(
             local_path=local_path,
             remote_path=remote_path,
             exclude_patterns=exclude_patterns)
@@ -45,7 +45,7 @@ class SFTPTransfer(object):
     def transfer_filelist(self, filelist):
         """ Start a transfer.
 
-        :param filelist: A FileList object.
+        :param filelist: A FileMapper object.
         """
 
         with self.ssh.open_sftp() as sftp:

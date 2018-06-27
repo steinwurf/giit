@@ -92,18 +92,18 @@ class PushCommand(object):
             url_base = reader.url_base.rstrip('/')
 
             filelist = giit.filelist.FileList(
-                local_path=temp_path,
-                remote_path='.',
+                from_path=temp_path,
                 exclude_patterns=exclude_patterns)
 
-            for fileinfo in filelist:
+            for filename in filelist:
 
-                filename = os.path.normpath(fileinfo.remote_file)
+                # On windows
+                filename = filename.replace('\\', '/')
 
                 if not filename.endswith('index.html'):
                     continue
 
-                url = os.path.join(url_base, filename)
+                url = '/'.join([url_base, filename])
                 self.log.info("Available URL: %s", url)
 
     @staticmethod
