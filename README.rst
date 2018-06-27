@@ -2,7 +2,10 @@ Introduction
 ============
 
 .. image:: https://ci.appveyor.com/api/projects/status/mld0fa79ox939fex/branch/master?svg=true
+    :target: https://ci.appveyor.com/project/SteinwurfApS/giit
+
 .. image:: https://travis-ci.org/steinwurf/giit.svg?branch=master
+    :target: https://travis-ci.org/steinwurf/giit
 
 The Git Iterator ``giit`` is a small tool for running commands on
 branches and tags of a git repository.
