@@ -1,3 +1,5 @@
+import mock
+
 import giit.git
 import giit.prompt
 

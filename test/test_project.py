@@ -18,22 +18,16 @@ class FakeGit(giit.git.Git):
     def remote_origin_url(self, cwd):
         return "https://github.com/fake/fake.git"
 
-    # def clone(self, repository, directory, cwd):
+    def clone(self, repository, directory, cwd):
 
-    #     # os.makedirs(self.directory)
-    #     #shutil.copytree(src=self.directory, dst=directory)
+        super(FakeGit, self).clone(repository=self.directory,
+                                   directory=directory, cwd=self.directory)
 
-    #     print("repository={} directory={}".format(self.directory,
-    #                                               directory))
-
-    #     super(FakeGit, self).clone(repository=self.directory,
-    #                                directory=directory, cwd=self.directory)
-
-    #     # Emulate that we cloned from a URL
-    #     super(FakeGit, self).checkout(branch='master', cwd=directory)
-    #     # self.git.clone(
-    #     #     repository=self.directory,
-    #     #     directory=directory, cwd=self.directory)
+        # Emulate that we cloned from a URL
+        super(FakeGit, self).checkout(branch='master', cwd=directory)
+        # self.git.clone(
+        #     repository=self.directory,
+        #     directory=directory, cwd=self.directory)
 
 
 def require_fake_git(factory):
@@ -230,7 +224,7 @@ def test_project_master(testdirectory, caplog):
 
     # Run the "docs" step
 
-    build = FakeBuild(source_branch='master',
+    build = FakeBuild(remote_branch='master',
                       directory=project_dir.path(),
                       step='docs', repository=project_dir.path(),
                       build_path=build_dir.path(), data_path=giit_dir.path())
@@ -250,7 +244,7 @@ def test_project_master(testdirectory, caplog):
 
     # Run the "landing_page" step
 
-    build = FakeBuild(source_branch='master',
+    build = FakeBuild(remote_branch='master',
                       directory=project_dir.path(),
                       step='landing_page', repository=project_dir.path(),
                       build_path=build_dir.path(), data_path=giit_dir.path())

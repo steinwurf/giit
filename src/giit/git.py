@@ -31,12 +31,12 @@ class Git(object):
         int_list = [int(s) for s in re.findall('\\d+', result.stdout)]
         return tuple(int_list)
 
-    def current_commit(self, cwd):
+    def current_commit(self, cwd, ref='HEAD'):
         """
         Runs 'git rev-parse HEAD' parse and return the commit id (SHA1) of the
         commit currently checked out into the working copy.
         """
-        args = [self.git_binary, 'rev-parse', 'HEAD']
+        args = [self.git_binary, 'rev-parse', ref]
         result = self.prompt.run(args, cwd=cwd)
 
         return result.stdout.strip()
@@ -238,3 +238,21 @@ class Git(object):
         result = self.prompt.run(args, cwd=cwd)
 
         return result.stdout.strip()
+
+    def remote_branch(self, cwd):
+        """
+        Runs 'git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD)
+
+        :return: Empty string if no corresponding remote branch is found otherwise
+            origin/master or similar.
+        """
+
+        # From https://stackoverflow.com/a/19308406/1717320
+
+        args = [self.git_binary, "symbolic-ref", "-q", "HEAD"]
+        ref = self.prompt.run(args, cwd=cwd).stdout.strip()
+
+        args = [self.git_binary, "for-each-ref",
+                "--format=%(upstream:short)", ref]
+
+        return self.prompt.run(args, cwd=cwd).stdout.strip()

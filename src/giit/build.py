@@ -18,7 +18,7 @@ class Build(object):
                  clean_build=False,
                  data_path=None,
                  json_config=None,
-                 source_branch=None):
+                 remote_branch=None):
 
         self.step = step
         self.repository = repository
@@ -26,7 +26,7 @@ class Build(object):
         self.clean_build = clean_build
         self.data_path = data_path
         self.json_config = json_config
-        self.source_branch = source_branch
+        self.remote_branch = remote_branch
 
     def run(self):
 
@@ -70,7 +70,7 @@ class Build(object):
         log.debug('build_path=%s', self.build_path)
         log.debug('data_path=%s', self.data_path)
         log.debug('json_config=%s', self.json_config)
-        log.debug('source_branch=%s', self.source_branch)
+        log.debug('remote_branch=%s', self.remote_branch)
 
         log.info('Lets go: %s', self.step)
 
@@ -147,7 +147,7 @@ class Build(object):
     def resolve_factory(self):
         return giit.factory.resolve_factory(
             data_path=self.data_path,
-            source_branch=self.source_branch)
+            remote_branch=self.remote_branch)
 
     def clone_factory(self, unique_name):
         return giit.factory.cache_factory(

@@ -269,3 +269,8 @@ techniques for writing testable code is dependency injection (DI).
 
 In Python DI is relatively simple to implement due to the dynamic nature of the
 language.
+
+Git branches
+------------
+
+
