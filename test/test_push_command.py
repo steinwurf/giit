@@ -57,6 +57,7 @@ def test_push_command(testdirectory):
     context = {
         'scope': 'tag',
         'name': '1.0.0',
+        'checkout': '1.0.0',
         'build_path': build_dir.path()
     }
 

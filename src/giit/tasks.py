@@ -31,6 +31,7 @@ class WorkingtreeGenerator(object):
             context = {
                 'scope': 'workingtree',
                 'name': 'workingtree',
+                'checkout': 'workingtree',
                 'build_path': self.build_path,
                 'source_path': self.git_repository.workingtree_path
             }
