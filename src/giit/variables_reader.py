@@ -11,14 +11,14 @@ class VariablesReader(object):
     def _find_item(self, key):
 
         scope = self.context['scope']
-        name = self.context['checkout']
+        checkout = self.context['checkout']
 
         # We first look in the variables dict using the following order:
         #
-        # 1. scope:name:variable
+        # 1. scope:checkout:variable
         # 2. scope:variable
         # 3. variable
-        explicit = ':'.join([scope, name, key])
+        explicit = ':'.join([scope, checkout, key])
 
         if explicit in self.variables:
             return self.variables[explicit]
