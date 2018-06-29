@@ -15,7 +15,6 @@ class Build(object):
     def __init__(self, step,
                  repository,
                  build_path=None,
-                 clean_build=False,
                  data_path=None,
                  json_config=None,
                  remote_branch=None):
@@ -23,7 +22,6 @@ class Build(object):
         self.step = step
         self.repository = repository
         self.build_path = build_path
-        self.clean_build = clean_build
         self.data_path = data_path
         self.json_config = json_config
         self.remote_branch = remote_branch
@@ -85,9 +83,14 @@ class Build(object):
             self.build_path = os.path.join(giit_path, 'build',
                                            git_repository.unique_name)
 
-        if self.clean_build:
+        if self.step == 'clean':
+
+            log.info("Cleaning: %s", self.build_path)
+
             if os.path.isdir(self.build_path):
                 shutil.rmtree(self.build_path, ignore_errors=True)
+
+            return
 
         if not os.path.isdir(self.build_path):
             os.makedirs(self.build_path)
