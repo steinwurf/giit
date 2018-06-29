@@ -151,9 +151,9 @@ Step user variables
 The user can define variables using the ``variables`` attribute.
 User variables are define using the following syntax::
 
-    scope:name:variable_name
+    scope:remote_branch:variable_name
 
-Where ``scope`` and ``name`` are optional.
+Where ``scope`` and ``remote_branch`` are optional.
 
 This can be used to customize e.g. the ``build_path``. Consider
 the following example::
@@ -166,7 +166,7 @@ the following example::
             ],
             ...
             "variables": {
-                "branch:master:output_path": "${build_path}/docs/latest",
+                "branch:origin/master:output_path": "${build_path}/docs/latest",
                 "branch:output_path": "${build_path}/sphinx/${name}",
                 "tag:output_path": "${build_path}/docs/${name}",
                 "workingtree:output_path": "${build_path}/workingtree/sphinx"
@@ -179,7 +179,7 @@ variable.
 
 Let walk though the different values ``output_path`` can take.
 
-* If scope is ``branch`` and the branch is ``master`` then
+* If scope is ``branch`` and the branch is ``origin/master`` then
   ``output_path`` will be ``${build_path}/docs/latest``.
 * For all other branches ``output_path`` will be
   ``${build_path}/sphinx/${name}`` where ``${name}`` will be the
@@ -199,6 +199,11 @@ Lets see how this could look (``build_path`` is ``/tmp/project``)::
     Branch trying_new ---> /tmp/project/sphinx/trying_new
     Branch new_idea -----> /tmp/project/sphinx/new_idea
     Workingtree ---------> /tmp/project/workingtree
+
+``clean`` step
+..............
+
+The ``clean`` step just remove the ``build_path``.
 
 ``python`` step
 ...............
@@ -247,10 +252,10 @@ This path is where the ``giit`` tool will store configurations, virtualenvs
 clones created while running the tool. It also serves as a cache, to speed up
 builds.
 
-Option: ``--source_branch``
+Option: ``--remote_branch``
 ---------------------------
 
-Specifies the source branch to use. The default is ``master``, however if you
+Specifies the source branch to use. The default is ``origin/master``, however if you
 need to build a different branch this is one way of doing it.
 
 Option: ``--json_config``
