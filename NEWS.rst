@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+3.0.0
+-----
 * Minor: Added a "clean" step which removes the build folder.
 * Major: Support only building remote branches. I.e. you have to
   push your local changes to a remote before being able to build.
