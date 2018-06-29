@@ -3,6 +3,7 @@ import os
 import shutil
 import hashlib
 import sys
+import re
 import semantic_version
 
 
@@ -53,7 +54,7 @@ class GitTask(object):
     def run(self):
 
         cwd = self.context['source_path']
-        checkout = self.context['name']
+        checkout = self.context['checkout']
 
         # The git reset fails if the branch is only on the remote
         # so we first do a checkout
@@ -120,9 +121,20 @@ class GitBranchGenerator(object):
 
         for branch in self.branches:
 
+            # We omit origin if in the branch name. For others
+            # we will include the remote name.
+            if branch.startswith('origin/'):
+                name = re.sub("^origin/", "", branch)
+            else:
+                name = branch
+
+            # Replace / in branch names
+            name = name.replace("/", "_")
+
             context = {
                 'scope': 'branch',
-                'name': branch,
+                'name': name,
+                'checkout': branch,
                 'build_path': self.build_path,
                 'source_path': self.repository_path
             }
@@ -163,6 +175,7 @@ class GitTagGenerator(object):
             context = {
                 'scope': 'tag',
                 'name': tag,
+                'checkout': tag,
                 'build_path': self.build_path,
                 'source_path': self.git_repository.repository_path
             }

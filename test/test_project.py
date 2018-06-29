@@ -9,22 +9,45 @@ import giit.git
 
 class FakeGit(giit.git.Git):
 
-    def __init__(self, directory, **kwargs):
+    def __init__(self, fake_git_repository, fake_git_branch, **kwargs):
+        """ Fakes running git
+
+        :param fake_git_repository: This is a path to a local fake git
+            repository.
+        :param fake_git_branch: The branch we should say we are on.
+        """
 
         super(FakeGit, self).__init__(**kwargs)
 
-        self.directory = directory
+        self.fake_git_repository = fake_git_repository
+        self.fake_git_branch = fake_git_branch
 
     def remote_origin_url(self, cwd):
         return "https://github.com/fake/fake.git"
 
-    def clone(self, repository, directory, cwd):
+    def remote_branch(self, cwd):
+        return self.fake_git_branch
 
-        super(FakeGit, self).clone(repository=self.directory,
-                                   directory=directory, cwd=self.directory)
+    def clone(self, repository, directory, cwd):
+        """ Fake the clone command.
+
+        :param repository: The clone URL in this case it is the
+            https://github.com.../fake.git URL returned by
+            the remote_origin_function
+
+        :param directory: This is the directory where the repository
+            should be cloned.
+        """
+
+        assert repository == "https://github.com/fake/fake.git"
+
+        super(FakeGit, self).clone(
+            repository=self.fake_git_repository,
+            directory=directory, cwd=self.fake_git_repository)
 
         # Emulate that we cloned from a URL
-        super(FakeGit, self).checkout(branch='master', cwd=directory)
+        super(FakeGit, self).checkout(
+            branch='master', cwd=directory)
         # self.git.clone(
         #     repository=self.directory,
         #     directory=directory, cwd=self.directory)
@@ -34,25 +57,32 @@ def require_fake_git(factory):
 
     prompt = factory.require(name='prompt')
     git_binary = factory.require(name='git_binary')
-    fake_project_path = factory.require(name='fake_project_path')
+    fake_git_repository = factory.require(name='fake_git_repository')
+    fake_git_branch = factory.require(name='fake_git_branch')
 
     return FakeGit(git_binary=git_binary, prompt=prompt,
-                   directory=fake_project_path)
+                   fake_git_branch=fake_git_branch,
+                   fake_git_repository=fake_git_repository)
 
 
 class FakeBuild(giit.build.Build):
 
-    def __init__(self, directory, **kwargs):
+    def __init__(self, fake_git_repository, fake_git_branch, **kwargs):
 
         super(FakeBuild, self).__init__(**kwargs)
 
-        self.directory = directory
+        self.fake_git_branch = fake_git_branch
+        self.fake_git_repository = fake_git_repository
 
     def resolve_factory(self):
 
         factory = super(FakeBuild, self).resolve_factory()
 
-        factory.provide_value(name='fake_project_path', value=self.directory)
+        factory.provide_value(name='fake_git_repository',
+                              value=self.fake_git_repository)
+
+        factory.provide_value(name='fake_git_branch',
+                              value=self.fake_git_branch)
 
         factory.provide_function(
             name='git', function=require_fake_git, override=True)
@@ -71,7 +101,7 @@ class FakeBuild(giit.build.Build):
 
             def push_config(factory):
                 config = factory.require(name='config')
-                config['git_url'] = self.directory
+                config['git_url'] = self.fake_git_repository
 
                 return giit.push_config.PushConfig.from_dict(
                     config=config)
@@ -129,14 +159,19 @@ def test_project(testdirectory, caplog):
 
     caplog.set_level(logging.DEBUG)
 
-    project_dir = mkdir_project(testdirectory, giit_branch='add-giit')
+    giit_branch = 'origin/add-giit'
+
+    project_dir = mkdir_project(testdirectory,
+                                giit_branch=giit_branch)
+
     build_dir = testdirectory.mkdir('build')
     giit_dir = testdirectory.mkdir('giit')
 
     # Run the "docs" step
 
     build = FakeBuild(
-        directory=project_dir.path(),
+        fake_git_repository=project_dir.path(),
+        fake_git_branch=giit_branch,
         step='docs', repository=project_dir.path(),
         build_path=build_dir.path(), data_path=giit_dir.path())
 
@@ -156,7 +191,8 @@ def test_project(testdirectory, caplog):
     # Run the "landing_page" step
 
     build = FakeBuild(
-        directory=project_dir.path(),
+        fake_git_repository=project_dir.path(),
+        fake_git_branch=giit_branch,
         step='landing_page', repository=project_dir.path(),
         build_path=build_dir.path(), data_path=giit_dir.path())
 
@@ -168,7 +204,8 @@ def test_project(testdirectory, caplog):
     # Run the "publish" step
 
     build = FakeBuild(
-        directory=project_dir.path(),
+        fake_git_repository=project_dir.path(),
+        fake_git_branch=giit_branch,
         step='publish', repository=project_dir.path(),
         build_path=build_dir.path(), data_path=giit_dir.path())
 
@@ -195,9 +232,11 @@ def test_project(testdirectory, caplog):
 
     # Run the "gh_pages" step
 
-    build = FakeBuild(directory=project_dir.path(),
-                      step='gh_pages', repository=project_dir.path(),
-                      build_path=build_dir.path(), data_path=giit_dir.path())
+    build = FakeBuild(
+        fake_git_repository=project_dir.path(),
+        fake_git_branch=giit_branch,
+        step='gh_pages', repository=project_dir.path(),
+        build_path=build_dir.path(), data_path=giit_dir.path())
 
     build.run()
 
@@ -213,21 +252,27 @@ def test_project(testdirectory, caplog):
 
 
 def test_project_master(testdirectory, caplog):
+
     # When building the master branch the output locations
     # of the different pieces change
 
+    giit_branch = 'origin/master'
+
     caplog.set_level(logging.DEBUG)
 
-    project_dir = mkdir_project(testdirectory, giit_branch=None)
+    project_dir = mkdir_project(testdirectory,
+                                giit_branch=giit_branch)
+
     build_dir = testdirectory.mkdir('build')
     giit_dir = testdirectory.mkdir('giit')
 
     # Run the "docs" step
 
-    build = FakeBuild(remote_branch='master',
-                      directory=project_dir.path(),
-                      step='docs', repository=project_dir.path(),
-                      build_path=build_dir.path(), data_path=giit_dir.path())
+    build = FakeBuild(
+        fake_git_branch=giit_branch,
+        fake_git_repository=project_dir.path(),
+        step='docs', repository=project_dir.path(),
+        build_path=build_dir.path(), data_path=giit_dir.path())
 
     build.run()
 
@@ -244,19 +289,22 @@ def test_project_master(testdirectory, caplog):
 
     # Run the "landing_page" step
 
-    build = FakeBuild(remote_branch='master',
-                      directory=project_dir.path(),
-                      step='landing_page', repository=project_dir.path(),
-                      build_path=build_dir.path(), data_path=giit_dir.path())
+    build = FakeBuild(
+        fake_git_branch=giit_branch,
+        fake_git_repository=project_dir.path(),
+        step='landing_page', repository=project_dir.path(),
+        build_path=build_dir.path(), data_path=giit_dir.path())
 
     build.run()
 
     assert build_dir.contains_file('docs/landing.txt')
     assert build_dir.contains_file('workingtree/landingpage/landing.txt')
 
-    build = FakeBuild(directory=project_dir.path(),
-                      step='gh_pages', repository=project_dir.path(),
-                      build_path=build_dir.path(), data_path=giit_dir.path())
+    build = FakeBuild(
+        fake_git_branch=giit_branch,
+        fake_git_repository=project_dir.path(),
+        step='gh_pages', repository=project_dir.path(),
+        build_path=build_dir.path(), data_path=giit_dir.path())
 
     build.run()
 

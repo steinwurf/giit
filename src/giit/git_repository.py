@@ -48,7 +48,8 @@ class GitRepository(object):
 
         version = self.git.version(cwd=self.clone_path)
 
-        #self.log.info("Using git version: %s", ".".join(version))
+        self.log.info("Using git version: %s",
+                      ".".join([str(i) for i in version]))
 
         # Get the URL to the repository
         git_url = self._git_url(repository=repository)
