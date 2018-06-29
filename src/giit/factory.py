@@ -101,13 +101,13 @@ def require_virtualenv(factory):
 def require_git_repository(factory):
     git = factory.require(name='git')
     git_url_parser = factory.require(name='git_url_parser')
-    source_branch = factory.require(name='source_branch')
+    remote_branch = factory.require(name='remote_branch')
     log = logging.getLogger(name='giit.git_repository')
     clone_path = factory.require(name='clone_path')
 
     return giit.git_repository.GitRepository(
         git=git, git_url_parser=git_url_parser, clone_path=clone_path,
-        log=log, source_branch=source_branch)
+        log=log, remote_branch=remote_branch)
 
 
 def provide_output_path(factory):
@@ -161,7 +161,7 @@ def require_task_generator(factory):
 
         git_branch_generator = giit.tasks.GitBranchGenerator(
             git=git, repository_path=git_repository.repository_path,
-            source_branch=git_repository.source_branch,
+            remote_branch=git_repository.remote_branch,
             command=command, build_path=build_path,
             branches=command_config.branches)
 
@@ -179,14 +179,14 @@ def require_task_generator(factory):
     return task_generator
 
 
-def resolve_factory(data_path, source_branch):
+def resolve_factory(data_path, remote_branch):
 
     factory = Factory()
     factory.set_default_build(default_build='git_repository')
 
     factory.provide_value(name='git_binary', value='git')
     factory.provide_value(name='data_path', value=data_path)
-    factory.provide_value(name='source_branch', value=source_branch)
+    factory.provide_value(name='remote_branch', value=remote_branch)
 
     factory.provide_function(name='clone_path', function=provide_clone_path)
     factory.provide_function(name='git_url_parser',

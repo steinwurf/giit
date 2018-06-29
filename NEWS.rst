@@ -6,7 +6,11 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Minor: Added a "clean" step which removes the build folder.
+* Major: Support only building remote branches. I.e. you have to
+  push your local changes to a remote before being able to build.
+  You can always see your local changes with the workingtree build -
+  if needed.
 
 2.1.0
 -----

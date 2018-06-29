@@ -3,6 +3,7 @@ import os
 import shutil
 import hashlib
 import sys
+import re
 import semantic_version
 
 
@@ -30,6 +31,7 @@ class WorkingtreeGenerator(object):
             context = {
                 'scope': 'workingtree',
                 'name': 'workingtree',
+                'checkout': 'workingtree',
                 'build_path': self.build_path,
                 'source_path': self.git_repository.workingtree_path
             }
@@ -53,11 +55,11 @@ class GitTask(object):
     def run(self):
 
         cwd = self.context['source_path']
-        checkout = self.context['name']
+        checkout = self.context['checkout']
 
         # The git reset fails if the branch is only on the remote
         # so we first do a checkout
-        self.git.checkout(branch=checkout, force=True, cwd=cwd)
+        #self.git.checkout(branch=checkout, force=True, cwd=cwd)
 
         # https://stackoverflow.com/a/8888015/1717320
         self.git.reset(branch=checkout, hard=True, cwd=cwd)
@@ -90,7 +92,7 @@ class GitTask(object):
 class GitBranchGenerator(object):
 
     def __init__(self, git, repository_path, command, build_path,
-                 source_branch, branches):
+                 remote_branch, branches):
         """ Create a branch generator.
 
         :param git: A giit.git.Git instance
@@ -98,12 +100,12 @@ class GitBranchGenerator(object):
         :param command: The command to run e.g.
             giit.python_command.PythonCommand
         :param build_path: The build path as a string
-        :param source_branch: The source branch as a string
+        :param remote_branch: The source branch as a string
         :param branches: The list of branches to build
         """
 
         self.git = git
-        self.source_branch = source_branch
+        self.remote_branch = remote_branch
         self.repository_path = repository_path
         self.command = command
         self.build_path = build_path
@@ -113,16 +115,27 @@ class GitBranchGenerator(object):
 
         # Create a task for the source branch if it is not already
         # included in the branches list
-        if self.source_branch not in self.branches:
-            self.branches.append(self.source_branch)
+        if self.remote_branch not in self.branches:
+            self.branches.append(self.remote_branch)
 
         tasks = []
 
         for branch in self.branches:
 
+            # We omit origin if in the branch name. For others
+            # we will include the remote name.
+            if branch.startswith('origin/'):
+                name = re.sub("^origin/", "", branch)
+            else:
+                name = branch
+
+            # Replace / in branch names
+            name = name.replace("/", "_")
+
             context = {
                 'scope': 'branch',
-                'name': branch,
+                'name': name,
+                'checkout': branch,
                 'build_path': self.build_path,
                 'source_path': self.repository_path
             }
@@ -163,6 +176,7 @@ class GitTagGenerator(object):
             context = {
                 'scope': 'tag',
                 'name': tag,
+                'checkout': tag,
                 'build_path': self.build_path,
                 'source_path': self.git_repository.repository_path
             }

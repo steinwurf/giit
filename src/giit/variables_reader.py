@@ -11,7 +11,7 @@ class VariablesReader(object):
     def _find_item(self, key):
 
         scope = self.context['scope']
-        name = self.context['name']
+        name = self.context['checkout']
 
         # We first look in the variables dict using the following order:
         #

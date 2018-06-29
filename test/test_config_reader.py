@@ -26,7 +26,7 @@ def test_config_reader():
 
     context = {
         'scope': 'tag',
-        'name': '1.0.0',
+        'checkout': '1.0.0',
         'build_path': '/tmp/build',
         'source_path': '/tmp/clone'
     }
@@ -52,7 +52,7 @@ def test_config_reader_empty():
 
     context = {
         'scope': 'tag',
-        'name': '1.0.0',
+        'checkout': '1.0.0',
         'build_path': '/tmp/build'
     }
 
