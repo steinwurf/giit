@@ -6,7 +6,7 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Patch: Fix using checkout in variable reader.
 
 3.0.0
 -----
