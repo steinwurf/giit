@@ -153,7 +153,7 @@ class Build(object):
 
             for task in tasks:
 
-                log.info("Running task: scope %s name %s",
+                log.info("Running task: scope '%s' name '%s'",
                          task.context['scope'], task.context['name'])
 
                 task.run()
