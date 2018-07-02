@@ -102,6 +102,7 @@ class GitBranchGenerator(object):
         :param build_path: The build path as a string
         :param remote_branch: The source branch as a string
         :param branches: The list of branches to build
+        :param log: A logging object
         """
 
         self.git = git
@@ -191,7 +192,7 @@ class GitTagGenerator(object):
 
 class TaskFactory(object):
 
-    def __init__(self):
+    def __init__(self, ):
         self.generators = []
 
     def add_generator(self, generator):
