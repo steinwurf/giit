@@ -104,10 +104,17 @@ class Build(object):
 
                 self.json_config = os.path.join(
                     git_repository.workingtree_path, 'giit.json')
+
+                self.log.info("Using giit.json from %s workingtree",
+                              git_repository.workingtree_path)
+
             else:
 
                 self.json_config = os.path.join(
                     git_repository.repository_path, 'giit.json')
+
+                self.log.info("Using giit.json from %s branch",
+                              git_repository.remote_branch)
 
         with open(self.json_config, 'r') as config_file:
             config = json.load(config_file)

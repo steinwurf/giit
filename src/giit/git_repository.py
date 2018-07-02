@@ -64,7 +64,6 @@ class GitRepository(object):
             self.remote_branch = self._get_remote_branch(repository=repository)
 
         self.log.info("Using git repository: %s", git_url)
-        self.log.info("Using giit.json from %s branch", self.remote_branch)
 
         # Compute the clone path
         git_info = self.git_url_parser.parse(url=git_url)
