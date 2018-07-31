@@ -251,6 +251,11 @@ class Git(object):
             origin/master or similar.
         """
 
+        args = [self.git_binary, "for-each-ref",
+                "--format='%(refname:short) <- %(upstream:short)'",  "refs/heads"]  # Make sure we are all updated
+
+        self.log.debug('for each ref v1 %s', self.prompt.run(args, cwd=cwd))
+
         # From https://stackoverflow.com/a/19308406/1717320
 
         args = [self.git_binary, "symbolic-ref", "-q", "HEAD"]

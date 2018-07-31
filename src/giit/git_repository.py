@@ -112,8 +112,6 @@ class GitRepository(object):
         """ :return: The git URL """
 
         if os.path.isdir(repository):
-            # Make sure we are all updated
-            self.git.fetch(cwd=repository, all=True, prune=True)
 
             current = self.git.current_branch(cwd=repository)
             remote = self.git.remote_branch(cwd=repository)
