@@ -17,7 +17,8 @@ class Build(object):
                  build_path=None,
                  data_path=None,
                  json_config=None,
-                 remote_branch=None):
+                 remote_branch=None,
+                 verbose=False):
 
         self.step = step
         self.repository = repository
@@ -25,6 +26,7 @@ class Build(object):
         self.data_path = data_path
         self.json_config = json_config
         self.remote_branch = remote_branch
+        self.verbose = verbose
 
     def run(self):
 
@@ -48,7 +50,8 @@ class Build(object):
 
         # create console handler with a higher log level
         ch = logging.StreamHandler(stream=sys.stdout)
-        ch.setLevel(logging.INFO)
+        #ch.setLevel(logging.DEBUG if self.verbose else logging.INFO)
+        ch.setLevel(logging.DEBUG)
 
         # create formatter and add it to the handlers
         fh_formatter = logging.Formatter(
