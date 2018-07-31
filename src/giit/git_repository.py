@@ -76,7 +76,9 @@ class GitRepository(object):
 
         # Get the updates
         if os.path.isdir(self.repository_path):
-            self.log.info('Running: git fetch in %s', self.repository_path)
+            #self.log.info('Running: git fetch in %s', self.repository_path)
+            self.log.info('Running: git new fetch in %s', self.repository_path)
+
             self.git.fetch(cwd=self.repository_path, all=True, prune=True)
         else:
             self.log.info('Running: git clone in %s', self.repository_path)
