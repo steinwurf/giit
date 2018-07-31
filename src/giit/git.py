@@ -56,7 +56,7 @@ class Git(object):
         args = [self.git_binary, 'pull']
         self.prompt.run(args, cwd=cwd)
 
-    def fetch(self, all, cwd):
+    def fetch(self, all, prune, cwd):
         """
         Runs 'git fetch' in the directory cwd
         """
@@ -65,6 +65,9 @@ class Git(object):
 
         if all:
             args.append('--all')
+
+        if prune:
+            args.append('--prune')
 
         self.prompt.run(args, cwd=cwd)
 
