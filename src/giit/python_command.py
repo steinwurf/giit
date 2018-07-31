@@ -34,6 +34,13 @@ class PythonCommand(object):
                 requirements=reader.requirements,
                 pip_packages=reader.pip_packages)
 
+            if reader.python_path:
+                if 'PYTHONPATH' in env:
+                    env['PYTHONPATH'] = os.path.pathsep.join(
+                        [reader.python_path, env['PYTHONPATH']])
+                else:
+                    env['PYTHONPATH'] = reader.python_path
+
             for script in reader.scripts:
                 self.log.info('Python: %s', script)
                 self.prompt.run(command=script, cwd=reader.cwd,
