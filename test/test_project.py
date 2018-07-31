@@ -57,10 +57,11 @@ def require_fake_git(factory):
 
     prompt = factory.require(name='prompt')
     git_binary = factory.require(name='git_binary')
+    log = logging.getLogger(name='giit.git')
     fake_git_repository = factory.require(name='fake_git_repository')
     fake_git_branch = factory.require(name='fake_git_branch')
 
-    return FakeGit(git_binary=git_binary, prompt=prompt,
+    return FakeGit(git_binary=git_binary, prompt=prompt, log=log,
                    fake_git_branch=fake_git_branch,
                    fake_git_repository=fake_git_repository)
 

@@ -74,8 +74,9 @@ def require_git(factory):
 
     prompt = factory.require(name='prompt')
     git_binary = factory.require(name='git_binary')
+    log = logging.getLogger(name='giit.git')
 
-    return giit.git.Git(git_binary=git_binary, prompt=prompt)
+    return giit.git.Git(git_binary=git_binary, prompt=prompt, log=log)
 
 
 def require_git_url_parser(factory):

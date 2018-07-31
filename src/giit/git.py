@@ -7,7 +7,7 @@ import re
 
 class Git(object):
 
-    def __init__(self, git_binary, prompt):
+    def __init__(self, git_binary, prompt, log):
         """ Construct a new Git instance.
 
         :param git_binary: A string containing the path to a git executable.
@@ -15,6 +15,7 @@ class Git(object):
         """
         self.git_binary = git_binary
         self.prompt = prompt
+        self.log = log
 
     def version(self, cwd):
         """
@@ -254,6 +255,8 @@ class Git(object):
 
         args = [self.git_binary, "symbolic-ref", "-q", "HEAD"]
         ref = self.prompt.run(args, cwd=cwd).stdout.strip()
+
+        self.log.debug("remote_branch ref %s", ref)
 
         args = [self.git_binary, "for-each-ref",
                 "--format=%(upstream:short)", ref]
