@@ -220,6 +220,8 @@ The ``python`` step supports the following attributes:
 * Optional ``scope``: A list of ``scope`` names for which the step will run.
 * Optional ``allow_failure``: A boolean indicating whether we
   allow the scripts to fail.
+* Optional ``python_path``: Setting the python path before running the
+  scripts.
 
 ``giit`` command line arguments
 ===============================
