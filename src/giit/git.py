@@ -261,4 +261,8 @@ class Git(object):
         args = [self.git_binary, "for-each-ref",
                 "--format=%(upstream:short)", ref]
 
-        return self.prompt.run(args, cwd=cwd).stdout.strip()
+        result = self.prompt.run(args, cwd=cwd)
+
+        self.log.debug('for each ref %s', result)
+
+        return result.stdout.strip()
