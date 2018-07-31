@@ -51,7 +51,7 @@ class Build(object):
         # create console handler with a higher log level
         ch = logging.StreamHandler(stream=sys.stdout)
         #ch.setLevel(logging.DEBUG if self.verbose else logging.INFO)
-        ch.setLevel(logging.INFO)
+        ch.setLevel(logging.DEBUG)
 
         # create formatter and add it to the handlers
         fh_formatter = logging.Formatter(
