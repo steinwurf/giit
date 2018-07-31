@@ -84,7 +84,7 @@ class Git(object):
 
         result = self.prompt.run(args, cwd=cwd)
 
-        self.log.debug("branch %s %s", remote, result)
+        self.log.debug("branch remote=%s %s", remote, result)
 
         if remote:
             return self._parse_branch_remote(result=result)
