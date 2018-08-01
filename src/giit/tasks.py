@@ -114,8 +114,14 @@ class GitBranchGenerator(object):
 
     def tasks(self):
 
-        # Create a task for the source branch if it is not already
-        # included in the branches list
+        # The remote branch is either passed to the giit cli or
+        # is the branch which a directory currently is pointing to.
+        #
+        # The branches are provided by the user in giit.json and
+        # are then ones we should always build.
+        #
+        # We build for both the remote_branch and the branches in
+        # giit.json
         if self.remote_branch not in self.branches:
             self.branches.append(self.remote_branch)
 
@@ -123,8 +129,10 @@ class GitBranchGenerator(object):
 
         for branch in self.branches:
 
-            # We omit origin if in the branch name. For others
-            # we will include the remote name.
+            # Create the human readable name for the branch. The "name"
+            # is available in the different steps. It is typically used
+            # to control where in the build directory the output of
+            # a command should go.
             if branch.startswith('origin/'):
                 name = re.sub("^origin/", "", branch)
             else:
