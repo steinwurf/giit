@@ -121,7 +121,11 @@ class GitRepository(object):
 
             if matches == 0:
                 raise RuntimeError(
-                    "No remote branch for %s in %s" % (current, remotes))
+                    "No remote branch tracking %s. These remote "
+                    "branches were found in "
+                    "the repository: %s.\nYou probably just need to "
+                    "push the branch you are working on:\n"
+                    "git push -u origin %s" % (current, remotes, current))
             if matches > 1:
                 raise RuntimeError(
                     "Several remote branches %s for %s" % (remotes, current))
