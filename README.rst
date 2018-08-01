@@ -11,8 +11,8 @@ The Git Iterator ``giit`` is a small tool for running commands on
 branches and tags of a git repository.
 
 It's original purpose was to allow Sphinx documentation to be easily
-generated for all available tags of a bunch of repositories. However,
-should you find an use for it - you should also be able to adapt it
+generated for all available tags of a bunch of different repositories. However,
+should you find a different use for it - you should also be able to adapt it
 to other scenarios.
 
 Quick Start
@@ -36,6 +36,7 @@ Example: ``urllib3``
             "scripts": [
                 "sphinx-build -b html . ${build_path}"
             ],
+            "python_path": "${source_path}/src",
             "cwd": "${source_path}/docs",
             "requirements": "${source_path}/docs/requirements.txt"
         }
@@ -54,6 +55,8 @@ You should now seem something like::
     Building into: /tmp/giit/build/urllib3-b1919a
     Python: sphinx-build -b html . /tmp/giit/build/urllib3-b1919a
 
+If you visit ``/tmp/giit/build/urllib3-b1919a`` with your web browser
+you should be able to see the ``urllib3`` Sphinx documentation.
 
 
 

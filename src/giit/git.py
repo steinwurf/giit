@@ -258,6 +258,12 @@ class Git(object):
 
         self.log.debug('for each ref v1 %s', self.prompt.run(args, cwd=cwd))
 
+        args = [self.git_binary, "branch", "-a"]
+        self.log.debug('%s %s', args, self.prompt.run(args, cwd=cwd))
+        # Make sure we are all updated
+
+        self.log.debug('for each ref v1 %s', self.prompt.run(args, cwd=cwd))
+
         # From https://stackoverflow.com/a/19308406/1717320
 
         args = [self.git_binary, "symbolic-ref", "-q", "HEAD"]
