@@ -267,6 +267,12 @@ class Git(object):
         args = [self.git_binary, "status", "-sb"]
         self.log.debug('%s %s', args, self.prompt.run(args, cwd=cwd))
 
+        self.log.debug('branchs local %s',
+                       self.branch(cwd=cwd, remote=False))
+
+        self.log.debug('branchs remote %s',
+                       self.branch(cwd=cwd, remote=True))
+
         # Make sure we are all updated
 
         self.log.debug('for each ref v1 %s', self.prompt.run(args, cwd=cwd))
