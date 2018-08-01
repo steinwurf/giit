@@ -260,6 +260,13 @@ class Git(object):
 
         args = [self.git_binary, "branch", "-a"]
         self.log.debug('%s %s', args, self.prompt.run(args, cwd=cwd))
+
+        args = [self.git_binary, "branch", "-vv"]
+        self.log.debug('%s %s', args, self.prompt.run(args, cwd=cwd))
+
+        args = [self.git_binary, "status", "-sb"]
+        self.log.debug('%s %s', args, self.prompt.run(args, cwd=cwd))
+
         # Make sure we are all updated
 
         self.log.debug('for each ref v1 %s', self.prompt.run(args, cwd=cwd))
