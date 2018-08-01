@@ -114,11 +114,19 @@ class GitRepository(object):
         if os.path.isdir(repository):
 
             current = self.git.current_branch(cwd=repository)
-            remote = self.git.remote_branch(cwd=repository)
+            remotes = self.git.remote_branches(cwd=repository)
 
-            if not remote:
-                raise RuntimeError("No remote branch for %s" % current)
+            match = [remote for remote in remotes if current in remote]
+            matches = len(match)
 
+            if matches == 0:
+                raise RuntimeError(
+                    "No remote branch for %s in %s" % (current, remotes))
+            if matches > 1:
+                raise RuntimeError(
+                    "Several remote branches %s for %s" % (remotes, current))
+
+            remote = match[0]
             self.log.debug('branch %s -> %s', current, remote)
             return remote
 

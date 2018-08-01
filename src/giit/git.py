@@ -72,7 +72,23 @@ class Git(object):
 
         self.prompt.run(args, cwd=cwd)
 
-    def branch(self, cwd, remote=False):
+    def current_branch(self, cwd):
+        """
+        Uses git.branch(...) but only returns the current one
+        """
+        current, _ = self._branch(cwd=cwd)
+        return current
+
+    def local_branches(self, cwd):
+        current, others = self._branch(cwd=cwd)
+
+        return others.append(current)
+
+    def remote_branches(self, cwd):
+        _, remote = self._branch(cwd=cwd, remote=True)
+        return remote
+
+    def _branch(self, cwd, remote=False):
         """
         Runs 'git branch' and returns the current branch and a list of
         additional branches
@@ -100,7 +116,7 @@ class Git(object):
 
         for b in branch:
             if 'origin/HEAD ->' in b:
-                b = b.replace('origin/HEAD ->', '')
+                continue
 
             parsed.append(b.strip())
 
@@ -135,13 +151,6 @@ class Git(object):
         args.append('--')
 
         self.prompt.run(args, cwd=cwd)
-
-    def current_branch(self, cwd):
-        """
-        Uses git.branch(...) but only returns the current one
-        """
-        current, _ = self.branch(cwd=cwd)
-        return current
 
     def is_detached_head(self, cwd):
         """
@@ -245,50 +254,50 @@ class Git(object):
 
         return result.stdout.strip()
 
-    def remote_branch(self, cwd):
-        """
-        Runs 'git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD)
+    # def remote_branch(self, cwd):
+    #     """
+    #     Runs 'git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD)
 
-        :return: Empty string if no corresponding remote branch is found otherwise
-            origin/master or similar.
-        """
+    #     :return: Empty string if no corresponding remote branch is found otherwise
+    #         origin/master or similar.
+    #     """
 
-        args = [self.git_binary, "for-each-ref",
-                "--format='%(refname:short) <- %(upstream:short)'",  "refs/heads"]  # Make sure we are all updated
+    #     args = [self.git_binary, "for-each-ref",
+    #             "--format='%(refname:short) <- %(upstream:short)'",  "refs/heads"]  # Make sure we are all updated
 
-        self.log.debug('for each ref v1 %s', self.prompt.run(args, cwd=cwd))
+    #     self.log.debug('for each ref v1 %s', self.prompt.run(args, cwd=cwd))
 
-        args = [self.git_binary, "branch", "-a"]
-        self.log.debug('%s %s', args, self.prompt.run(args, cwd=cwd))
+    #     args = [self.git_binary, "branch", "-a"]
+    #     self.log.debug('%s %s', args, self.prompt.run(args, cwd=cwd))
 
-        args = [self.git_binary, "branch", "-vv"]
-        self.log.debug('%s %s', args, self.prompt.run(args, cwd=cwd))
+    #     args = [self.git_binary, "branch", "-vv"]
+    #     self.log.debug('%s %s', args, self.prompt.run(args, cwd=cwd))
 
-        args = [self.git_binary, "status", "-sb"]
-        self.log.debug('%s %s', args, self.prompt.run(args, cwd=cwd))
+    #     args = [self.git_binary, "status", "-sb"]
+    #     self.log.debug('%s %s', args, self.prompt.run(args, cwd=cwd))
 
-        self.log.debug('branchs local %s',
-                       self.branch(cwd=cwd, remote=False))
+    #     self.log.debug('branchs local %s',
+    #                    self.branch(cwd=cwd, remote=False))
 
-        self.log.debug('branchs remote %s',
-                       self.branch(cwd=cwd, remote=True))
+    #     self.log.debug('branchs remote %s',
+    #                    self.branch(cwd=cwd, remote=True))
 
-        # Make sure we are all updated
+    #     # Make sure we are all updated
 
-        self.log.debug('for each ref v1 %s', self.prompt.run(args, cwd=cwd))
+    #     self.log.debug('for each ref v1 %s', self.prompt.run(args, cwd=cwd))
 
-        # From https://stackoverflow.com/a/19308406/1717320
+    #     # From https://stackoverflow.com/a/19308406/1717320
 
-        args = [self.git_binary, "symbolic-ref", "-q", "HEAD"]
-        ref = self.prompt.run(args, cwd=cwd).stdout.strip()
+    #     args = [self.git_binary, "symbolic-ref", "-q", "HEAD"]
+    #     ref = self.prompt.run(args, cwd=cwd).stdout.strip()
 
-        self.log.debug("remote_branch ref %s", ref)
+    #     self.log.debug("remote_branch ref %s", ref)
 
-        args = [self.git_binary, "for-each-ref",
-                "--format=%(upstream:short)", ref]
+    #     args = [self.git_binary, "for-each-ref",
+    #             "--format=%(upstream:short)", ref]
 
-        result = self.prompt.run(args, cwd=cwd)
+    #     result = self.prompt.run(args, cwd=cwd)
 
-        self.log.debug('for each ref %s', result)
+    #     self.log.debug('for each ref %s', result)
 
-        return result.stdout.strip()
+    #     return result.stdout.strip()

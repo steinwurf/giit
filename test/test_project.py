@@ -25,8 +25,8 @@ class FakeGit(giit.git.Git):
     def remote_origin_url(self, cwd):
         return "https://github.com/fake/fake.git"
 
-    def remote_branch(self, cwd):
-        return self.fake_git_branch
+    def remote_branches(self, cwd):
+        return [self.fake_git_branch]
 
     def clone(self, repository, directory, cwd):
         """ Fake the clone command.
