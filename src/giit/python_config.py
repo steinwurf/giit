@@ -67,6 +67,6 @@ class PythonConfig(object):
             config['allow_failure'] = False
 
         if not 'python_path' in config:
-            config['python_path'] = None
+            config['python_path'] = Nonev
 
         return PythonConfig(config=config)

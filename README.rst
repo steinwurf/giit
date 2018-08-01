@@ -59,7 +59,6 @@ If you visit ``/tmp/giit/build/urllib3-b1919a`` with your web browser
 you should be able to see the ``urllib3`` Sphinx documentation.
 
 
-
 ``giit.json``
 =============
 
