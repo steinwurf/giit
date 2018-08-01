@@ -6,7 +6,9 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Patch: Improve logging output.
+* Minor: Added verbose flag to produce more logging on stdout
+
 
 3.0.0
 -----
