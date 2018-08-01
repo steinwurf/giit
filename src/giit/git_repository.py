@@ -125,7 +125,7 @@ class GitRepository(object):
                     "branches were found in "
                     "the repository: %s.\nYou probably just need to "
                     "push the branch you are working on:\n\n"
-                    "\tgit push -u origin %s" % (current, remotes, current))
+                    "\tgit push -u origin %s\n" % (current, remotes, current))
             if matches > 1:
                 raise RuntimeError(
                     "Several remote branches %s for %s" % (remotes, current))
