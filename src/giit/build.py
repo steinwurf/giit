@@ -17,7 +17,8 @@ class Build(object):
                  build_path=None,
                  data_path=None,
                  json_config=None,
-                 remote_branch=None):
+                 remote_branch=None,
+                 verbose=False):
 
         self.step = step
         self.repository = repository
@@ -25,6 +26,7 @@ class Build(object):
         self.data_path = data_path
         self.json_config = json_config
         self.remote_branch = remote_branch
+        self.verbose = verbose
 
     def run(self):
 
@@ -48,7 +50,7 @@ class Build(object):
 
         # create console handler with a higher log level
         ch = logging.StreamHandler(stream=sys.stdout)
-        ch.setLevel(logging.INFO)
+        ch.setLevel(logging.DEBUG if self.verbose else logging.INFO)
 
         # create formatter and add it to the handlers
         fh_formatter = logging.Formatter(
@@ -104,10 +106,17 @@ class Build(object):
 
                 self.json_config = os.path.join(
                     git_repository.workingtree_path, 'giit.json')
+
+                log.info("Using giit.json from %s workingtree",
+                         git_repository.workingtree_path)
+
             else:
 
                 self.json_config = os.path.join(
                     git_repository.repository_path, 'giit.json')
+
+                log.info("Using giit.json from %s branch",
+                         git_repository.remote_branch)
 
         with open(self.json_config, 'r') as config_file:
             config = json.load(config_file)
@@ -145,6 +154,10 @@ class Build(object):
             tasks = task_generator.tasks()
 
             for task in tasks:
+
+                log.info("Running task: scope '%s' name '%s'",
+                         task.context['scope'], task.context['checkout'])
+
                 task.run()
 
     def resolve_factory(self):

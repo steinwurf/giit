@@ -44,4 +44,4 @@ class VariablesReader(object):
 
     def expand(self, element):
 
-        return string.Template(element).substitute(self)
+        return str(string.Template(element).substitute(self))
