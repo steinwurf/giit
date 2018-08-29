@@ -64,7 +64,6 @@ class GitRepository(object):
             self.remote_branch = self._get_remote_branch(repository=repository)
 
         self.log.info("Using git repository: %s", git_url)
-        self.log.info("Using giit.json from %s branch", self.remote_branch)
 
         # Compute the clone path
         git_info = self.git_url_parser.parse(url=git_url)
@@ -113,12 +112,25 @@ class GitRepository(object):
         """ :return: The git URL """
 
         if os.path.isdir(repository):
+
             current = self.git.current_branch(cwd=repository)
-            remote = self.git.remote_branch(cwd=repository)
+            remotes = self.git.remote_branches(cwd=repository)
 
-            if not remote:
-                raise RuntimeError("No remote branch for %s" % current)
+            match = [remote for remote in remotes if current in remote]
+            matches = len(match)
 
+            if matches == 0:
+                raise RuntimeError(
+                    "No remote branch tracking %s. These remote "
+                    "branches were found in "
+                    "the repository: %s.\nYou probably just need to "
+                    "push the branch you are working on:\n\n"
+                    "\tgit push -u origin %s\n" % (current, remotes, current))
+            if matches > 1:
+                raise RuntimeError(
+                    "Several remote branches %s for %s" % (remotes, current))
+
+            remote = match[0]
             self.log.debug('branch %s -> %s', current, remote)
             return remote
 

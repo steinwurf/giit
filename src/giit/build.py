@@ -49,8 +49,8 @@ class Build(object):
         fh.setLevel(logging.DEBUG)
 
         # create console handler with a higher log level
+        ch = logging.StreamHandler(stream=sys.stdout)
         ch.setLevel(logging.DEBUG if self.verbose else logging.INFO)
-        ch.setLevel(logging.DEBUG)
 
         # create formatter and add it to the handlers
         fh_formatter = logging.Formatter(
@@ -106,10 +106,17 @@ class Build(object):
 
                 self.json_config = os.path.join(
                     git_repository.workingtree_path, 'giit.json')
+
+                log.info("Using giit.json from %s workingtree",
+                         git_repository.workingtree_path)
+
             else:
 
                 self.json_config = os.path.join(
                     git_repository.repository_path, 'giit.json')
+
+                log.info("Using giit.json from %s branch",
+                         git_repository.remote_branch)
 
         with open(self.json_config, 'r') as config_file:
             config = json.load(config_file)
@@ -147,6 +154,10 @@ class Build(object):
             tasks = task_generator.tasks()
 
             for task in tasks:
+
+                log.info("Running task: scope '%s' name '%s'",
+                         task.context['scope'], task.context['checkout'])
+
                 task.run()
 
     def resolve_factory(self):

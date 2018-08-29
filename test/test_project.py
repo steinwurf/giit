@@ -25,8 +25,8 @@ class FakeGit(giit.git.Git):
     def remote_origin_url(self, cwd):
         return "https://github.com/fake/fake.git"
 
-    def remote_branch(self, cwd):
-        return self.fake_git_branch
+    def remote_branches(self, cwd):
+        return [self.fake_git_branch]
 
     def clone(self, repository, directory, cwd):
         """ Fake the clone command.
@@ -57,10 +57,11 @@ def require_fake_git(factory):
 
     prompt = factory.require(name='prompt')
     git_binary = factory.require(name='git_binary')
+    log = logging.getLogger(name='giit.git')
     fake_git_repository = factory.require(name='fake_git_repository')
     fake_git_branch = factory.require(name='fake_git_branch')
 
-    return FakeGit(git_binary=git_binary, prompt=prompt,
+    return FakeGit(git_binary=git_binary, prompt=prompt, log=log,
                    fake_git_branch=fake_git_branch,
                    fake_git_repository=fake_git_repository)
 

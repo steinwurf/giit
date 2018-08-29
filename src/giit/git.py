@@ -7,7 +7,7 @@ import re
 
 class Git(object):
 
-    def __init__(self, git_binary, prompt):
+    def __init__(self, git_binary, prompt, log):
         """ Construct a new Git instance.
 
         :param git_binary: A string containing the path to a git executable.
@@ -15,6 +15,7 @@ class Git(object):
         """
         self.git_binary = git_binary
         self.prompt = prompt
+        self.log = log
 
     def version(self, cwd):
         """
@@ -71,7 +72,23 @@ class Git(object):
 
         self.prompt.run(args, cwd=cwd)
 
-    def branch(self, cwd, remote=False):
+    def current_branch(self, cwd):
+        """
+        Uses git.branch(...) but only returns the current one
+        """
+        current, _ = self._branch(cwd=cwd)
+        return current
+
+    def local_branches(self, cwd):
+        current, others = self._branch(cwd=cwd)
+
+        return others.append(current)
+
+    def remote_branches(self, cwd):
+        _, remote = self._branch(cwd=cwd, remote=True)
+        return remote
+
+    def _branch(self, cwd, remote=False):
         """
         Runs 'git branch' and returns the current branch and a list of
         additional branches
@@ -82,6 +99,8 @@ class Git(object):
             args.append('-r')
 
         result = self.prompt.run(args, cwd=cwd)
+
+        self.log.debug("branch remote=%s %s", remote, result)
 
         if remote:
             return self._parse_branch_remote(result=result)
@@ -97,7 +116,7 @@ class Git(object):
 
         for b in branch:
             if 'origin/HEAD ->' in b:
-                b = b.replace('origin/HEAD ->', '')
+                continue
 
             parsed.append(b.strip())
 
@@ -132,13 +151,6 @@ class Git(object):
         args.append('--')
 
         self.prompt.run(args, cwd=cwd)
-
-    def current_branch(self, cwd):
-        """
-        Uses git.branch(...) but only returns the current one
-        """
-        current, _ = self.branch(cwd=cwd)
-        return current
 
     def is_detached_head(self, cwd):
         """
@@ -241,21 +253,3 @@ class Git(object):
         result = self.prompt.run(args, cwd=cwd)
 
         return result.stdout.strip()
-
-    def remote_branch(self, cwd):
-        """
-        Runs 'git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD)
-
-        :return: Empty string if no corresponding remote branch is found otherwise
-            origin/master or similar.
-        """
-
-        # From https://stackoverflow.com/a/19308406/1717320
-
-        args = [self.git_binary, "symbolic-ref", "-q", "HEAD"]
-        ref = self.prompt.run(args, cwd=cwd).stdout.strip()
-
-        args = [self.git_binary, "for-each-ref",
-                "--format=%(upstream:short)", ref]
-
-        return self.prompt.run(args, cwd=cwd).stdout.strip()

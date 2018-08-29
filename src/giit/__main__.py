@@ -1,4 +1,5 @@
 import click
+import colorama
 
 import giit.build
 
@@ -23,7 +24,16 @@ def cli(step, repository, build_path, data_path, json_config,
         remote_branch=remote_branch,
         verbose=verbose)
 
-    build.run()
+    try:
+        build.run()
+    except Exception as e:
+
+        if verbose:
+            # We just propagate the exception out
+            raise
+
+        colorama.init()
+        print(colorama.Fore.RED + str(e))
 
 
 if __name__ == "__main__":
