@@ -6,13 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
-<<<<<<< HEAD
 * Patch: Fix using checkout in variable reader.
-=======
 * Patch: Improve logging output.
 * Minor: Added verbose flag to produce more logging on stdout
 
->>>>>>> master
 
 3.0.0
 -----
