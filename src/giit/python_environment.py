@@ -57,6 +57,14 @@ class PythonEnvironment(object):
     def _environment_name(self, requirements, pip_packages):
         """ Create an unique name for the environment. """
 
+        # Read the contents of the requirements file, to ensure we
+        # generate a new environment if it changes
+        if requirements:
+            with open(requirements, 'r') as f:
+                requirements_content = f.read()
+        else:
+            requirements_content = ""
+
         # We need to make a hashable name
         info = json.dumps(
             {'requirements': requirements,
