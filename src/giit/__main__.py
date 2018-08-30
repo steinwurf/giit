@@ -1,3 +1,4 @@
+import sys
 import click
 import colorama
 
@@ -34,6 +35,7 @@ def cli(step, repository, build_path, data_path, json_config,
 
         colorama.init()
         print(colorama.Fore.RED + str(e))
+        sys.exit(1)
 
 
 if __name__ == "__main__":
