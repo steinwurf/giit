@@ -72,7 +72,7 @@ class PythonEnvironment(object):
 
         # We need to make a hashable name
         info = json.dumps(
-            {'requirements': requirements,
+            {'requirements': requirements_content,
              'pip_packages': pip_packages})
 
         # The Python executable
