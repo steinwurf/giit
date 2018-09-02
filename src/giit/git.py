@@ -17,7 +17,7 @@ class Git(object):
         self.prompt = prompt
         self.log = log
 
-    def version(self, cwd):
+    def version(self):
         """
         Runs 'git version' and return the version information as a tuple
 
@@ -27,7 +27,7 @@ class Git(object):
             we just extract the integers i.e. (1.8.1.1)
         """
         args = [self.git_binary, 'version']
-        result = self.prompt.run(args, cwd=cwd)
+        result = self.prompt.run(args)
 
         int_list = [int(s) for s in re.findall('\\d+', result.stdout)]
         return tuple(int_list)

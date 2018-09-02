@@ -6,7 +6,7 @@ import giit.build
 
 
 @click.command()
-@click.option('--remote_branch')
+#@click.option('--remote_branch')
 @click.option('--build_path')
 @click.option('--data_path')
 @click.option('--json_config')
@@ -14,7 +14,8 @@ import giit.build
 @click.argument('step')
 @click.argument('repository')
 def cli(step, repository, build_path, data_path, json_config,
-        remote_branch, verbose):
+        verbose):
+    #        remote_branch, verbose):
 
     build = giit.build.Build(
         step=step,
@@ -22,7 +23,7 @@ def cli(step, repository, build_path, data_path, json_config,
         build_path=build_path,
         data_path=data_path,
         json_config=json_config,
-        remote_branch=remote_branch,
+        # remote_branch=remote_branch,
         verbose=verbose)
 
     try:

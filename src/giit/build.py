@@ -17,7 +17,7 @@ class Build(object):
                  build_path=None,
                  data_path=None,
                  json_config=None,
-                 remote_branch=None,
+                 # remote_branch=None,
                  verbose=False):
 
         self.step = step
@@ -25,7 +25,7 @@ class Build(object):
         self.build_path = build_path
         self.data_path = data_path
         self.json_config = json_config
-        self.remote_branch = remote_branch
+        #self.remote_branch = remote_branch
         self.verbose = verbose
 
     def run(self):
@@ -43,16 +43,16 @@ class Build(object):
         logger = logging.getLogger('giit')
         logger.setLevel(logging.DEBUG)
 
-        # create file handler which logs even debug messages
+        # Create file handler which logs even debug messages
         logfile = os.path.join(self.data_path, 'giit.log')
         fh = logging.FileHandler(logfile)
         fh.setLevel(logging.DEBUG)
 
-        # create console handler with a higher log level
+        # Create console handler with a higher log level
         ch = logging.StreamHandler(stream=sys.stdout)
         ch.setLevel(logging.DEBUG if self.verbose else logging.INFO)
 
-        # create formatter and add it to the handlers
+        # Create formatter and add it to the handlers
         fh_formatter = logging.Formatter(
             '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         fh.setFormatter(fh_formatter)
@@ -60,7 +60,7 @@ class Build(object):
         ch_formatter = logging.Formatter('%(message)s')
         ch.setFormatter(ch_formatter)
 
-        # add the handlers to the logger
+        # Add the handlers to the logger
         logger.addHandler(fh)
         logger.addHandler(ch)
 
@@ -70,7 +70,7 @@ class Build(object):
         log.debug('build_path=%s', self.build_path)
         log.debug('data_path=%s', self.data_path)
         log.debug('json_config=%s', self.json_config)
-        log.debug('remote_branch=%s', self.remote_branch)
+        #log.debug('remote_branch=%s', self.remote_branch)
 
         log.info('Lets go: %s', self.step)
 
@@ -78,7 +78,7 @@ class Build(object):
         factory = self.resolve_factory()
 
         git_repository = factory.build()
-        git_repository.clone(repository=self.repository)
+        git_repository.clone()
 
         # Set the build path
         if not self.build_path:
@@ -100,26 +100,11 @@ class Build(object):
         log.info("Building into: %s", self.build_path)
 
         # Get the command
-        if not self.json_config:
-
-            if git_repository.workingtree_path:
-
-                self.json_config = os.path.join(
-                    git_repository.workingtree_path, 'giit.json')
-
-                log.info("Using giit.json from %s workingtree",
-                         git_repository.workingtree_path)
-
-            else:
-
-                self.json_config = os.path.join(
-                    git_repository.repository_path, 'giit.json')
-
-                log.info("Using giit.json from %s branch",
-                         git_repository.remote_branch)
-
-        with open(self.json_config, 'r') as config_file:
-            config = json.load(config_file)
+        if self.json_config:
+            with open(self.json_config, 'r') as config_file:
+                config = json.load(config_file)
+        else:
+            config = git_repository.load_json_config()
 
         if self.step not in config:
             raise RuntimeError("Error step %s not found in %s",
@@ -162,8 +147,8 @@ class Build(object):
 
     def resolve_factory(self):
         return giit.factory.resolve_factory(
-            data_path=self.data_path,
-            remote_branch=self.remote_branch)
+            data_path=self.data_path, repository=self.repository)  # ,
+        # remote_branch=self.remote_branch)
 
     def clone_factory(self, unique_name):
         return giit.factory.cache_factory(
