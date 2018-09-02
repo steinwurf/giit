@@ -102,13 +102,14 @@ def require_virtualenv(factory):
 def require_git_repository(factory):
     git = factory.require(name='git')
     git_url_parser = factory.require(name='git_url_parser')
-    remote_branch = factory.require(name='remote_branch')
+    #remote_branch = factory.require(name='remote_branch')
+    repository = factory.require(name='repository')
     log = logging.getLogger(name='giit.git_repository')
     clone_path = factory.require(name='clone_path')
 
     return giit.git_repository.GitRepository(
         git=git, git_url_parser=git_url_parser, clone_path=clone_path,
-        log=log, remote_branch=remote_branch)
+        log=log, repository=repository)  # , remote_branch=remote_branch)
 
 
 def provide_output_path(factory):
@@ -160,9 +161,22 @@ def require_task_generator(factory):
 
     if 'branch' in command_config.scope:
 
+        # The giit branch is either passed to the giit cli or
+        # is the branch which a directory currently is pointing to.
+        #
+        # The branches are provided by the user in giit.json and
+        # are then ones we should always build.
+        #
+        # We build for both the giit_branch and the branches in
+        # giit.json
+
+        branches = command_config.branches
+
+        if git_repository.giit_branch not in branches:
+            branches.append(git_repository.giit_branch)
+
         git_branch_generator = giit.tasks.GitBranchGenerator(
-            git=git, repository_path=git_repository.repository_path,
-            remote_branch=git_repository.remote_branch,
+            git=git, repository_path=git_repository.giit_clone_path,
             command=command, build_path=build_path,
             branches=command_config.branches)
 
@@ -180,14 +194,15 @@ def require_task_generator(factory):
     return task_generator
 
 
-def resolve_factory(data_path, remote_branch):
+def resolve_factory(data_path, repository):  # , remote_branch):
 
     factory = Factory()
     factory.set_default_build(default_build='git_repository')
 
     factory.provide_value(name='git_binary', value='git')
     factory.provide_value(name='data_path', value=data_path)
-    factory.provide_value(name='remote_branch', value=remote_branch)
+    factory.provide_value(name='repository', value=repository)
+    #factory.provide_value(name='remote_branch', value=remote_branch)
 
     factory.provide_function(name='clone_path', function=provide_clone_path)
     factory.provide_function(name='git_url_parser',

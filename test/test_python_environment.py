@@ -23,6 +23,6 @@ def test_python_environment(testdirectory):
 
     assert venv == env
 
-    command = 'python -m pip install -r {}'.format(
+    command = 'python -m pip install -U -r {}'.format(
         os.path.join(testdirectory.path(), 'requirements.txt'))
     prompt.run.assert_called_once_with(command=command, env=env)

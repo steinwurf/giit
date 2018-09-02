@@ -92,7 +92,7 @@ class GitTask(object):
 class GitBranchGenerator(object):
 
     def __init__(self, git, repository_path, command, build_path,
-                 remote_branch, branches):
+                 branches):
         """ Create a branch generator.
 
         :param git: A giit.git.Git instance
@@ -100,30 +100,17 @@ class GitBranchGenerator(object):
         :param command: The command to run e.g.
             giit.python_command.PythonCommand
         :param build_path: The build path as a string
-        :param remote_branch: The source branch as a string
         :param branches: The list of branches to build
         :param log: A logging object
         """
 
         self.git = git
-        self.remote_branch = remote_branch
         self.repository_path = repository_path
         self.command = command
         self.build_path = build_path
         self.branches = branches
 
     def tasks(self):
-
-        # The remote branch is either passed to the giit cli or
-        # is the branch which a directory currently is pointing to.
-        #
-        # The branches are provided by the user in giit.json and
-        # are then ones we should always build.
-        #
-        # We build for both the remote_branch and the branches in
-        # giit.json
-        if self.remote_branch not in self.branches:
-            self.branches.append(self.remote_branch)
 
         tasks = []
 
@@ -187,7 +174,7 @@ class GitTagGenerator(object):
                 'name': tag,
                 'checkout': tag,
                 'build_path': self.build_path,
-                'source_path': self.git_repository.repository_path
+                'source_path': self.git_repository.giit_clone_path
             }
 
             task = GitTask(git=self.git, context=context,

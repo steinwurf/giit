@@ -58,12 +58,58 @@ You should now seem something like::
 If you visit ``/tmp/giit/build/urllib3-b1919a`` with your web browser
 you should be able to see the ``urllib3`` Sphinx documentation.
 
+Command-line arguments
+----------------------
+
+Whn invoking ``giit`` there are two mandatory arguments::
+
+    giit STEP REPOSITORY
+
+* ``STEP`` selects the step defined in the ``giit.json`` to execute.
+* ``REPOSITORY`` is a repository URL or a path on the file system to a
+   repository
+
+In addition to the two mandatory arguments there are a number of optional
+options that can customize the ``giit``'s behavior.
+
+* ``--build_path`` this option controls where in the file system the should
+  be produced. This option is passed to the ``giit`` steps such that Python
+  commands etc. can respect it (notice how it was used to control the build
+  output of the ``urllib3`` example).
+
+* ``--giit_path`` this option controls where ``giit`` will store all it's
+  state. Clones of repositories, meta data etc.
+
+* ``--json_config`` this option allows the path to the ``giit.json`` file to
+  be specified.
+
+* ``-v`` / ``--verbose`` allows the verbosity level of the tool to be increased
+  generating more debug information on the command line.
 
 ``giit.json``
 =============
 
 The ``giit.json`` is where the different steps are defined. Let's
 walk though the different attributes which can be used.
+
+Location
+--------
+
+Since the content of the ``giit.json`` file fully determines the steps taken
+by ``giit`` understanding how the ``giit.json`` file is found is quite
+important.
+
+The following outlines the rules:
+
+1. Passing a path using ``--json_config``.
+2. If using a path to the repository when calling ``giit`` e.g.::
+
+       git docs ../path/to/repo
+
+   We will try to find the ``giit.json`` in ``../path/to/repo/giit.json``
+
+3. In
+
 
 Defining steps
 --------------
@@ -89,7 +135,7 @@ Step type
 Each step will have a type. The type defines the behavior and
 attributes available in the step.
 
-Currently supported are ``python`` and ``sftp``
+Currently supported are ``python``, ``sftp`` and ``push``.
 
 Step scope
 ----------

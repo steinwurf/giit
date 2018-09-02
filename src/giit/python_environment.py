@@ -36,15 +36,20 @@ class PythonEnvironment(object):
 
         env = self.virtualenv.create_environment(name=name)
 
+        # We use the -U (--upgrade) to pip since otherwise it will
+        # not update to the newest version available. Also when
+        # installing via VCS such as git (https://pip.pypa.io/en/latest/reference/pip_install/#vcs-support)
+        # we won't get the newest available version.
+
         if requirements:
             # Install the requirements
-            command = 'python -m pip install -r {}'.format(requirements)
+            command = 'python -m pip install -U -r {}'.format(requirements)
             self.prompt.run(command=command, env=env)
 
         if pip_packages:
             # Install the pip packages
             pip_packages = " ".join(pip_packages)
-            command = 'python -m pip install {}'.format(pip_packages)
+            command = 'python -m pip install -U {}'.format(pip_packages)
 
             self.prompt.run(command=command, env=env)
 
@@ -67,7 +72,7 @@ class PythonEnvironment(object):
 
         # We need to make a hashable name
         info = json.dumps(
-            {'requirements': requirements,
+            {'requirements': requirements_content,
              'pip_packages': pip_packages})
 
         # The Python executable
