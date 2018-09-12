@@ -58,6 +58,9 @@ You should now seem something like::
 If you visit ``/tmp/giit/build/urllib3-b1919a`` with your web browser
 you should be able to see the ``urllib3`` Sphinx documentation.
 
+``giit`` scopes
+
+
 Command-line arguments
 ----------------------
 
@@ -69,6 +72,14 @@ Whn invoking ``giit`` there are two mandatory arguments::
 
 * ``REPOSITORY`` is a repository URL or a path on the file system to a
    repository
+
+As default ``giit`` will behave differently depending
+on whether you pass a URL or a path to it.
+
+1. If you pass an URL to ``giit`` it will enable the  the ``master`` branch.
+
+2. If you pass a path it will run command on the workingtree.
+
 
 In addition to the two mandatory arguments there are a number of optional
 options that can customize the ``giit``'s behavior.
@@ -86,6 +97,9 @@ options that can customize the ``giit``'s behavior.
 
 * ``-v`` / ``--verbose`` allows the verbosity level of the tool to be increased
   generating more debug information on the command line.
+
+
+
 
 ``giit.json``
 =============
