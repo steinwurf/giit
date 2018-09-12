@@ -66,6 +66,7 @@ Whn invoking ``giit`` there are two mandatory arguments::
     giit STEP REPOSITORY
 
 * ``STEP`` selects the step defined in the ``giit.json`` to execute.
+
 * ``REPOSITORY`` is a repository URL or a path on the file system to a
    repository
 
@@ -95,9 +96,9 @@ walk though the different attributes which can be used.
 Location
 --------
 
-Since the content of the ``giit.json`` file fully determines the steps taken
-by ``giit`` understanding how the ``giit.json`` file is found is quite
-important.
+Since the content of the ``giit.json`` file fully determines the steps
+taken by ``giit`` understanding how the ``giit.json`` file is found is
+quite important.
 
 The following outlines the rules:
 
@@ -295,7 +296,7 @@ Sets the build path (i.e. where the output artifacts/data) will be generated/
 built. This argument is available in the ``giit.json`` as the ``${build_path}``
 variable.
 
-Option: ``--data_path``
+Option: ``--giit_path``
 -----------------------
 
 This path is where the ``giit`` tool will store configurations, virtualenvs

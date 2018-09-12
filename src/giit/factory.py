@@ -114,30 +114,30 @@ def require_git_repository(factory):
 
 def provide_output_path(factory):
 
-    return factory.require(name='data_path')
+    return factory.require(name='giit_path')
 
 
 def provide_clone_path(factory):
 
-    data_path = factory.require(name='data_path')
+    giit_path = factory.require(name='giit_path')
 
-    return os.path.join(data_path, 'clones')
+    return os.path.join(giit_path, 'clones')
 
 
 def provide_virtualenv_root_path(factory):
 
-    data_path = factory.require(name='data_path')
+    giit_path = factory.require(name='giit_path')
 
-    return os.path.join(data_path, 'virtualenvs')
+    return os.path.join(giit_path, 'virtualenvs')
 
 
 def require_cache(factory):
 
-    data_path = factory.require(name='data_path')
+    giit_path = factory.require(name='giit_path')
     unique_name = factory.require(name='unique_name')
 
     return giit.cache.Cache(
-        cache_path=data_path, unique_name=unique_name)
+        cache_path=giit_path, unique_name=unique_name)
 
 
 def require_task_generator(factory):
@@ -172,8 +172,10 @@ def require_task_generator(factory):
 
         branches = command_config.branches
 
-        if git_repository.giit_branch not in branches:
-            branches.append(git_repository.giit_branch)
+        if git_repository.giit_branch:
+
+            if git_repository.giit_branch not in branches:
+                branches.append(git_repository.giit_branch)
 
         git_branch_generator = giit.tasks.GitBranchGenerator(
             git=git, repository_path=git_repository.giit_clone_path,
@@ -194,13 +196,13 @@ def require_task_generator(factory):
     return task_generator
 
 
-def resolve_factory(data_path, repository):  # , remote_branch):
+def resolve_factory(giit_path, repository):  # , remote_branch):
 
     factory = Factory()
     factory.set_default_build(default_build='git_repository')
 
     factory.provide_value(name='git_binary', value='git')
-    factory.provide_value(name='data_path', value=data_path)
+    factory.provide_value(name='giit_path', value=giit_path)
     factory.provide_value(name='repository', value=repository)
     #factory.provide_value(name='remote_branch', value=remote_branch)
 
@@ -215,11 +217,11 @@ def resolve_factory(data_path, repository):  # , remote_branch):
     return factory
 
 
-def cache_factory(data_path, unique_name):
+def cache_factory(giit_path, unique_name):
 
     factory = Factory()
     factory.set_default_build(default_build='cache')
-    factory.provide_value(name='data_path', value=data_path)
+    factory.provide_value(name='giit_path', value=giit_path)
     factory.provide_value(name='unique_name', value=unique_name)
     factory.provide_function(name='cache', function=require_cache)
 

@@ -15,7 +15,7 @@ class Build(object):
     def __init__(self, step,
                  repository,
                  build_path=None,
-                 data_path=None,
+                 giit_path=None,
                  json_config=None,
                  # remote_branch=None,
                  verbose=False):
@@ -23,28 +23,26 @@ class Build(object):
         self.step = step
         self.repository = repository
         self.build_path = build_path
-        self.data_path = data_path
+        self.giit_path = giit_path
         self.json_config = json_config
         #self.remote_branch = remote_branch
         self.verbose = verbose
 
     def run(self):
 
-        # Location for giit files - if not user specified
-        giit_path = os.path.join(tempfile.gettempdir(), 'giit')
-
         # Setup data path
-        if not self.data_path:
-            self.data_path = os.path.join(giit_path, 'data')
+        if not self.giit_path:
+            self.giit_path = os.path.join(
+                tempfile.gettempdir(), 'giit', 'data')
 
-            if not os.path.isdir(self.data_path):
-                os.makedirs(self.data_path)
+        if not os.path.isdir(self.giit_path):
+            os.makedirs(self.giit_path)
 
         logger = logging.getLogger('giit')
         logger.setLevel(logging.DEBUG)
 
         # Create file handler which logs even debug messages
-        logfile = os.path.join(self.data_path, 'giit.log')
+        logfile = os.path.join(self.giit_path, 'giit.log')
         fh = logging.FileHandler(logfile)
         fh.setLevel(logging.DEBUG)
 
@@ -68,7 +66,7 @@ class Build(object):
 
         # Add details to log file
         log.debug('build_path=%s', self.build_path)
-        log.debug('data_path=%s', self.data_path)
+        log.debug('giit_path=%s', self.giit_path)
         log.debug('json_config=%s', self.json_config)
         #log.debug('remote_branch=%s', self.remote_branch)
 
@@ -82,7 +80,7 @@ class Build(object):
 
         # Set the build path
         if not self.build_path:
-            self.build_path = os.path.join(giit_path, 'build',
+            self.build_path = os.path.join(self.giit_path, 'build',
                                            git_repository.unique_name)
 
         if self.step == 'clean':
@@ -127,7 +125,7 @@ class Build(object):
         # Provide the different needed by the factory
         factory.provide_value(name='config', value=config[self.step])
         factory.provide_value(name='build_path', value=self.build_path)
-        factory.provide_value(name='data_path', value=self.data_path)
+        factory.provide_value(name='giit_path', value=self.giit_path)
         factory.provide_value(name='git_repository', value=git_repository)
 
         # Run the command
@@ -147,12 +145,12 @@ class Build(object):
 
     def resolve_factory(self):
         return giit.factory.resolve_factory(
-            data_path=self.data_path, repository=self.repository)  # ,
+            giit_path=self.giit_path, repository=self.repository)  # ,
         # remote_branch=self.remote_branch)
 
     def clone_factory(self, unique_name):
         return giit.factory.cache_factory(
-            data_path=self.data_path,
+            giit_path=self.giit_path,
             unique_name=unique_name)
 
     def build_factory(self, build_type):
