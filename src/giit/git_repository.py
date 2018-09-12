@@ -65,12 +65,15 @@ class GitRepository(object):
         matches = len(match)
 
         if matches == 0:
-            raise RuntimeError(
-                "No remote branch tracking %s. These remote "
+            self.log.info(
+                "Skipping build: No remote branch tracking %s. These remote "
                 "branches were found in "
                 "the repository: %s.\nYou probably just need to "
                 "push the branch you are working on:\n\n"
                 "\tgit push -u origin %s\n" % (current, remotes, current))
+
+            return None
+
         if matches > 1:
             raise RuntimeError(
                 "Several remote branches %s for %s" % (remotes, current))
