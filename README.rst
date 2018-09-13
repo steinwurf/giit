@@ -110,10 +110,10 @@ three scopes:
       2. If ``giit`` is invoked with a URL the ``source_branch`` will
          default to master.
 
-     The source branch will always refer to the remote branch. This means
-     that even if two people are working on the same branch they will only
-     be able to see their results after pushing. This avoids tricky race
-     conditions, where it is unclear from what changes a branch is built.
+      The source branch will always refer to the remote branch. This means
+      that even if two people are working on the same branch they will only
+      be able to see their results after pushing. This avoids tricky race
+      conditions, where it is unclear from what changes a branch is built.
 
 3. ``tags``: Works similar to the ``branch`` scope but steps run for the specified
    tags only.
