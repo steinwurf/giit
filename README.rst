@@ -58,25 +58,26 @@ You should now seem something like::
 If you visit ``/tmp/giit/build/urllib3-b1919a`` with your web browser
 you should be able to see the ``urllib3`` Sphinx documentation.
 
-``giit`` scopes
----------------
+``giit.json`` location
+======================
 
-It is possible to customize the behavior of ``giit`` using scopes. A scope
-basically specifies how the steps specified will run. There are
-three scopes:
+Since the content of the ``giit.json`` file fully determines the steps
+taken by ``giit`` understanding how the ``giit.json`` file is found is
+quite important.
 
-1. ``workingtree``: If this scoped is enabled ``giit`` will run the specified
-   steps in a local already checkout repository.
+The following outlines the rules:
 
-2. ``branch``: When enabling the ``branch`` scope ``giit`` will run steps for
-   the selected branches.
+1. Passing a path using ``--json_config``.
 
-3. ``tag``: Works similar to the ``branch`` scope but steps run for the specified
-   tags only.
+2. If using a path to the repository when calling ``giit`` e.g.::
 
-Scopes can either be implicitly enabled or explicitly. Multiple scopes can be
-enabled at the same time. We will describe how this works when describing the
-command-line arguments supported by ``giit``.
+       git docs ../path/to/repo
+
+   We will try to find the ``giit.json`` in ``../path/to/repo/giit.json``
+
+3. If a URL is passed  (like in the ``urllib3`` example) ``giit`` will
+   look in the ``master`` branch for the ``giit.json`` this can be
+   change by passing the ``--config_branch`` option.
 
 Command-line arguments
 ----------------------
@@ -90,35 +91,6 @@ Whn invoking ``giit`` there are two mandatory arguments::
 * ``REPOSITORY`` is a repository URL or a path on the file system to a
    repository
 
-Explicitly enabling scopes
-..........................
-
-Scopes are explicitly enabled by passing the ``--scope`` option.
-
-1. Enable the ``workingtree`` scope by passing ``--scope workingtree``. Can only
-   be enabled if ``giit`` is invoked with a path.
-
-2. Enable the ``branch`` scope by passing ``--scope branch``
-
-3. Enable the ``tag`` scope by passing ``--scope tag``
-
-If for example we only want to build the local changes, we can run the
-following::
-
-    giit docs ../../path --scope workingtree
-
-Implicitly enabling scopes
-..........................
-
-If scopes are not explicitly defined. The default behavior of ``giit`` is to
-enable as many scopes as possible. As mentioned above ``giit`` can either be
-invoked with a repository URL or a path to an existing repository.
-
-* In case of an URL no working tree exists so only the ``branch`` and ``tag``
-  scope will be enabled.
-* In case of a path all three scopes are enabled.
-
-
 As default ``giit`` will behave differently depending
 on whether you pass a URL or a path to it.
 
@@ -126,11 +98,9 @@ on whether you pass a URL or a path to it.
 
 2. If you pass a path it will run command on the workingtree.
 
-Other options
-.............
 
-In addition to the two mandatory arguments and the ``--scope`` option there
-exist a number of optional options that can customize the ``giit``'s behavior.
+In addition to the two mandatory arguments there are a number of optional
+options that can customize the ``giit``'s behavior.
 
 * ``--build_path`` this option controls where in the file system the should
   be produced. This option is passed to the ``giit`` steps such that Python
@@ -141,11 +111,7 @@ exist a number of optional options that can customize the ``giit``'s behavior.
   state. Clones of repositories, meta data etc.
 
 * ``--json_config`` this option allows the path to the ``giit.json`` file to
-  be specified. If not specified the following search order is defined:
-
-  1. If the ``workingtree`` scope is enabled look there.
-
-  2. If the ``branch`` scope is enabled look in the ``source_branch``..???
+  be specified.
 
 * ``-v`` / ``--verbose`` allows the verbosity level of the tool to be increased
   generating more debug information on the command line.
@@ -153,30 +119,12 @@ exist a number of optional options that can customize the ``giit``'s behavior.
 
 
 
-``giit.json``
-=============
+
+``giit.json`` steps
+===================
 
 The ``giit.json`` is where the different steps are defined. Let's
 walk though the different attributes which can be used.
-
-Location
---------
-
-Since the content of the ``giit.json`` file fully determines the steps
-taken by ``giit`` understanding how the ``giit.json`` file is found is
-quite important.
-
-The following outlines the rules:
-
-1. Passing a path using ``--json_config``.
-2. If using a path to the repository when calling ``giit`` e.g.::
-
-       git docs ../path/to/repo
-
-   We will try to find the ``giit.json`` in ``../path/to/repo/giit.json``
-
-3. In
-
 
 Defining steps
 --------------
