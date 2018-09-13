@@ -61,7 +61,7 @@ you should be able to see the ``urllib3`` Sphinx documentation.
 Command-line arguments
 ----------------------
 
-Whn invoking ``giit`` there are two mandatory arguments::
+When invoking ``giit`` there are two mandatory arguments::
 
     giit STEP REPOSITORY
 
@@ -143,6 +143,7 @@ Step scope
 If enabled a step will run in a number of different "scopes":
 
 * ``workingtree``:
+
   * If a user passes a path to the ``giit`` command e.g.
     ``giit docs ../dev/project/docs`` then the ``workingtree`` scope will
     be enabled.
@@ -151,12 +152,14 @@ If enabled a step will run in a number of different "scopes":
   * This allows a user to run steps without having to first
     push to the remote git repository.
 * ``branch``:
+
   * The source branch scope will default to ``master``.
   * If a user passes a path to ``giit`` the source branch will be whatever
     branch the local repository is on.
   * The source branch can also be selected by the user when passing
     a git URL to the ``giit`` command.
 * ``tag``:
+
   * A default ``giit`` will run the step for each tag on the repository
     in this scope.
 
@@ -279,7 +282,7 @@ The ``giit`` tool takes two mandatory arguments and a number of options::
     giit STEP REPOSITORY [--options]
 
 Argument: ``STEP``
------------------
+------------------
 
 Selects the step in the ``giit.json`` file to run.
 
@@ -289,7 +292,7 @@ Argument: ``REPOSITORY``
 The URL or path to the git repository.
 
 Option: ``--build_path``
------------------------
+------------------------
 
 Sets the build path (i.e. where the output artifacts/data) will be generated/
 built. This argument is available in the ``giit.json`` as the ``${build_path}``
@@ -314,15 +317,13 @@ Option: ``--json_config``
 Sets the path to where the ``giit.json`` file.
 
 
-
-
 Factories and Dependency Injection
 ----------------------------------
 
 Testability is a key feature of any modern software library and one of the key
 techniques for writing testable code is dependency injection (DI).
 
-In Python DI is relatively simple to implement due to the dynamic nature of the
+In Python, DI is relatively simple to implement due to the dynamic nature of the
 language.
 
 Git branches
