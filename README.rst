@@ -69,16 +69,17 @@ The following outlines the rules:
 
 1. Passing a path using ``--json_config``.
 
-2. If using a path to the repository when calling ``giit`` e.g.::
-
-       git docs ../path/to/repo
-
-   We will try to find the ``giit.json`` in ``../path/to/repo/giit.json``
-
-3. If a URL is passed  (like in the ``urllib3`` example) ``giit`` will
+2. If a URL is passed  (like in the ``urllib3`` example) ``giit`` will
    look in the ``master`` branch for the ``giit.json`` this can be
    change by passing the ``--source_branch`` option.
 
+3. If using a path to the repository when calling ``giit`` e.g.::
+
+       git docs ../path/to/repo
+
+    If ``giit`` is invoked with a path to a local repository. The
+    current branch of that repository is used as the ``source_branch``.
+    We will try to find the ``giit.json`` in the root of that branch.
 
 ``giit`` scopes
 ===============
@@ -87,41 +88,48 @@ It is possible to customize the behavior of ``giit`` using scopes. A scope
 basically specifies how the steps specified will run. There are
 three scopes:
 
-1. ``workingtree``: If this scoped is enabled ``giit`` will run the specified
-   steps in a local already checkout repository.
+``branch`` scope
+----------------
 
-2. ``branch``: When enabling the ``branch`` scope ``giit`` will run steps for
-   the selected branch.
+The ``branch`` scope is the default enabled scope.
 
-   When the ``branch`` scope is activated. ``giit`` will run steps for one
-   specific branch available on the repository called the ``source_branch``.
+When the ``branch`` scope is activated. ``giit`` will run steps for one
+specific branch available on the repository called the ``source_branch``.
 
-   The ``source_branch`` can either be explicitly specified or implicitly
-   using the following rules:
+The ``source_branch`` can either be explicitly specified or implicitly
+using the following rules:
 
-   1. The user explicitly specifies the ``source_branch`` with the
-      ``--source_branch`` option.
+1. The user explicitly specifies the ``source_branch`` with the
+    ``--source_branch`` option.
 
-   2. The ``source_branch`` can also be implicitly defined:
+2. The ``source_branch`` can also be implicitly defined:
 
-      1. If ``giit`` is invoked with a path to a local repository. The
-         current branch of that repository is used as the ``source_branch``
+    1. If ``giit`` is invoked with a path to a local repository. The
+        current branch of that repository is used as the ``source_branch``
 
-      2. If ``giit`` is invoked with a URL the ``source_branch`` will
-         default to master.
+    2. If ``giit`` is invoked with a URL the ``source_branch`` will
+        default to master.
 
-      The source branch will always refer to the remote branch. This means
-      that even if two people are working on the same branch they will only
-      be able to see their results after pushing. This avoids tricky race
-      conditions, where it is unclear from what changes a branch is built.
+The source branch will always refer to the remote branch. This means
+that even if two people are working on the same branch they will only
+be able to see their results after pushing. This avoids tricky race
+conditions, where it is unclear from what changes a branch is built.
 
-3. ``tags``: Works similar to the ``branch`` scope but steps run for the specified
-   tags only.
+``workingtree`` scope
+---------------------
+If this scoped is enabled ``giit`` will run the specified
+steps in a local already checkout repository.
 
-   If the ``tags`` scope is enabled the default behaviour is to run steps
-   for all tags on a repository. This is not always meaningful and
-   therefore we can specify tag filters in the ``giit.json`` to restrict
-   which tags are selected.
+``tags`` scope
+---------------
+
+Works similar to the ``branch`` scope but steps run for the specified
+tags only.
+
+If the ``tags`` scope is enabled the default behaviour is to run steps
+for all tags on a repository. This is not always meaningful and
+therefore we can specify tag filters in the ``giit.json`` to restrict
+which tags are selected.
 
 Scopes can either be implicitly enabled or explicitly. Multiple scopes can be
 enabled at the same time. We will describe how this works when describing the
