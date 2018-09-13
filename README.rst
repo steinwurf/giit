@@ -77,7 +77,130 @@ The following outlines the rules:
 
 3. If a URL is passed  (like in the ``urllib3`` example) ``giit`` will
    look in the ``master`` branch for the ``giit.json`` this can be
-   change by passing the ``--config_branch`` option.
+   change by passing the ``--source_branch`` option.
+
+
+``giit`` scopes
+===============
+
+It is possible to customize the behavior of ``giit`` using scopes. A scope
+basically specifies how the steps specified will run. There are
+three scopes:
+
+1. ``workingtree``: If this scoped is enabled ``giit`` will run the specified
+   steps in a local already checkout repository.
+
+2. ``branch``: When enabling the ``branch`` scope ``giit`` will run steps for
+   the selected branch.
+
+   When the ``branch`` scope is activated. ``giit`` will run steps for one
+   specific branch available on the repository called the ``source_branch``.
+
+   The ``source_branch`` can either be explicitly specified or implicitly
+   using the following rules:
+
+   1. The user explicitly specifies the ``source_branch`` with the
+      ``--source_branch`` option.
+
+   2. The ``source_branch`` can also be implicitly defined:
+
+      1. If ``giit`` is invoked with a path to a local repository. The
+         current branch of that repository is used as the ``source_branch``
+
+      2. If ``giit`` is invoked with a URL the ``source_branch`` will
+         default to master.
+
+    The source branch will always refer to the remote branch. This means
+    that even if two people are working on the same branch they will only
+    be able to see their results after pushing. This avoids tricky race
+    conditions, where it is unclear from what changes a branch is built.
+
+3. ``tags``: Works similar to the ``branch`` scope but steps run for the specified
+   tags only.
+
+   If the ``tags`` scope is enabled the default behaviour is to run steps
+   for all tags on a repository. This is not always meaningful and
+   therefore we can specify tag filters in the ``giit.json`` to restrict
+   which tags are selected.
+
+Scopes can either be implicitly enabled or explicitly. Multiple scopes can be
+enabled at the same time. We will describe how this works when describing the
+command-line arguments supported by ``giit``.
+
+Explicitly enabling scopes
+--------------------------
+
+Scopes are explicitly enabled by passing the ``--scope`` option.
+
+1. Enable the ``workingtree`` scope by passing ``--scope workingtree``.
+   Can only be enabled if ``giit`` is invoked with a path.
+
+2. Enable the ``branch`` scope by passing ``--scope branch``.
+
+3. Enable the ``tag`` scope by passing ``--scope tag``.
+
+Implicitly enabling scopes
+--------------------------
+
+If scopes are not explicitly defined. The default behavior of ``giit``
+depends on whether a repository path or URL was used. As mentioned
+above ``giit`` can either be invoked with a repository URL or a path
+to an existing repository.
+
+* In case of an URL the ``branch`` scope is implicitly enabled. The default
+  branch to build is the ``master``. This can be changed with the
+  ``--source_branch`` option
+
+* In case of a path all three scopes are enabled.
+
+
+As default ``giit`` will behave differently depending
+on whether you pass a URL or a path to it.
+
+1. If you pass an URL to ``giit`` it will enable the  the ``master`` branch.
+
+2. If you pass a path it will run command on the workingtree.
+
+Scope examples
+--------------
+
+The following examples show different ways to invoked ``giit`` and the
+expected outcome (in all examples we assume the ``giit.json`` is in the
+root of the repository, so we can omit the ``--json_config`` option).
+
+Building changes in the local directory
+.......................................
+
+::
+
+    giit ../../path
+
+Scopes enabled: ``workingtree``.
+
+Building the branch on a repository already checked out
+.......................................................
+
+This is useful in CI systems, where the CI system performs the checkout
+for us. To build the corresponding branch we just say.
+
+::
+
+    giit ../../path --scope branch
+
+Scopes enabled: ``branch``.
+
+Note, that ``giit`` will look for the branch on the remote. So this
+requires that all changes have been pushed.
+
+Building branch and tags
+........................
+
+We can easily extend the command to also build the tags.
+
+::
+
+    giit ../../path --scope branch --scope tags
+
 
 Command-line arguments
 ----------------------
