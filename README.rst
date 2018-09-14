@@ -32,10 +32,10 @@ Example: ``urllib3``
 
     {
         "docs": {
-            "type": "python",
             "scripts": [
                 "sphinx-build -b html . ${build_path}"
             ],
+
             "python_path": "${source_path}/src",
             "cwd": "${source_path}/docs",
             "requirements": "${source_path}/docs/requirements.txt"
@@ -485,8 +485,7 @@ Git branches
 ``giit`` uses a ``giit.json`` file to describe the different steps::
 
     {
-        "docs": {
-            "type": "python",
+        "docs": [{
             "branches": [
                 "regex_filter": [
                     "master"
@@ -499,17 +498,17 @@ Git branches
                 "semver_filter" : [">2.0.0"],
             ],
             "workingtree": True,
-            "scripts": [
-                "sphinx-build -b html . ${output_path}"
-            ],
             "python_path": "${source_path}/src",
-            "cwd": "${source_path}/docs",
             "requirements": "${source_path}/docs/requirements.txt"
             "variables": {
                 "branch:master:output_path": "${build_path}/docs/latest",
                 "branch:output_path": "${build_path}/sphinx/${name}",
                 "tag:output_path": "${build_path}/docs/${name}",
                 "workingtree:output_path": "${build_path}/workingtree/sphinx"
-            }
-        }
+            },
+            "cwd": "${source_path}/docs",
+            "scripts": [
+                "sphinx-build -b html . ${type}/${output_path}"
+            ],
+        }]
     }
