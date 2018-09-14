@@ -24,19 +24,6 @@ class UploadContext(BuildContext):
     fun = 'upload'
 
 
-def resolve(ctx):
-
-    # Testing dependencies
-    ctx.add_dependency(
-        name='virtualenv',
-        recurse=False,
-        optional=False,
-        resolver='git',
-        method='checkout',
-        checkout='15.1.0',
-        sources=['github.com/pypa/virtualenv.git'])
-
-
 def options(opt):
 
     opt.add_option(
@@ -53,16 +40,12 @@ def options(opt):
              'Wildcards not allowed. (Used with --run_tests)')
 
 
-def configure(conf):
-    pass
-
-
 def build(bld):
 
     # Create a virtualenv in the source folder and build universal wheel
     # Make sure the virtualenv Python module is in path
 
-    with _create_virtualenv(bld=bld) as venv:
+    with bld.create_virtualenv(cwd=bld.bldnode.abspath()) as venv:
         venv.pip_install(packages=['wheel'])
         venv.run(cmd='python setup.py bdist_wheel --universal', cwd=bld.path)
 
@@ -96,7 +79,7 @@ def _find_wheel(ctx):
 def upload(bld):
     """ Upload the built wheel to PyPI (the Python Package Index) """
 
-    with _create_virtualenv(bld=bld) as venv:
+    with bld.create_virtualenv(cwd=bld.bldnode.abspath()) as venv:
         venv.pip_install(packages=['twine'])
 
         wheel = _find_wheel(ctx=bld)
@@ -106,19 +89,14 @@ def upload(bld):
 
 def _pytest(bld):
 
-    with _create_virtualenv(bld=bld) as venv:
+    with bld.create_virtualenv(cwd=bld.bldnode.abspath()) as venv:
 
-        # If we need to be able to run doxygen from the system
-        venv.env['PATH'] = os.path.pathsep.join(
-            [venv.env['PATH'], os.environ['PATH']])
-
-        venv.pip_install(
-            ['pytest', 'pytest-testdirectory', 'mock'])
+        venv.run("pip install pytest pytest-testdirectory mock")
 
         # Install the pytest-testdirectory plugin in the virtualenv
         wheel = _find_wheel(ctx=bld)
 
-        venv.run('python -m pip install {}'.format(wheel))
+        venv.run("pip install {}".format(wheel))
 
         # We override the pytest temp folder with the basetemp option,
         # so the test folders will be available at the specified location
@@ -157,16 +135,3 @@ def _pytest(bld):
         #
         # venv.pip_install(['collective.checkdocs'])
         # venv.run(cmd='python setup.py checkdocs', cwd=bld.path)
-
-
-def _create_virtualenv(bld):
-
-    # Create a virtualenv in the source folder and build universal wheel
-        # Make sure the virtualenv Python module is in path
-    venv_path = bld.dependency_path('virtualenv')
-
-    env = dict(os.environ)
-    env.update({'PYTHONPATH': os.path.pathsep.join(
-        [bld.dependency_path('virtualenv')])})
-
-    return bld.create_virtualenv(cwd=bld.bldnode.abspath(), env=env)

@@ -32,10 +32,12 @@ Example: ``urllib3``
 
     {
         "docs": {
+            "branches": {
+                "regex_filter": ["master"]
+            },
             "scripts": [
                 "sphinx-build -b html . ${build_path}"
             ],
-
             "python_path": "${source_path}/src",
             "cwd": "${source_path}/docs",
             "requirements": "${source_path}/docs/requirements.txt"
@@ -477,9 +479,6 @@ language.
 
 Git branches
 ------------
-
-
-
 
 
 ``giit`` uses a ``giit.json`` file to describe the different steps::
