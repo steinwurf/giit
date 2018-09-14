@@ -131,12 +131,15 @@ for all tags on a repository. This is not always meaningful and
 therefore we can specify tag filters in the ``giit.json`` to restrict
 which tags are selected.
 
+Enabling scopes
+----------------
+
 Scopes can either be implicitly enabled or explicitly. Multiple scopes can be
 enabled at the same time. We will describe how this works when describing the
 command-line arguments supported by ``giit``.
 
 Explicitly enabling scopes
---------------------------
+..........................
 
 Scopes are explicitly enabled by passing the ``--scope`` option.
 
@@ -148,7 +151,7 @@ Scopes are explicitly enabled by passing the ``--scope`` option.
 3. Enable the ``tag`` scope by passing ``--scope tag``.
 
 Implicitly enabling scopes
---------------------------
+..........................
 
 If scopes are not explicitly defined. The default behavior of ``giit``
 depends on whether a repository path or URL was used. As mentioned
@@ -169,8 +172,8 @@ on whether you pass a URL or a path to it.
 
 2. If you pass a path it will run command on the workingtree.
 
-Scope examples
---------------
+Examples
+---------
 
 The following examples show different ways to invoked ``giit`` and the
 expected outcome (in all examples we assume the ``giit.json`` is in the
@@ -181,9 +184,9 @@ Building changes in the local directory
 
 ::
 
-    giit ../../path
+    giit ../../path --workingtree --json_config ../../path
 
-Scopes enabled: ``workingtree``.
+Scopes enabled: ``branch``.
 
 Building the branch on a repository already checked out
 .......................................................
@@ -476,3 +479,37 @@ Git branches
 ------------
 
 
+
+
+
+``giit`` uses a ``giit.json`` file to describe the different steps::
+
+    {
+        "docs": {
+            "type": "python",
+            "branches": [
+                "regex_filter": [
+                    "master"
+                    "(\d+\.\d+.\d+)-LTS",
+                    "${source_branch}"
+                ]
+            ],
+            "tags": {
+                "regex_filter" : ["(\d+\.\d+.\d+)"],
+                "semver_filter" : [">2.0.0"],
+            ],
+            "workingtree": True,
+            "scripts": [
+                "sphinx-build -b html . ${output_path}"
+            ],
+            "python_path": "${source_path}/src",
+            "cwd": "${source_path}/docs",
+            "requirements": "${source_path}/docs/requirements.txt"
+            "variables": {
+                "branch:master:output_path": "${build_path}/docs/latest",
+                "branch:output_path": "${build_path}/sphinx/${name}",
+                "tag:output_path": "${build_path}/docs/${name}",
+                "workingtree:output_path": "${build_path}/workingtree/sphinx"
+            }
+        }
+    }
