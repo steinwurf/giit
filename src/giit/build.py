@@ -30,7 +30,7 @@ class Build(object):
 
     def run(self):
 
-        # Setup data path
+        # Setup giit data path
         if not self.giit_path:
             self.giit_path = os.path.join(
                 tempfile.gettempdir(), 'giit', 'data')

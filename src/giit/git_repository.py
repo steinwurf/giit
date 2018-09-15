@@ -5,28 +5,30 @@ import json
 
 class GitRepository(object):
 
-    def __init__(self, git, git_url_parser, clone_path, log, repository):
+    def __init__(self, repository, git, git_url_parser, clone_path, log):
                  # source_branch, log):
         """ Create a new instance.
 
+        :param repository: The repository either as an URL or path to a
+            local repository
         :param git: The Git object used to run git commands.
         :param git_url_parser: Parser to extract information from
             the git URL
         :param clone_path: The user specified where clones should
             be made
-        :param remote_branch: An optional source branch. If specified
-            this branch will be used, otherwise we use either the current
-            branch or master.
         :param log: A logging object
         """
+        self.repository = repository
         self.git = git
         self.git_url_parser = git_url_parser
         self.clone_path = os.path.abspath(os.path.expanduser(clone_path))
         self.log = log
-        self.repository = repository
 
     @property
     def workingtree_path(self):
+        """ :return: The path to the workingtree if there is not workingtree
+                     return None
+        """
         if os.path.isdir(self.repository):
             return os.path.abspath(os.path.expanduser(self.repository))
         else:
@@ -34,6 +36,7 @@ class GitRepository(object):
 
     @property
     def git_url(self):
+        """ :return: The Git repository URL """
         if os.path.isdir(self.repository):
             return self.git.remote_origin_url(cwd=self.repository)
         else:
@@ -41,6 +44,7 @@ class GitRepository(object):
 
     @property
     def unique_name(self):
+        """ :return: A unique name for this repository """
         # Compute the clone path
         git_info = self.git_url_parser.parse(url=self.git_url)
 
@@ -49,15 +53,20 @@ class GitRepository(object):
 
     @property
     def giit_clone_path(self):
+        """ :return: The path where we clone the repository """
         return os.path.join(self.clone_path, self.unique_name)
 
     @property
-    def giit_branch(self):
+    def source_branch(self):
+        """ :return: The source branch. When passing a path to giit the
+                     source branch will be the branch currently checked out
+                     for that path. When passing an URL to giit we return None
+        """
 
-        if self.workingtree_path:
-            current = self.git.current_branch(cwd=self.workingtree_path)
-        else:
-            current = "master"
+        if not self.workingtree_path:
+            return None
+
+        current = self.git.current_branch(cwd=self.workingtree_path)
 
         remotes = self.git.remote_branches(cwd=self.giit_clone_path)
 
