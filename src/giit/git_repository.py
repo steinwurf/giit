@@ -114,6 +114,59 @@ class GitRepository(object):
                            directory=self.giit_clone_path,
                            cwd=self.clone_path)
 
+    def checkout(self, checkout):
+        """ Ensures that the repository is on a specific checkout.
+
+        The checkout can be a branch name, commit or tag.
+        """
+
+        # Check if this is a branch
+        remotes = self.git.remote_branches(cwd=self.giit_clone_path)
+
+        match = [remote for remote in remotes if current in remote]
+        matches = len(match)
+
+        if matches == 0:
+            self.log.debub(
+                "No remote branch tracking %s. These remote "
+                "branches were found in "
+                "the repository: %s." % (current, remotes))
+
+        if matches > 1:
+            raise RuntimeError(
+                "Several remote branches %s for %s" % (remotes, current))
+
+        remote = match[0]
+        self.log.debug('branch %s -> %s', current, remote)
+        return remote
+
+    def checkout_branch(self, checkout):
+        """ Checkout a specific branch.
+
+        The branch must be a remote-tracking branch, but passing both
+        master or origin/master should work.
+        """
+
+        # Check if this is a branch
+        remotes = self.git.remote_branches(cwd=self.giit_clone_path)
+
+        match = [remote for remote in remotes if checkout in remote]
+        matches = len(match)
+
+        if matches == 0:
+            self.log.debug(
+                "No remote branch tracking %s. These remote "
+                "branches were found in "
+                "the repository: %s." % (checkout, remotes))
+
+        if matches > 1:
+            raise RuntimeError(
+                "Several remote branches %s for %s" % (remotes, checkout))
+
+        remote = match[0]
+        self.log.debug('branch %s -> %s', checkout, remote)
+        return remote
+
     def tags(self):
         """ :return: The tags specified for the repository """
         return self.git.tags(cwd=self.giit_clone_path)
