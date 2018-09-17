@@ -554,3 +554,23 @@ Git branches
             ],
         }]
     }
+
+
+
+    {
+    "docs": {
+        "filter:branch:regex": [
+            "origin/master"
+        ],
+        "tag.semver.filter": [
+            ">=1.20"
+        ],
+        "tag:semver:relaxed": true,
+        "scripts": [
+            "sphinx-build -b html . ${build_path}/${name}"
+        ],
+        "python_path": "${source_path}/src",
+        "cwd": "${source_path}/docs",
+        "requirements": "${source_path}/docs/requirements.txt"
+    }
+}

@@ -19,21 +19,33 @@ class WorkingtreeTask(object):
 
 class WorkingtreeGenerator(object):
 
-    def __init__(self, git_repository, command, build_path):
+    def __init__(self, git_repository, command, config, build_path):
+        """ Create a tag generator.
+
+        :param git_repository: A giit.git_repository.GitRepository instance
+        :param command: The command to run e.g.giit.python_command.PythonCommand
+        :param config: The config e.g. giit.python_config.PythonConfig
+        :param build_path: The build path as a string
+        """
+
         self.git_repository = git_repository
         self.command = command
+        self.config = config
         self.build_path = build_path
 
     def tasks(self):
 
-        if self.git_repository.workingtree_path:
+        if self.config['workingtree'] == False:
+            return []
+
+        if self.git_repository.workingtree_path():
 
             context = {
                 'scope': 'workingtree',
                 'name': 'workingtree',
                 'checkout': 'workingtree',
                 'build_path': self.build_path,
-                'source_path': self.git_repository.workingtree_path
+                'source_path': self.git_repository.workingtree_path()
             }
 
             task = WorkingtreeTask(context=context, command=self.command)
@@ -59,7 +71,7 @@ class GitTask(object):
 
         if scope == 'branch':
             self.git_repository.checkout_branch(
-                remote_branche=checkout)
+                remote_branch=checkout)
 
         elif scope == 'tag':
             self.git_repository.checkout_tag(
@@ -74,6 +86,9 @@ class GitTask(object):
         #     self.output_path, self.checkout_type, self.checkout)
 
         # sha1 = self.git.current_commit(cwd=cwd)
+
+        # with self.cache:
+        #    pass
 
         # build_info.output_path = output_path
         # build_info.repository_path = self.repository_path
@@ -155,26 +170,39 @@ class GitBranchGenerator(object):
         :return: True if the branch matches the filter otherwise False
         """
 
-        regex_filters = self.config.branches["regex_filters"]
+        regex_filters = self.config["branches"]["regex"]["filters"]
 
         for regex_filter in regex_filters:
 
             if re.match(regex_filter, branch):
                 return True
 
+        if not self.config["branches"]["source_branch"]:
+            return False
+
+        source_branch = self.git_repository.source_branch()
+
+        if source_branch == branch:
+            return True
+
         return False
 
 
 class GitTagGenerator(object):
 
-    def __init__(self, git, git_repository, command, build_path,
-                 tag_semver_filter):
+    def __init__(self, git_repository, command, config, build_path):
+        """ Create a tag generator.
 
-        self.git = git
+        :param git_repository: A giit.git_repository.GitRepository instance
+        :param command: The command to run e.g.giit.python_command.PythonCommand
+        :param config: The config e.g. giit.python_config.PythonConfig
+        :param build_path: The build path as a string
+        """
+
         self.git_repository = git_repository
         self.command = command
+        self.config = config
         self.build_path = build_path
-        self.tag_semver_filter = tag_semver_filter
 
     def tasks(self):
 
@@ -182,28 +210,51 @@ class GitTagGenerator(object):
 
         tags = self.git_repository.tags()
 
-        if self.tag_semver_filter:
-
-            spec = semantic_version.Spec(self.tag_semver_filter)
-            versions = [semantic_version.Version(t) for t in tags]
-            tags = [str(tag) for tag in spec.filter(versions)]
-
         for tag in tags:
+
+            if not self._match_tag(tag=tag):
+                continue
 
             context = {
                 'scope': 'tag',
                 'name': tag,
                 'checkout': tag,
                 'build_path': self.build_path,
-                'source_path': self.git_repository.giit_clone_path
+                'source_path': self.git_repository.repository_path()
             }
 
-            task = GitTask(git=self.git, context=context,
+            task = GitTask(git_repository=self.git_repository,
+                           context=context,
                            command=self.command)
 
             tasks.append(task)
 
         return tasks
+
+    def _match_tag(self, tag):
+        """ Checks the tag name against the filters.
+
+        :return: True if the tag matches the filter otherwise False
+        """
+
+        regex_filters = self.config["tags"]["regex"]["filters"]
+
+        for regex_filter in regex_filters:
+
+            if re.match(regex_filter, tag):
+                return True
+
+        semver_filters = self.config["tags"]["semver"]["filters"]
+        semver_relaxed = self.config["tags"]["semver"]["relaxed"]
+
+        for semver_filter in semver_filters:
+
+            spec = semantic_version.Spec(semver_filter)
+
+            if spec.match(semantic_version.Version(tag, partial=semver_relaxed)):
+                return True
+
+        return False
 
 
 class TaskFactory(object):

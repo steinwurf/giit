@@ -151,6 +151,30 @@ def require_branch_generator(factory):
         config=config, build_path=build_path)
 
 
+def require_tag_generator(factory):
+
+    git_repository = factory.require(name='git_repository')
+    command = factory.require(name='command')
+    config = factory.require(name='command_config')
+    build_path = factory.require(name='build_path')
+
+    return giit.tasks.GitTagGenerator(
+        git_repository=git_repository, command=command,
+        config=config, build_path=build_path)
+
+
+def require_workingtree_generator(factory):
+
+    git_repository = factory.require(name='git_repository')
+    command = factory.require(name='command')
+    config = factory.require(name='command_config')
+    build_path = factory.require(name='build_path')
+
+    return giit.tasks.WorkingtreeGenerator(
+        git_repository=git_repository, command=command,
+        config=config, build_path=build_path)
+
+
 def require_task_generator(factory):
 
     #
@@ -169,6 +193,12 @@ def require_task_generator(factory):
     # task_generator.add_generator(workingtree_generator)
     branch_generator = factory.require(name='branch_generator')
     task_generator.add_generator(branch_generator)
+
+    tag_generator = factory.require(name='tag_generator')
+    task_generator.add_generator(tag_generator)
+
+    workingtree_generator = factory.require(name='workingtree_generator')
+    task_generator.add_generator(workingtree_generator)
 
     # git_tag_generator = giit.tasks.GitTagGenerator(
     #     git=git, git_repository=git_repository,
@@ -277,5 +307,11 @@ def build_factory():
 
     factory.provide_function(
         name='branch_generator', function=require_branch_generator)
+
+    factory.provide_function(
+        name='tag_generator', function=require_tag_generator)
+
+    factory.provide_function(
+        name='workingtree_generator', function=require_workingtree_generator)
 
     return factory

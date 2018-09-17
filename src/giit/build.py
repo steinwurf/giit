@@ -105,40 +105,51 @@ class Build(object):
         if not isinstance(substep_configs, list):
             substep_configs = [substep_configs]
 
-        for substep_config in substep_configs:
-            self._run_step(config=substep_config,
-                           git_repository=git_repository)
+        # Get the tasks for all the substeps
+        tasks = []
 
-    def _run_step(self, config, git_repository):
+        for substep_config in substep_configs:
+            tasks += self._generate_tasks(config=substep_config,
+                                          git_repository=git_repository)
+
+        if len(tasks) == 0:
+            raise RuntimeError("No tasks were generated. Check your filters, "
+                               "they did not match any of the available "
+                               "branches or tags.")
+
+        log.info("Tasks generated %d", len(tasks))
+
+        for idx, task in enumerate(tasks, 1):
+
+            log.info("Running task [%d/%d]: scope '%s' name '%s'",
+                     idx, len(tasks), task.context['scope'], task.context['checkout'])
+
+            task.run()
+
+    def _generate_tasks(self, config, git_repository):
 
         log = logging.getLogger('giit.main')
 
         # Instantiate the cache
-        cache_factory = self.factory.cache_factory(
-            giit_path=self.giit_path,
-            unique_name=git_repository.unique_name())
+        # cache_factory = self.factory.cache_factory(
+        #     giit_path=self.giit_path,
+        #     unique_name=git_repository.unique_name())
 
-        cache = cache_factory.build()
+        # cache = cache_factory.build()
 
-        factory = self.factory.build_factory()
+        build_factory = self.factory.build_factory()
 
         # Provide the different needed by the factory
-        factory.provide_value(name='config', value=config)
-        factory.provide_value(name='build_path', value=self.build_path)
-        factory.provide_value(name='giit_path', value=self.giit_path)
-        factory.provide_value(name='git_repository', value=git_repository)
+        build_factory.provide_value(name='config', value=config)
+        build_factory.provide_value(name='build_path', value=self.build_path)
+        build_factory.provide_value(name='giit_path', value=self.giit_path)
+        build_factory.provide_value(
+            name='git_repository', value=git_repository)
 
         # Run the command
 
-        with cache:
+        task_generator = build_factory.build()
 
-            task_generator = factory.build()
+        tasks = task_generator.tasks()
 
-            tasks = task_generator.tasks()
-
-            for task in tasks:
-
-                log.info("Running task: scope '%s' name '%s'",
-                         task.context['scope'], task.context['checkout'])
-
-                task.run()
+        return tasks

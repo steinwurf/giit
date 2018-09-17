@@ -23,6 +23,11 @@ class GitRepository(object):
         self.clone_path = os.path.abspath(os.path.expanduser(clone_path))
         self.log = log
 
+        # Cache some values
+        self._git_url = None
+        self._unique_name = None
+        self._remote_branches = None
+
     def workingtree_path(self):
         """ :return: The path to the workingtree if there is not workingtree
                      return None
@@ -35,18 +40,28 @@ class GitRepository(object):
     def git_url(self):
         """ :return: The Git repository URL """
         if os.path.isdir(self.repository):
-            return self.git.remote_origin_url(cwd=self.repository)
+
+            if self._git_url is None:
+                self._git_url = self.git.remote_origin_url(cwd=self.repository)
+
+            return self._git_url
         else:
             return self.repository
 
     def unique_name(self):
         """ :return: A unique name for this repository """
+
+        if self._unique_name is not None:
+            return self._unique_name
+
         # Compute the clone path
         git_url = self.git_url()
         git_info = self.git_url_parser.parse(url=git_url)
 
         url_hash = hashlib.sha1(git_url.encode('utf-8')).hexdigest()[:6]
-        return git_info.name + '-' + url_hash
+        self._unique_name = git_info.name + '-' + url_hash
+
+        return self._unique_name
 
     def repository_path(self):
         """ :return: The path where we clone the repository """
@@ -66,15 +81,21 @@ class GitRepository(object):
 
         # Check if the current branch has a corresponding remote i.e. if
         # it has been pushed.
-        current = self.git.current_branch(cwd=self.workingtree_path)
+        current = self.git.current_branch(cwd=self.workingtree_path())
 
         # Fetch a list of remote branches
-        remote_branches = self.git.remote_branches(cwd=self.repository_path)
+        remote_branches = self.git.remote_branches(cwd=self.repository_path())
 
         # The remote branches are in a list of "remote/branch"
         match = []
         for remote_branch in remote_branches:
-            remote, branch = remote_branch.split("/")
+            #print("REMOTE {}".format(remote_branch))
+            #print("CURRENT {}".format(current))
+
+            # Some branch names contain / e.g.
+            # origin/bug/567
+
+            remote, branch = remote_branch.split("/", 1)
 
             if branch == current:
                 match.append(remote_branch)
@@ -132,7 +153,13 @@ class GitRepository(object):
         """ :return: The re,pte brances specified for the repository """
         assert os.path.isdir(self.repository_path())
 
-        return self.git.remote_branches(cwd=self.repository_path())
+        if self._remote_branches is not None:
+            return self._remote_branches
+
+        self._remote_branches = self.git.remote_branches(
+            cwd=self.repository_path())
+
+        return self._remote_branches
 
     def tags(self):
         """ :return: The tags specified for the repository """

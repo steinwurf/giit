@@ -77,6 +77,7 @@ class Git(object):
         Uses git.branch(...) but only returns the current one
         """
         current, _ = self._branch(cwd=cwd)
+
         return current
 
     def local_branches(self, cwd):
