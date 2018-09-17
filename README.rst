@@ -33,7 +33,7 @@ Example: ``urllib3``
     {
         "docs": {
             "branches": {
-                "regex_filter": ["master"]
+                "regex_filter": ["origin/master"]
             },
             "scripts": [
                 "sphinx-build -b html . ${build_path}"
@@ -69,13 +69,21 @@ quite important.
 
 The following outlines the rules:
 
-1. Passing a path using ``--json_config``.
+1. Passing a path using ``--config_path`` or passing a branch
+   using ``--config_branch``.
 
-2. If a URL is passed  (like in the ``urllib3`` example) ``giit`` will
-   look in the ``master`` branch for the ``giit.json`` this can be
-   change by passing the ``--source_branch`` option.
+2. If no config path or branch is passed by the user and an URL is
+   passed  (like in the ``urllib3`` example) ``giit`` will
+   look in the ``origin/master`` branch for the ``giit.json``.
 
-3. If using a path to the repository when calling ``giit`` e.g.::
+   Example::
+
+        giit docs https://github.com/urllib3/urllib3.git
+
+   In this case ``giit`` will look in ``origin/master`` for a
+   ``giit.json``.
+
+3. If no config path or branch is passed by the user and a path to the repository when calling ``giit`` e.g.::
 
        git docs ../path/to/repo
 

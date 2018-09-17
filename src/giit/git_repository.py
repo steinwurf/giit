@@ -124,7 +124,7 @@ class GitRepository(object):
         else:
             self.log.info('Running: git clone into %s', repository_path)
             self.git.clone(repository=git_url, directory=repository_path,
-                           cwd=self.clone_path
+                           cwd=self.clone_path)
 
     def remote_branches(self):
         """ :return: The re,pte brances specified for the repository """
@@ -145,7 +145,7 @@ class GitRepository(object):
         """
 
         # Check if the branch exists
-        remotes=self.remote_branches()
+        remotes = self.remote_branches()
 
         if remote_branch not in remotes:
             raise RuntimeError("No remote branch %s. These branches exits "
@@ -157,7 +157,7 @@ class GitRepository(object):
         """ Checkout a specific tag."""
 
         # Check if the tag exists
-        tags=self.tags()
+        tags = self.tags()
 
         if tag not in tags:
             raise RuntimeError("No tag %s. These tags exits "
