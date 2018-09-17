@@ -75,24 +75,23 @@ The following outlines the rules:
 1. Passing a path using ``--config_path`` or passing a branch
    using ``--config_branch``.
 
-2. If no config path or branch is passed by the user and an URL is
-   passed  (like in the ``urllib3`` example) ``giit`` will
-   look in the ``origin/master`` branch for the ``giit.json``.
+2. If no config path or branch is passed by the user and ``giit`` is
+   invoked with an URL (like in the ``urllib3`` example).
 
    Example::
 
         giit docs https://github.com/urllib3/urllib3.git
 
-   In this case ``giit`` will look in ``origin/master`` for a
-   ``giit.json``.
+   In this case ``giit`` will look at the root of the repository in
+   ``origin/master`` branch for a ``giit.json``.
 
-3. If no config path or branch is passed by the user and a path to the repository when calling ``giit`` e.g.::
+3. If no config path or branch is passed by the user and ``giit`` is
+   invoked with a path::
 
        git docs ../path/to/repo
 
-    If ``giit`` is invoked with a path to a local repository. The
-    current branch of that repository is used as the ``source_branch``.
-    We will try to find the ``giit.json`` in the root of that branch.
+   In this case ``giit`` will try to find a ``giit.json`` at
+   ``../path/to/repo/giit.json``.
 
 ``giit`` scopes
 ===============
