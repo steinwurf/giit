@@ -5,11 +5,13 @@ def test_urllib3(testdirectory):
     url = 'https://github.com/urllib3/urllib3.git'
 
     cmd = ['giit', 'clean', url,
-           '--json_config', config_file]
+           '--config_path', config_file]
 
     print(testdirectory.run(cmd))
 
     cmd = ['giit', 'docs', url,
-           '--json_config', config_file]
+           '--config_path', config_file, '-v']
 
     print(testdirectory.run(cmd))
+
+    assert 0

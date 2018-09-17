@@ -7,25 +7,28 @@ import json
 import sys
 import shutil
 
-import giit.factory
+import giit.logs
+import giit.giit_json
 
 
 class Build(object):
 
     def __init__(self, step,
                  repository,
+                 factory,
                  build_path=None,
                  giit_path=None,
-                 json_config=None,
-                 # remote_branch=None,
+                 config_path=None,
+                 config_branch=None,
                  verbose=False):
 
         self.step = step
         self.repository = repository
+        self.factory = factory
         self.build_path = build_path
         self.giit_path = giit_path
-        self.json_config = json_config
-        #self.remote_branch = remote_branch
+        self.config_path = config_path
+        self.config_branch = config_branch
         self.verbose = verbose
 
     def run(self):
@@ -38,51 +41,33 @@ class Build(object):
         if not os.path.isdir(self.giit_path):
             os.makedirs(self.giit_path)
 
-        logger = logging.getLogger('giit')
-        logger.setLevel(logging.DEBUG)
+        # Setup logging
+        giit.logs.setup_logging(
+            giit_path=self.giit_path, verbose=self.verbose)
 
-        # Create file handler which logs even debug messages
-        logfile = os.path.join(self.giit_path, 'giit.log')
-        fh = logging.FileHandler(logfile)
-        fh.setLevel(logging.DEBUG)
-
-        # Create console handler with a higher log level
-        ch = logging.StreamHandler(stream=sys.stdout)
-        ch.setLevel(logging.DEBUG if self.verbose else logging.INFO)
-
-        # Create formatter and add it to the handlers
-        fh_formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        fh.setFormatter(fh_formatter)
-
-        ch_formatter = logging.Formatter('%(message)s')
-        ch.setFormatter(ch_formatter)
-
-        # Add the handlers to the logger
-        logger.addHandler(fh)
-        logger.addHandler(ch)
-
+        # Create the build build log
         log = logging.getLogger('giit.main')
 
         # Add details to log file
         log.debug('build_path=%s', self.build_path)
         log.debug('giit_path=%s', self.giit_path)
-        log.debug('json_config=%s', self.json_config)
-        #log.debug('remote_branch=%s', self.remote_branch)
+        log.debug('config_branch=%s', self.config_branch)
+        log.debug('config_path=%s', self.config_path)
 
         log.info('Lets go: %s', self.step)
 
         # Resolve the repository
-        factory = self.resolve_factory()
+        factory = self.factory.resolve_factory(
+            giit_path=self.giit_path, repository=self.repository)
 
         git_repository = factory.build()
-        git_repository.clone()
 
         # Set the build path
         if not self.build_path:
-            self.build_path = os.path.join(self.giit_path, 'build',
-                                           git_repository.unique_name)
+            self.build_path = os.path.join(
+                self.giit_path, 'build', git_repository.unique_name())
 
+        # If the step is clean we do it without fetching or cloning
         if self.step == 'clean':
 
             log.info("Cleaning: %s", self.build_path)
@@ -92,38 +77,53 @@ class Build(object):
 
             return
 
+        # Make sure the build directory exists
         if not os.path.isdir(self.build_path):
             os.makedirs(self.build_path)
 
         log.info("Building into: %s", self.build_path)
 
-        # Get the command
-        if self.json_config:
-            with open(self.json_config, 'r') as config_file:
-                config = json.load(config_file)
-        else:
-            config = git_repository.load_json_config()
+        # Make sure the repository is available
+        git_repository.clone()
+
+        # Read the 'giit.json'
+        json_config = giit.giit_json.GiitJson(git_repository=git_repository,
+                                              log=logging.getLogger(
+                                                  'giit.giit_json'),
+                                              config_path=self.config_path,
+                                              config_branch=self.config_branch)
+
+        config = json_config.read()
 
         if self.step not in config:
-            raise RuntimeError("Error step %s not found in %s",
-                               self.step, self.json_config)
+            raise RuntimeError("Error step {} not found in {}".format(
+                               self.step, config))
 
-        step_config = config[self.step]
+        substep_configs = config[self.step]
+
+        # The sub-steps can be a list
+        if not isinstance(substep_configs, list):
+            substep_configs = [substep_configs]
+
+        for substep_config in substep_configs:
+            self._run_step(config=substep_config,
+                           git_repository=git_repository)
+
+    def _run_step(self, config, git_repository):
+
+        log = logging.getLogger('giit.main')
 
         # Instantiate the cache
-        cache_factory = self.clone_factory(
-            unique_name=git_repository.unique_name)
+        cache_factory = self.factory.cache_factory(
+            giit_path=self.giit_path,
+            unique_name=git_repository.unique_name())
 
         cache = cache_factory.build()
 
-        # All steps has a type which controls the available options and
-        # actions
-        build_type = config[self.step]['type']
-
-        factory = self.build_factory(build_type=build_type)
+        factory = self.factory.build_factory()
 
         # Provide the different needed by the factory
-        factory.provide_value(name='config', value=config[self.step])
+        factory.provide_value(name='config', value=config)
         factory.provide_value(name='build_path', value=self.build_path)
         factory.provide_value(name='giit_path', value=self.giit_path)
         factory.provide_value(name='git_repository', value=git_repository)
@@ -142,16 +142,3 @@ class Build(object):
                          task.context['scope'], task.context['checkout'])
 
                 task.run()
-
-    def resolve_factory(self):
-        return giit.factory.resolve_factory(
-            giit_path=self.giit_path, repository=self.repository)  # ,
-        # remote_branch=self.remote_branch)
-
-    def clone_factory(self, unique_name):
-        return giit.factory.cache_factory(
-            giit_path=self.giit_path,
-            unique_name=unique_name)
-
-    def build_factory(self, build_type):
-        return giit.factory.build_factory(build_type=build_type)

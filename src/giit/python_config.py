@@ -1,4 +1,7 @@
 import os
+import schema
+import six
+import copy
 
 
 class PythonConfig(object):
@@ -37,22 +40,26 @@ class PythonConfig(object):
     @staticmethod
     def from_dict(config):
 
-        # Mandatory
-        assert config['type'] == 'python'
-        assert len(config['scripts']) > 0
+        config = copy.deepcopy(config)
+
+        assert not 'variables' in config
+
+        config_schema = schema.Schema({
+            'scripts': list,
+            schema.Optional('variables'): list,
+            schema.Optional('requirements'): six.text_type,
+            schema.Optional('cwd'): six.text_type,
+            schema.Optional('python_path'): six.text_type
+        })
+
+        config_schema.validate(config)
 
         # Optional
-        if not 'scope' in config:
-            config['scope'] = ['branch']
-
-        if not 'tag_semver_filter' in config:
-            config['tag_semver_filter'] = None
-
         if not 'variables' in config:
             config['variables'] = ''
 
         if not 'branches' in config:
-            config['branches'] = []
+            config['branches'] = {"regex_filters": []}
 
         if not 'requirements' in config:
             config['requirements'] = None

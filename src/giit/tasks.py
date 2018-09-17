@@ -47,22 +47,26 @@ class WorkingtreeGenerator(object):
 
 class GitTask(object):
 
-    def __init__(self, git, context, command):
-        self.git = git
+    def __init__(self, git_repository, context, command):
+        self.git_repository = git_repository
         self.context = context
         self.command = command
 
     def run(self):
 
-        cwd = self.context['source_path']
         checkout = self.context['checkout']
+        scope = self.context['scope']
 
-        # The git reset fails if the branch is only on the remote
-        # so we first do a checkout
-        #self.git.checkout(branch=checkout, force=True, cwd=cwd)
+        if scope == 'branch':
+            self.git_repository.checkout_branch(
+                remote_branche=checkout)
 
-        # https://stackoverflow.com/a/8888015/1717320
-        self.git.reset(branch=checkout, hard=True, cwd=cwd)
+        elif scope == 'tag':
+            self.git_repository.checkout_tag(
+                tag=checkout)
+
+        else:
+            raise RuntimeError("Unknown scope {}".format(scope))
 
         self.command.run(context=self.context)
 
@@ -91,11 +95,10 @@ class GitTask(object):
 
 class GitBranchGenerator(object):
 
-    def __init__(self, git, repository_path, command, build_path,
-                 branches):
+    def __init__(self, git_repository, command, config, build_path):
         """ Create a branch generator.
 
-        :param git: A giit.git.Git instance
+        :param git_repository: A giit.git_repository.GitRepository instance
         :param repository_path: Path to where the repository is.
         :param command: The command to run e.g.
             giit.python_command.PythonCommand
@@ -104,17 +107,19 @@ class GitBranchGenerator(object):
         :param log: A logging object
         """
 
-        self.git = git
-        self.repository_path = repository_path
+        self.git_repository = git_repository
         self.command = command
+        self.config = config
         self.build_path = build_path
-        self.branches = branches
 
     def tasks(self):
 
         tasks = []
 
-        for branch in self.branches:
+        for branch in self.git_repository.remote_branches():
+
+            if not self._match_branch(branch=branch):
+                continue
 
             # Create the human readable name for the branch. The "name"
             # is available in the different steps. It is typically used
@@ -133,15 +138,31 @@ class GitBranchGenerator(object):
                 'name': name,
                 'checkout': branch,
                 'build_path': self.build_path,
-                'source_path': self.repository_path
+                'source_path': self.git_repository.repository_path()
             }
 
-            task = GitTask(git=self.git, context=context,
+            task = GitTask(git_repository=self.git_repository,
+                           context=context,
                            command=self.command)
 
             tasks.append(task)
 
         return tasks
+
+    def _match_branch(self, branch):
+        """ Checks the branch name against the filters.
+
+        :return: True if the branch matches the filter otherwise False
+        """
+
+        regex_filters = self.config.branches["regex_filters"]
+
+        for regex_filter in regex_filters:
+
+            if re.match(regex_filter, branch):
+                return True
+
+        return False
 
 
 class GitTagGenerator(object):

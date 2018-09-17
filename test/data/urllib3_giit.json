@@ -1,6 +1,5 @@
 {
     "docs": {
-        "type": "python",
         "scripts": [
             "sphinx-build -b html . ${build_path}"
         ],
