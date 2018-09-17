@@ -15,6 +15,9 @@ generated for all available tags of a bunch of different repositories. However,
 should you find a different use for it - you should also be able to adapt it
 to other scenarios.
 
+.. contents:: Table of Contents:
+   :local:
+
 Quick Start
 ===========
 
