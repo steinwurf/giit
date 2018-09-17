@@ -1,0 +1,11 @@
+{
+    "docs": {
+        "branches.source_branch": true,
+        "scripts": [
+            "sphinx-build -b html . ${build_path}/src/${name}"
+        ],
+        "python_path": "${source_path}/src",
+        "cwd": "${source_path}/docs",
+        "requirements": "${source_path}/docs/requirements.txt"
+    }
+}
