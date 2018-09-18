@@ -98,6 +98,9 @@ def validate_dict(config):
 def fill_dict(context, config):
     """ Visit all the values in the dict and expand the string """
 
+    # Make sure we do not modify the original dict.
+    config = copy.deepcopy(config)
+
     variables = giit.variables_reader.VariablesReader(
         variables=config['variables'], context=context)
 
