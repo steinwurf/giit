@@ -149,7 +149,7 @@ def require_branch_generator(factory):
 
     return giit.tasks.GitBranchGenerator(
         git_repository=git_repository, command=command,
-        config=config, build_path=build_path)
+        config=copy.deepcopy(config), build_path=build_path)
 
 
 def require_tag_generator(factory):
@@ -161,7 +161,7 @@ def require_tag_generator(factory):
 
     return giit.tasks.GitTagGenerator(
         git_repository=git_repository, command=command,
-        config=config, build_path=build_path)
+        config=copy.deepcopy(config), build_path=build_path)
 
 
 def require_workingtree_generator(factory):
@@ -173,7 +173,7 @@ def require_workingtree_generator(factory):
 
     return giit.tasks.WorkingtreeGenerator(
         git_repository=git_repository, command=command,
-        config=config, build_path=build_path)
+        config=copy.deepcopy(config), build_path=build_path)
 
 
 def require_task_generator(factory):
@@ -237,14 +237,12 @@ def require_python_environement(factory):
 def require_command(factory):
 
     config = factory.require(name='config')
-    config = copy.deepcopy(config)
-
     environment = factory.require(name='python_environment')
     prompt = factory.require(name='prompt')
     log = logging.getLogger(name='giit.python_command')
 
     return giit.python_command.PythonCommand(
-        config=config, environment=environment, prompt=prompt, log=log)
+        config=copy.deepcopy(config), environment=environment, prompt=prompt, log=log)
 
 
 def build_factory():
