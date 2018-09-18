@@ -13,7 +13,7 @@ class GiitJson(object):
 
     def read(self):
 
-        if [self.config_path, self.config_branch].count(None) > 1:
+        if [self.config_path, self.config_branch].count(None) == 0:
             raise RuntimeError("You can only specify either the "
                                "--config_path or --config_branch option, not both.")
 
