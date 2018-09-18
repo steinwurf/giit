@@ -7,6 +7,7 @@ import hashlib
 import shutil
 import logging
 import paramiko
+import copy
 
 import giit.prompt
 import giit.git
@@ -236,6 +237,8 @@ def require_python_environement(factory):
 def require_command(factory):
 
     config = factory.require(name='config')
+    config = copy.deepcopy(config)
+
     environment = factory.require(name='python_environment')
     prompt = factory.require(name='prompt')
     log = logging.getLogger(name='giit.python_command')
