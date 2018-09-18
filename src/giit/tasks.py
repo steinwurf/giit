@@ -5,16 +5,22 @@ import hashlib
 import sys
 import re
 import semantic_version
+import giit.python_config
 
 
 class WorkingtreeTask(object):
 
-    def __init__(self, context, command):
+    def __init__(self, context, config, command):
         self.context = context
+        self.config = config
         self.command = command
 
     def run(self):
-        self.command.run(context=self.context)
+
+        task_config = giit.python_config.fill_dict(
+            context=self.context, config=self.config)
+
+        self.command.run(config=task_config)
 
 
 class WorkingtreeGenerator(object):
@@ -59,8 +65,9 @@ class WorkingtreeGenerator(object):
 
 class GitTask(object):
 
-    def __init__(self, git_repository, context, command):
+    def __init__(self, git_repository, config, context, command):
         self.git_repository = git_repository
+        self.config = config
         self.context = context
         self.command = command
 
@@ -80,7 +87,10 @@ class GitTask(object):
         else:
             raise RuntimeError("Unknown scope {}".format(scope))
 
-        self.command.run(context=self.context)
+        task_config = giit.python_config.fill_dict(
+            context=self.context, config=self.config)
+
+        self.command.run(config=task_config)
 
         # output_path = os.path.join(
         #     self.output_path, self.checkout_type, self.checkout)
@@ -160,6 +170,7 @@ class GitBranchGenerator(object):
 
             task = GitTask(git_repository=self.git_repository,
                            context=context,
+                           config=self.config,
                            command=self.command)
 
             tasks.append(task)
@@ -227,6 +238,7 @@ class GitTagGenerator(object):
 
             task = GitTask(git_repository=self.git_repository,
                            context=context,
+                           config=self.config,
                            command=self.command)
 
             tasks.append(task)
