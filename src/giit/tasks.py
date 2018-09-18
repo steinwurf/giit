@@ -156,6 +156,8 @@ class GitBranchGenerator(object):
                 'source_path': self.git_repository.repository_path()
             }
 
+            print("CONTEXT {}".format(context))
+
             task = GitTask(git_repository=self.git_repository,
                            context=context,
                            command=self.command)
