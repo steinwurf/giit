@@ -1,0 +1,27 @@
+{
+  "allow_failure": false,
+  "branches": {
+    "regex": {
+      "filters": []
+    },
+    "source_branch": true
+  },
+  "cwd": "${source_path}/docs",
+  "pip_packages": null,
+  "python_path": "${source_path}/src",
+  "requirements": "${source_path}/docs/requirements.txt",
+  "scripts": [
+    "sphinx-build -b html . ${build_path}/src/${name}"
+  ],
+  "tags": {
+    "regex": {
+      "filters": []
+    },
+    "semver": {
+      "filters": [],
+      "relaxed": false
+    }
+  },
+  "variables": {},
+  "workingtree": false
+}
