@@ -54,7 +54,8 @@ class WorkingtreeGenerator(object):
                 'source_path': self.git_repository.workingtree_path()
             }
 
-            task = WorkingtreeTask(context=context, command=self.command)
+            task = WorkingtreeTask(
+                config=self.config, context=context, command=self.command)
 
             return [task]
 
