@@ -21,11 +21,12 @@ class PythonCommand(object):
 
     def run(self, context):
 
-        self.log.debug("context=%s", context)
-
         # Expand the context in the config
         self.config = giit.python_config.fill_dict(
             context=context, config=self.config)
+
+        self.log.debug("context=%s", context)
+        self.log.debug("config=%s", self.config)
 
         # We might try to access a requirements.txt file in the
         # repository here. This may fail on older tags etc. and

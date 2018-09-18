@@ -242,7 +242,8 @@ def require_command(factory):
     log = logging.getLogger(name='giit.python_command')
 
     return giit.python_command.PythonCommand(
-        config=copy.deepcopy(config), environment=environment, prompt=prompt, log=log)
+        config=copy.deepcopy(config), environment=environment,
+        prompt=prompt, log=log)
 
 
 def build_factory():
