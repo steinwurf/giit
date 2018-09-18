@@ -59,7 +59,7 @@ def validate_dict(config):
 
     config_schema = schema.Schema({
         'scripts': list,
-        schema.Optional('variables', default=[]): list,
+        schema.Optional('variables', default={}): dict,
         schema.Optional('requirements', default=None): six.text_type,
         schema.Optional('cwd', default=os.getcwd()): six.text_type,
         schema.Optional('python_path', default=None): six.text_type,
