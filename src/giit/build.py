@@ -125,8 +125,9 @@ class Build(object):
 
         for idx, task in enumerate(tasks, 1):
 
-            log.info("Running task [%d/%d]: scope '%s' name '%s'",
-                     idx, len(tasks), task.context['scope'], task.context['checkout'])
+            log.info("Running task [%d/%d]: scope '%s' name '%s' checkout '%s'",
+                     idx, len(tasks), task.context['scope'],
+                     task.context['name'], task.context['checkout'])
 
             task.run()
 
