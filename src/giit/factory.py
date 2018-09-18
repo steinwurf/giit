@@ -143,7 +143,7 @@ def require_branch_generator(factory):
 
     git_repository = factory.require(name='git_repository')
     command = factory.require(name='command')
-    config = factory.require(name='command_config')
+    config = factory.require(name='config')
     build_path = factory.require(name='build_path')
 
     return giit.tasks.GitBranchGenerator(
@@ -155,7 +155,7 @@ def require_tag_generator(factory):
 
     git_repository = factory.require(name='git_repository')
     command = factory.require(name='command')
-    config = factory.require(name='command_config')
+    config = factory.require(name='config')
     build_path = factory.require(name='build_path')
 
     return giit.tasks.GitTagGenerator(
@@ -167,7 +167,7 @@ def require_workingtree_generator(factory):
 
     git_repository = factory.require(name='git_repository')
     command = factory.require(name='command')
-    config = factory.require(name='command_config')
+    config = factory.require(name='config')
     build_path = factory.require(name='build_path')
 
     return giit.tasks.WorkingtreeGenerator(
@@ -177,20 +177,8 @@ def require_workingtree_generator(factory):
 
 def require_task_generator(factory):
 
-    #
-    # command = factory.require(name='command')
-    # command_config = factory.require(name='command_config')
-    # build_path = factory.require(name='build_path')
-    # git = factory.require(name='git')
-    # cache = factory.require(name='cache')
-
     task_generator = giit.tasks.TaskFactory()
 
-    # workingtree_generator = giit.tasks.WorkingtreeGenerator(
-    #     git_repository=git_repository,
-    #     command=command, build_path=build_path)
-
-    # task_generator.add_generator(workingtree_generator)
     branch_generator = factory.require(name='branch_generator')
     task_generator.add_generator(branch_generator)
 
@@ -200,17 +188,10 @@ def require_task_generator(factory):
     workingtree_generator = factory.require(name='workingtree_generator')
     task_generator.add_generator(workingtree_generator)
 
-    # git_tag_generator = giit.tasks.GitTagGenerator(
-    #     git=git, git_repository=git_repository,
-    #     command=command, build_path=build_path,
-    #     tag_semver_filter=command_config.tag_semver_filter)
-
-    # task_generator.add_generator(git_tag_generator)
-
     return task_generator
 
 
-def resolve_factory(giit_path, repository):  # , remote_branch):
+def resolve_factory(giit_path, repository):
 
     factory = Factory()
     factory.set_default_build(default_build='git_repository')
@@ -242,14 +223,6 @@ def cache_factory(giit_path, unique_name):
     return factory
 
 
-def require_command_config(factory):
-
-    config = factory.require(name='config')
-
-    return giit.python_config.PythonConfig.from_dict(
-        config=config)
-
-
 def require_python_environement(factory):
 
     prompt = factory.require(name='prompt')
@@ -262,7 +235,7 @@ def require_python_environement(factory):
 
 def require_command(factory):
 
-    config = factory.require(name='command_config')
+    config = factory.require(name='config')
     environment = factory.require(name='python_environment')
     prompt = factory.require(name='prompt')
     log = logging.getLogger(name='giit.python_command')
@@ -275,9 +248,6 @@ def build_factory():
 
     factory = Factory()
     factory.set_default_build(default_build='require_task_generator')
-
-    factory.provide_function(
-        name='command_config', function=require_command_config)
 
     factory.provide_function(
         name='prompt', function=require_prompt)

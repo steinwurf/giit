@@ -9,6 +9,7 @@ import shutil
 
 import giit.logs
 import giit.giit_json
+import giit.python_config
 
 
 class Build(object):
@@ -99,17 +100,20 @@ class Build(object):
             raise RuntimeError("Error step {} not found in {}".format(
                                self.step, config))
 
-        substep_configs = config[self.step]
+        # We will only use the configuration for the step
+        config = config[self.step]
 
-        # The sub-steps can be a list
-        if not isinstance(substep_configs, list):
-            substep_configs = [substep_configs]
+        # There can be several "sub-configurations" in a step, lets
+        # make sure the config is a list. So we can handle the cases
+        # uniformly
+        if not isinstance(config, list):
+            config = [config]
 
         # Get the tasks for all the substeps
         tasks = []
 
-        for substep_config in substep_configs:
-            tasks += self._generate_tasks(config=substep_config,
+        for subconfig in config:
+            tasks += self._generate_tasks(config=subconfig,
                                           git_repository=git_repository)
 
         if len(tasks) == 0:
@@ -130,14 +134,10 @@ class Build(object):
 
         log = logging.getLogger('giit.main')
 
-        # Instantiate the cache
-        # cache_factory = self.factory.cache_factory(
-        #     giit_path=self.giit_path,
-        #     unique_name=git_repository.unique_name())
-
-        # cache = cache_factory.build()
-
         build_factory = self.factory.build_factory()
+
+        # Validate the configuration
+        config = giit.python_config.validate_dict(config=config)
 
         # Provide the different needed by the factory
         build_factory.provide_value(name='config', value=config)
@@ -146,10 +146,7 @@ class Build(object):
         build_factory.provide_value(
             name='git_repository', value=git_repository)
 
-        # Run the command
-
         task_generator = build_factory.build()
-
         tasks = task_generator.tasks()
 
         return tasks

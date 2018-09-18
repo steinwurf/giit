@@ -38,3 +38,16 @@ class ConfigReader(object):
             return values
 
         return element
+
+    def to_dict(self):
+
+        output = {}
+
+        def visit(value):
+            if isinstance(value, dict):
+                for k, v in value.items():
+                    value[k] = visit(v)
+
+            return value
+
+        output

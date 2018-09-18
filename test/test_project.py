@@ -156,7 +156,7 @@ def mkdir_project(directory, giit_branch):
     return project_dir
 
 
-def test_project(testdirectory, caplog):
+def _test_project(testdirectory, caplog):
 
     caplog.set_level(logging.DEBUG)
 
@@ -252,7 +252,7 @@ def test_project(testdirectory, caplog):
     #assert project_dir.contains_file('docs/landing.txt')
 
 
-def test_project_master(testdirectory, caplog):
+def _test_project_master(testdirectory, caplog):
 
     # When building the master branch the output locations
     # of the different pieces change

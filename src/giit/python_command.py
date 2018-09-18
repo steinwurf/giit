@@ -5,7 +5,7 @@ import os
 import sys
 import hashlib
 
-import giit.config_reader
+import giit.python_config
 
 
 class PythonCommand(object):
@@ -23,32 +23,33 @@ class PythonCommand(object):
 
         self.log.debug("context=%s", context)
 
-        reader = giit.config_reader.ConfigReader(
-            config=self.config, context=context)
+        # Expand the context in the config
+        self.config = giit.python_config.fill_dict(
+            context=context, config=self.config)
 
         # We might try to access a requirements.txt file in the
         # repository here. This may fail on older tags etc. and
         # that is OK if allow_failure is true
         try:
             env = self.environment.from_requirements(
-                requirements=reader.requirements,
-                pip_packages=reader.pip_packages)
+                requirements=self.config['requirements'],
+                pip_packages=self.config['pip_packages'])
 
-            if reader.python_path:
+            if self.config["python_path"]:
                 if 'PYTHONPATH' in env:
                     env['PYTHONPATH'] = os.path.pathsep.join(
-                        [reader.python_path, env['PYTHONPATH']])
+                        [self.config["python_path"], env['PYTHONPATH']])
                 else:
-                    env['PYTHONPATH'] = reader.python_path
+                    env['PYTHONPATH'] = self.config["python_path"]
 
-            for script in reader.scripts:
+            for script in self.config["scripts"]:
                 self.log.info('Python: %s', script)
-                self.prompt.run(command=script, cwd=reader.cwd,
+                self.prompt.run(command=script, cwd=self.config["cwd"],
                                 env=env)
 
         except Exception:
 
-            if reader.allow_failure:
+            if self.config["allow_failure"]:
                 self.log.exception('PythonCommand')
             else:
                 raise

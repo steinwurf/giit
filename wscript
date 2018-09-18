@@ -92,6 +92,8 @@ def _pytest(bld):
     with bld.create_virtualenv(cwd=bld.bldnode.abspath()) as venv:
 
         venv.run("pip install pytest pytest-testdirectory mock")
+        venv.run(
+            "pip install git+https://github.com/steinwurf/pytest-datarecorder.git@47f1f06")
 
         # Install the pytest-testdirectory plugin in the virtualenv
         wheel = _find_wheel(ctx=bld)
