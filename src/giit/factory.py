@@ -178,12 +178,13 @@ def require_workingtree_generator(factory):
 
 def require_no_git_generator(factory):
 
+    git_repository = factory.require(name='git_repository')
     command = factory.require(name='command')
     config = factory.require(name='config')
     build_path = factory.require(name='build_path')
 
     return giit.tasks.NoGitGenerator(
-        command=command,
+        git_repository=git_repository, command=command,
         config=copy.deepcopy(config), build_path=build_path)
 
 

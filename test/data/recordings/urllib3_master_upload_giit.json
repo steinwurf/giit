@@ -12,7 +12,7 @@
   "python_path": null,
   "requirements": null,
   "scripts": [
-    "python -c \"print('upload')\""
+    "python -c \"print('${source_path}')\""
   ],
   "tags": {
     "regex": {

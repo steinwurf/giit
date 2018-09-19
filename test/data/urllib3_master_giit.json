@@ -13,7 +13,7 @@
     "upload": {
         "no_git": true,
         "scripts": [
-            "python -c \"print('upload')\""
+            "python -c \"print('${source_path}')\""
         ],
         "cwd": "${build_path}"
     }

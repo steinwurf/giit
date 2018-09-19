@@ -28,14 +28,16 @@ class NoGitTask(object):
 
 class NoGitGenerator(object):
 
-    def __init__(self, command, config, build_path):
+    def __init__(self, git_repository, command, config, build_path):
         """ Create a tag generator.
 
+        :param git_repository: A giit.git_repository.GitRepository instance
         :param command: The command to run e.g.giit.python_command.PythonCommand
         :param config: The config e.g. giit.python_config.PythonConfig
         :param build_path: The build path as a string
         """
 
+        self.git_repository = git_repository
         self.command = command
         self.config = config
         self.build_path = build_path
@@ -47,6 +49,7 @@ class NoGitGenerator(object):
         context = {
             'scope': 'no_git',
             'build_path': self.build_path,
+            'source_path': self.git_repository.repository_path()
         }
 
         task = NoGitTask(
