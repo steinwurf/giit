@@ -9,6 +9,7 @@
     "source_branch": false
   },
   "cwd": "${source_path}/docs",
+  "no_git": false,
   "pip_packages": null,
   "python_path": "${source_path}/src",
   "requirements": "${source_path}/docs/requirements.txt",

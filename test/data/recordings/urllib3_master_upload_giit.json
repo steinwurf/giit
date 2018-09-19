@@ -2,19 +2,17 @@
   "allow_failure": false,
   "branches": {
     "regex": {
-      "filters": [
-        "origin/master"
-      ]
+      "filters": []
     },
     "source_branch": false
   },
-  "cwd": "${source_path}/docs",
-  "no_git": false,
+  "cwd": "${build_path}",
+  "no_git": true,
   "pip_packages": null,
-  "python_path": "${source_path}/src",
-  "requirements": "${source_path}/docs/requirements.txt",
+  "python_path": null,
+  "requirements": null,
   "scripts": [
-    "sphinx-build -b html . ${build_path}"
+    "python -c \"print('upload')\""
   ],
   "tags": {
     "regex": {

@@ -3,6 +3,7 @@ import schema
 import six
 import copy
 import collections
+import logging
 
 import giit.variables_reader
 
@@ -68,6 +69,7 @@ def validate_dict(config):
             schema.Optional("source_branch", default=default_branches["source_branch"]): bool},
         schema.Optional('workingtree', default=False): bool,
         schema.Optional('allow_failure', default=False): bool,
+        schema.Optional('no_git', default=False): bool,
         schema.Optional('pip_packages', default=None): list,
         schema.Optional('tags', default=default_tags): {
             schema.Optional("regex", default=default_tags["regex"]): {
@@ -83,14 +85,43 @@ def validate_dict(config):
 
     config = config_schema.validate(config)
 
-    # At least one of the filters should be specified.
-    filters = ["workingtree", "tags", "branches"]
+    if config["no_git"]:
+        try:
+            # We should have no filters setup
+            branches_schema = schema.Schema(default_branches)
+            branches_schema.validate(config["branches"])
 
-    in_config = set(filters) & set(config.keys())
+            # We should have no filters setup
+            tags_schema = schema.Schema(default_tags)
+            tags_schema.validate(config["tags"])
 
-    if len(in_config) == 0:
-        raise RuntimeError("You must specify at least one of the "
-                           "following filters in your giit.json: {}".format(filters))
+            workingtree_schema = schema.Schema(False)
+            workingtree_schema.validate(config["workingtree"])
+
+        except Exception as e:
+
+            log = logging.getLogger("giit.config")
+            log.exception(e)
+
+            raise RuntimeError("Invalid filter specified with the 'no_git' "
+                               "option. Remove 'workingtree', 'tags' and "
+                               "'branches' filters.")
+
+            # At least one of the filters should be specified.
+            # filters = ["workingtree", "tags", "branches"]
+
+            # filters_in_config = len(set(filters) & set(config.keys()))
+
+            # if config["no_git"]:
+            #     if filters_in_config > 0:
+            #         raise RuntimeError("You cannot specify any of the git filters {}"
+            #                            " with the no_git option.".format(filters))
+            # else:
+
+            #     if filters_in_config == 0:
+            #         raise RuntimeError("You must specify at least one of the "
+            #                            "following filters in your "
+            #                            "giit.json: {}".format(filters))
 
     return config
 

@@ -9,5 +9,12 @@
         "python_path": "${source_path}/src",
         "cwd": "${source_path}/docs",
         "requirements": "${source_path}/docs/requirements.txt"
+    },
+    "upload": {
+        "no_git": true,
+        "scripts": [
+            "python -c \"print('upload')\""
+        ],
+        "cwd": "${build_path}"
     }
 }

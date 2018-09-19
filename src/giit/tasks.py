@@ -8,6 +8,53 @@ import semantic_version
 import giit.python_config
 
 
+class NoGitTask(object):
+
+    def __init__(self, context, config, command):
+        self.context = context
+        self.config = config
+        self.command = command
+
+    def run(self):
+
+        task_config = giit.python_config.fill_dict(
+            context=self.context, config=self.config)
+
+        self.command.run(config=task_config)
+
+    def __str__(self):
+        return "scope '{scope}'".format(**self.context)
+
+
+class NoGitGenerator(object):
+
+    def __init__(self, command, config, build_path):
+        """ Create a tag generator.
+
+        :param command: The command to run e.g.giit.python_command.PythonCommand
+        :param config: The config e.g. giit.python_config.PythonConfig
+        :param build_path: The build path as a string
+        """
+
+        self.command = command
+        self.config = config
+        self.build_path = build_path
+
+    def tasks(self):
+
+        assert self.config['no_git'] == True
+
+        context = {
+            'scope': 'no_git',
+            'build_path': self.build_path,
+        }
+
+        task = NoGitTask(
+            config=self.config, context=context, command=self.command)
+
+        return [task]
+
+
 class WorkingtreeTask(object):
 
     def __init__(self, context, config, command):
@@ -21,6 +68,10 @@ class WorkingtreeTask(object):
             context=self.context, config=self.config)
 
         self.command.run(config=task_config)
+
+    def __str__(self):
+        return "scope '{scope}' name '{name}' checkout '{checkout}'".format(
+            **self.context)
 
 
 class WorkingtreeGenerator(object):
@@ -93,6 +144,9 @@ class GitTask(object):
 
         self.command.run(config=task_config)
 
+    def __str__(self):
+        return "scope '{scope}' name '{name}' checkout '{checkout}'".format(
+            **self.context)
         # output_path = os.path.join(
         #     self.output_path, self.checkout_type, self.checkout)
 
