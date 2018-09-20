@@ -1,0 +1,17 @@
+{
+    "docs": {
+        "branches.regex.filters": [
+            "origin/master"
+        ],
+        "tags.semver.filters": [
+            ">=1.20"
+        ],
+        "tags.semver.relaxed": true,
+        "scripts": [
+            "sphinx-build -b html . ${build_path}/${name}"
+        ],
+        "python_path": "${source_path}/src",
+        "cwd": "${source_path}/docs",
+        "requirements": "${source_path}/docs/requirements.txt"
+    }
+}

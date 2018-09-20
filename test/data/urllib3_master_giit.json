@@ -1,6 +1,8 @@
 {
     "docs": {
-        "type": "python",
+        "branches.regex.filters": [
+            "origin/master"
+        ],
         "scripts": [
             "sphinx-build -b html . ${build_path}"
         ],

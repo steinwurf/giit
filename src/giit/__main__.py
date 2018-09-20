@@ -3,27 +3,29 @@ import click
 import colorama
 
 import giit.build
+import giit.logs
+import giit.factory
 
 
 @click.command()
-#@click.option('--remote_branch')
 @click.option('--build_path')
-@click.option('--data_path')
-@click.option('--json_config')
+@click.option('--giit_path')
+@click.option('--config_branch')
+@click.option('--config_path')
 @click.option('-v', '--verbose', is_flag=True)
 @click.argument('step')
 @click.argument('repository')
-def cli(step, repository, build_path, data_path, json_config,
+def cli(step, repository, build_path, giit_path, config_branch, config_path,
         verbose):
-    #        remote_branch, verbose):
 
     build = giit.build.Build(
         step=step,
         repository=repository,
+        factory=giit.factory,
         build_path=build_path,
-        data_path=data_path,
-        json_config=json_config,
-        # remote_branch=remote_branch,
+        giit_path=giit_path,
+        config_branch=config_branch,
+        config_path=config_path,
         verbose=verbose)
 
     try:

@@ -5,78 +5,120 @@ import json
 
 class GitRepository(object):
 
-    def __init__(self, git, git_url_parser, clone_path, log, repository):
-                 # source_branch, log):
+    def __init__(self, repository, git, git_url_parser, clone_path, log):
         """ Create a new instance.
 
+        :param repository: The repository either as an URL or path to a
+            local repository
         :param git: The Git object used to run git commands.
         :param git_url_parser: Parser to extract information from
             the git URL
         :param clone_path: The user specified where clones should
             be made
-        :param remote_branch: An optional source branch. If specified
-            this branch will be used, otherwise we use either the current
-            branch or master.
         :param log: A logging object
         """
+        self.repository = repository
         self.git = git
         self.git_url_parser = git_url_parser
         self.clone_path = os.path.abspath(os.path.expanduser(clone_path))
         self.log = log
-        self.repository = repository
 
-    @property
+        # Cache some values
+        self._git_url = None
+        self._unique_name = None
+        self._remote_branches = None
+
     def workingtree_path(self):
+        """ :return: The path to the workingtree if there is not workingtree
+                     return None
+        """
         if os.path.isdir(self.repository):
             return os.path.abspath(os.path.expanduser(self.repository))
         else:
             return None
 
-    @property
     def git_url(self):
+        """ :return: The Git repository URL """
         if os.path.isdir(self.repository):
-            return self.git.remote_origin_url(cwd=self.repository)
+
+            if self._git_url is None:
+                self._git_url = self.git.remote_origin_url(cwd=self.repository)
+
+            return self._git_url
         else:
             return self.repository
 
-    @property
     def unique_name(self):
+        """ :return: A unique name for this repository """
+
+        if self._unique_name is not None:
+            return self._unique_name
+
         # Compute the clone path
-        git_info = self.git_url_parser.parse(url=self.git_url)
+        git_url = self.git_url()
+        git_info = self.git_url_parser.parse(url=git_url)
 
-        url_hash = hashlib.sha1(self.git_url.encode('utf-8')).hexdigest()[:6]
-        return git_info.name + '-' + url_hash
+        url_hash = hashlib.sha1(git_url.encode('utf-8')).hexdigest()[:6]
+        self._unique_name = git_info.name + '-' + url_hash
 
-    @property
-    def giit_clone_path(self):
-        return os.path.join(self.clone_path, self.unique_name)
+        return self._unique_name
 
-    @property
-    def giit_branch(self):
+    def repository_path(self):
+        """ :return: The path where we clone the repository """
+        return os.path.join(self.clone_path, self.unique_name())
 
-        if self.workingtree_path:
-            current = self.git.current_branch(cwd=self.workingtree_path)
-        else:
-            current = "master"
+    def source_branch(self):
+        """ The source branch.
 
-        remotes = self.git.remote_branches(cwd=self.giit_clone_path)
+        When passing a path to giit the source branch will be the branch
+        currently checked out for that path. When passing an URL to giit we
+        return None
+        """
 
-        match = [remote for remote in remotes if current in remote]
+        # If we were not passed an URL
+        if not self.workingtree_path():
+            return None
+
+        # Check if the current branch has a corresponding remote i.e. if
+        # it has been pushed.
+        current = self.git.current_branch(cwd=self.workingtree_path())
+
+        # Fetch a list of remote branches
+        remote_branches = self.git.remote_branches(cwd=self.repository_path())
+
+        # The remote branches are in a list of "remote/branch"
+        match = []
+        for remote_branch in remote_branches:
+            #print("REMOTE {}".format(remote_branch))
+            #print("CURRENT {}".format(current))
+
+            # Some branch names contain / e.g.
+            # origin/bug/567
+
+            remote, branch = remote_branch.split("/", 1)
+
+            if branch == current:
+                match.append(remote_branch)
+
         matches = len(match)
 
         if matches == 0:
-            raise RuntimeError(
-                "No remote branch tracking %s. These remote "
-                "branches were found in "
+            self.log.debug(
+                "Skipping source branch: No remote branch tracking %s. These "
+                "remote branches were found in "
                 "the repository: %s.\nYou probably just need to "
                 "push the branch you are working on:\n\n"
-                "\tgit push -u origin %s\n" % (current, remotes, current))
+                "\tgit push -u origin %s\n" % (current, remote_branches,
+                                               current))
+
+            return None
+
         if matches > 1:
             raise RuntimeError(
-                "Several remote branches %s for %s" % (remotes, current))
+                "Several remote branches %s for %s" % (remote_branches, current))
 
         remote = match[0]
-        self.log.debug('branch %s -> %s', current, remote)
+        self.log.debug('source branch %s' % remote)
         return remote
 
     def clone(self):
@@ -90,48 +132,98 @@ class GitRepository(object):
                       ".".join([str(i) for i in self.git.version()]))
 
         # Get the URL to the repository
-        self.log.info("Using git repository: %s", self.git_url)
+        git_url = self.git_url()
+        self.log.info("Using git repository: %s", git_url)
+
+        repository_path = self.repository_path()
+
+        self.log.debug("repository_path=%s", repository_path)
 
         # Get the updates
-        if os.path.isdir(self.giit_clone_path):
-            self.log.info('Running: git fetch in %s', self.giit_clone_path)
-            self.git.fetch(cwd=self.giit_clone_path, all=True, prune=True)
+        if os.path.isdir(repository_path):
+            self.log.info('Running: git fetch in %s', repository_path)
+            self.git.fetch(cwd=repository_path, all=True, prune=True)
+
         else:
-            self.log.info('Running: git clone into %s', self.giit_clone_path)
-            self.git.clone(repository=self.git_url,
-                           directory=self.giit_clone_path,
+            self.log.info('Running: git clone into %s', repository_path)
+            self.git.clone(repository=git_url, directory=repository_path,
                            cwd=self.clone_path)
+
+    def remote_branches(self):
+        """ :return: The re,pte brances specified for the repository """
+        assert os.path.isdir(self.repository_path())
+
+        if self._remote_branches is not None:
+            return self._remote_branches
+
+        self._remote_branches = self.git.remote_branches(
+            cwd=self.repository_path())
+
+        return self._remote_branches
 
     def tags(self):
         """ :return: The tags specified for the repository """
-        return self.git.tags(cwd=self.giit_clone_path)
+        assert os.path.isdir(self.repository_path())
 
-    def load_json_config(self):
+        return self.git.tags(cwd=self.repository_path())
 
-        if self.workingtree_path:
-            json_config = os.path.join(self.workingtree_path, 'giit.json')
+    def checkout_branch(self, remote_branch):
+        """ Checkout a specific branch.
 
-            self.log.info("Using giit.json from %s workingtree",
-                          self.workingtree_path)
+        The branch must be a remote-tracking branch.
+        """
 
-            with open(json_config, 'r') as config_file:
-                return json.load(config_file)
+        # Check if the branch exists
+        remotes = self.remote_branches()
 
-        # We only support building branches remote branches. The reason for
-        # this it that it makes it easier to know what is the state of a given
-        # branch. Two users might be on the same branch but have different
-        # changes. Since we only build the remote we force users to push their
-        # changes and thereby we have one source of truth of what is on a given
-        # branch. Namely what has been pushed to the remote. Lets get the
-        # corresponding remote branch
+        if remote_branch not in remotes:
+            raise RuntimeError("No remote branch %s. These branches exits "
+                               "in the repository %s" % (remote_branch, remotes))
 
-        # Make sure we start on the source branch, we may
-        # read the giit.json file from here
-        self.git.checkout(branch=self.giit_branch, cwd=self.giit_clone_path)
+        self._checkout(checkout=remote_branch)
 
-        json_config = os.path.join(self.giit_clone_path, 'giit.json')
+    def checkout_tag(self, tag):
+        """ Checkout a specific tag."""
 
-        self.log.info("Using giit.json from %s branch", self.giit_branch)
+        # Check if the tag exists
+        tags = self.tags()
 
-        with open(json_config, 'r') as config_file:
-            return json.load(config_file)
+        if tag not in tags:
+            raise RuntimeError("No tag %s. These tags exits "
+                               "in the repository %s" % (tag, tags))
+
+        self._checkout(checkout=tag)
+
+    def _checkout(self, checkout):
+        # https://stackoverflow.com/a/8888015/1717320
+        self.git.reset(branch=checkout, hard=True, cwd=self.repository_path())
+
+    # def load_json_config(self):
+
+    #     if self.workingtree_path:
+    #         json_config = os.path.join(self.workingtree_path, 'giit.json')
+
+    #         self.log.info("Using giit.json from %s workingtree",
+    #                       self.workingtree_path)
+
+    #         with open(json_config, 'r') as config_file:
+    #             return json.load(config_file)
+
+    #     # We only support building branches remote branches. The reason for
+    #     # this it that it makes it easier to know what is the state of a given
+    #     # branch. Two users might be on the same branch but have different
+    #     # changes. Since we only build the remote we force users to push their
+    #     # changes and thereby we have one source of truth of what is on a given
+    #     # branch. Namely what has been pushed to the remote. Lets get the
+    #     # corresponding remote branch
+
+    #     # Make sure we start on the source branch, we may
+    #     # read the giit.json file from here
+    #     self.git.checkout(branch=self.giit_branch, cwd=self.giit_clone_path)
+
+    #     json_config = os.path.join(self.giit_clone_path, 'giit.json')
+
+    #     self.log.info("Using giit.json from %s branch", self.giit_branch)
+
+    #     with open(json_config, 'r') as config_file:
+    #         return json.load(config_file)

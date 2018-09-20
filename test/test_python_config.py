@@ -1,26 +1,60 @@
 import os
 import mock
+import json
 import giit.python_config
 
 
-def test_python_config():
+def read_config(json_path, step):
+    """ Small helper to read the configs """
+    with open(json_path) as json_file:
+        json_data = json.load(json_file)
 
-    config_in = {
-        'type': 'python',
-        'scripts': [
-            'python test.py'
-        ]
+    config = json_data[step]
+
+    return giit.python_config.validate_dict(config=config)
+
+
+def test_python_config_master(datarecorder):
+
+    config = read_config(
+        'test/data/urllib3_master_giit.json', step="docs")
+
+    datarecorder.recording_path = 'test/data/recordings/urllib3_master_giit.json'
+    datarecorder.record(data=config)
+
+
+def test_python_config_source(datarecorder):
+
+    config = read_config(
+        'test/data/urllib3_source_branch_giit.json', step="docs")
+
+    datarecorder.recording_path = 'test/data/recordings/urllib3_source_branch_giit.json'
+    datarecorder.record(data=config)
+
+
+def test_python_config_tags(datarecorder):
+
+    config = read_config(
+        'test/data/urllib3_tags_giit.json', step="docs")
+
+    datarecorder.recording_path = 'test/data/recordings/urllib3_tags_giit.json'
+    datarecorder.record(data=config)
+
+
+def test_python_config_tags_fill(datarecorder):
+
+    config = read_config(
+        'test/data/urllib3_tags_giit.json', step="docs")
+
+    context = {
+        'scope': 'tag',
+        'name': '1.0.0',
+        'checkout': '1.0.0',
+        'build_path': '/tmp/build',
+        'source_path': '/tmp/clone'
     }
 
-    config_out = giit.python_config.PythonConfig.from_dict(
-        config=config_in)
+    config = giit.python_config.fill_dict(context=context, config=config)
 
-    assert config_out.type == 'python'
-    assert len(config_out.scripts) == 1
-    assert config_out.scripts[0] == 'python test.py'
-    assert config_out.cwd == os.getcwd()
-    assert config_out.requirements == None
-    assert config_out.variables == ''
-    assert config_out.allow_failure == False
-    assert config_out.scope == ['branch']
-    assert config_out.branches == []
+    datarecorder.recording_path = 'test/data/recordings/urllib3_tags_giit_fill.json'
+    datarecorder.record(data=config)

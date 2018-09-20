@@ -156,7 +156,7 @@ def mkdir_project(directory, giit_branch):
     return project_dir
 
 
-def test_project(testdirectory, caplog):
+def _test_project(testdirectory, caplog):
 
     caplog.set_level(logging.DEBUG)
 
@@ -174,7 +174,7 @@ def test_project(testdirectory, caplog):
         fake_git_repository=project_dir.path(),
         fake_git_branch=giit_branch,
         step='docs', repository=project_dir.path(),
-        build_path=build_dir.path(), data_path=giit_dir.path())
+        build_path=build_dir.path(), giit_path=giit_dir.path())
 
     build.run()
 
@@ -195,7 +195,7 @@ def test_project(testdirectory, caplog):
         fake_git_repository=project_dir.path(),
         fake_git_branch=giit_branch,
         step='landing_page', repository=project_dir.path(),
-        build_path=build_dir.path(), data_path=giit_dir.path())
+        build_path=build_dir.path(), giit_path=giit_dir.path())
 
     build.run()
 
@@ -208,7 +208,7 @@ def test_project(testdirectory, caplog):
         fake_git_repository=project_dir.path(),
         fake_git_branch=giit_branch,
         step='publish', repository=project_dir.path(),
-        build_path=build_dir.path(), data_path=giit_dir.path())
+        build_path=build_dir.path(), giit_path=giit_dir.path())
 
     build.run()
 
@@ -237,7 +237,7 @@ def test_project(testdirectory, caplog):
         fake_git_repository=project_dir.path(),
         fake_git_branch=giit_branch,
         step='gh_pages', repository=project_dir.path(),
-        build_path=build_dir.path(), data_path=giit_dir.path())
+        build_path=build_dir.path(), giit_path=giit_dir.path())
 
     build.run()
 
@@ -252,7 +252,7 @@ def test_project(testdirectory, caplog):
     #assert project_dir.contains_file('docs/landing.txt')
 
 
-def test_project_master(testdirectory, caplog):
+def _test_project_master(testdirectory, caplog):
 
     # When building the master branch the output locations
     # of the different pieces change
@@ -273,7 +273,7 @@ def test_project_master(testdirectory, caplog):
         fake_git_branch=giit_branch,
         fake_git_repository=project_dir.path(),
         step='docs', repository=project_dir.path(),
-        build_path=build_dir.path(), data_path=giit_dir.path())
+        build_path=build_dir.path(), giit_path=giit_dir.path())
 
     build.run()
 
@@ -294,7 +294,7 @@ def test_project_master(testdirectory, caplog):
         fake_git_branch=giit_branch,
         fake_git_repository=project_dir.path(),
         step='landing_page', repository=project_dir.path(),
-        build_path=build_dir.path(), data_path=giit_dir.path())
+        build_path=build_dir.path(), giit_path=giit_dir.path())
 
     build.run()
 
@@ -305,7 +305,7 @@ def test_project_master(testdirectory, caplog):
         fake_git_branch=giit_branch,
         fake_git_repository=project_dir.path(),
         step='gh_pages', repository=project_dir.path(),
-        build_path=build_dir.path(), data_path=giit_dir.path())
+        build_path=build_dir.path(), giit_path=giit_dir.path())
 
     build.run()
 

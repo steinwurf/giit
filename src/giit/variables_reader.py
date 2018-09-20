@@ -11,17 +11,19 @@ class VariablesReader(object):
     def _find_item(self, key):
 
         scope = self.context['scope']
-        checkout = self.context['checkout']
 
-        # We first look in the variables dict using the following order:
-        #
-        # 1. scope:checkout:variable
-        # 2. scope:variable
-        # 3. variable
-        explicit = ':'.join([scope, checkout, key])
+        if 'checkout' in self.context:
+            checkout = self.context['checkout']
 
-        if explicit in self.variables:
-            return self.variables[explicit]
+            # We first look in the variables dict using the following order:
+            #
+            # 1. scope:checkout:variable
+            # 2. scope:variable
+            # 3. variable
+            explicit = ':'.join([scope, checkout, key])
+
+            if explicit in self.variables:
+                return self.variables[explicit]
 
         partial = ':'.join([scope, key])
 

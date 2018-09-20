@@ -1,3 +1,4 @@
+============
 Introduction
 ============
 
@@ -15,6 +16,9 @@ generated for all available tags of a bunch of different repositories. However,
 should you find a different use for it - you should also be able to adapt it
 to other scenarios.
 
+.. contents:: Table of Contents:
+   :local:
+
 Quick Start
 ===========
 
@@ -25,6 +29,20 @@ live in the root of the repository.
 Let's say we want to generate the Sphinx documentation for a specific
 repository.
 
+Installation
+------------
+
+``giit`` is a Python package so you can ``pip install`` it. If you just want to
+try it out use a virtualenv or similar::
+
+    $ virtualenv giit
+    $ source giit/bin/activate
+
+Now install the ``giit`` package::
+
+    $ pip install giit
+
+
 Example: ``urllib3``
 --------------------
 
@@ -32,7 +50,9 @@ Example: ``urllib3``
 
     {
         "docs": {
-            "type": "python",
+            "branches.regex.filters": [
+                "origin/master"
+            ],
             "scripts": [
                 "sphinx-build -b html . ${build_path}"
             ],
@@ -49,173 +69,209 @@ Lets build the ``urllib3`` Sphinx documentation
 
 You should now seem something like::
 
-    Lets go!
+    Lets go: docs
+    Building into: /tmp/giit/data/build/urllib3-b1919a
+    Using git version: 2.17.1
     Using git repository: https://github.com/urllib3/urllib3.git
-    Running: git clone in /tmp/giit/data/clones/urllib3-b1919a
-    Building into: /tmp/giit/build/urllib3-b1919a
-    Python: sphinx-build -b html . /tmp/giit/build/urllib3-b1919a
+    Running: git clone into /tmp/giit/data/clones/urllib3-b1919a
+    Using giit.json from path ./giit.json
+    Tasks generated 1
+    Running task [1/1]: scope 'branch' name 'master' checkout 'origin/master'
+    Python: sphinx-build -b html . /tmp/giit/data/build/urllib3-b1919a
+
 
 If you visit ``/tmp/giit/build/urllib3-b1919a`` with your web browser
 you should be able to see the ``urllib3`` Sphinx documentation.
 
-Command-line arguments
-----------------------
+``giit.json`` location
+======================
 
-When invoking ``giit`` there are two mandatory arguments::
-
-    giit STEP REPOSITORY
-
-* ``STEP`` selects the step defined in the ``giit.json`` to execute.
-* ``REPOSITORY`` is a repository URL or a path on the file system to a
-   repository
-
-In addition to the two mandatory arguments there are a number of optional
-options that can customize the ``giit``'s behavior.
-
-* ``--build_path`` this option controls where in the file system the should
-  be produced. This option is passed to the ``giit`` steps such that Python
-  commands etc. can respect it (notice how it was used to control the build
-  output of the ``urllib3`` example).
-
-* ``--giit_path`` this option controls where ``giit`` will store all it's
-  state. Clones of repositories, meta data etc.
-
-* ``--json_config`` this option allows the path to the ``giit.json`` file to
-  be specified.
-
-* ``-v`` / ``--verbose`` allows the verbosity level of the tool to be increased
-  generating more debug information on the command line.
-
-``giit.json``
-=============
-
-The ``giit.json`` is where the different steps are defined. Let's
-walk though the different attributes which can be used.
-
-Location
---------
-
-Since the content of the ``giit.json`` file fully determines the steps taken
-by ``giit`` understanding how the ``giit.json`` file is found is quite
-important.
+Since the content of the ``giit.json`` file fully determines the steps
+taken by ``giit`` understanding how the ``giit.json`` file is found is
+quite important.
 
 The following outlines the rules:
 
-1. Passing a path using ``--json_config``.
-2. If using a path to the repository when calling ``giit`` e.g.::
+1. Passing a path using ``--config_path`` or passing a branch
+   using ``--config_branch``.
+
+2. If no config path or branch is passed by the user and ``giit`` is
+   invoked with an URL (like in the ``urllib3`` example).
+
+   Example::
+
+        giit docs https://github.com/urllib3/urllib3.git
+
+   In this case ``giit`` will look at the root of the repository in
+   ``origin/master`` branch for a ``giit.json``.
+
+3. If no config path or branch is passed by the user and ``giit`` is
+   invoked with a path::
 
        git docs ../path/to/repo
 
-   We will try to find the ``giit.json`` in ``../path/to/repo/giit.json``
+   In this case ``giit`` will try to find a ``giit.json`` at
+   ``../path/to/repo/giit.json``.
 
-3. In
+Filters and tasks
+=================
+
+As we saw in the ``urllib3`` example a single task is generated for building
+the ``origin/master`` branch. We can generate more tasks by setting up more
+filter.
+
+Here are the available options:
+
+``branches.regex.filters``
+--------------------------
+
+This is a list of regular expressions that will be matched against the branch
+name. If the regular expression matches a task will be generated.
+
+For example (in ``giit.json``)::
+
+        "branches.regex.filters": [
+            "origin/master",
+            "(\d+\.\d+.\d+)-LTS"
+        ]
 
 
-Defining steps
---------------
+``branches.source_branch``
+--------------------------
 
-The different steps define the behavior we can invoke, in
-the following ``giit.json`` we define three steps::
+When invoking ``giit`` with a path to a repository e.g.:
+``giit docs ../path/repo``. ``giit`` can be instructed to build the
+remote tracking branch currently checkout out in ``../path/repo``.
 
-    {
-        "docs": {
-            ...
-        },
-        "landing_page": {
-            ...
-        },
-        "publish": {
-            ...
-        }
-    }
+This is useful in continuous integration systems.
 
-Step type
-----------
+For example (in ``giit.json``)::
 
-Each step will have a type. The type defines the behavior and
-attributes available in the step.
+        "branches.source_branch": true
 
-Currently supported are ``python``, ``sftp`` and ``push``.
+``tags.regex.filters``
+--------------------------
 
-Step scope
-----------
+This is a list of regular expressions that will be matched against
+the tag name. If the regular expression matches a task will be
+generated.
 
-If enabled a step will run in a number of different "scopes":
+For example (in ``giit.json``)::
 
-* ``workingtree``:
+        "tags.regex.filters": [
+            "(\d+\.\d+.\d+)"
+        ]
 
-  * If a user passes a path to the ``giit`` command e.g.
-    ``giit docs ../dev/project/docs`` then the ``workingtree`` scope will
-    be enabled.
-  * The step will run once with the variable ``source_path`` set to
-    local path.
-  * This allows a user to run steps without having to first
-    push to the remote git repository.
-* ``branch``:
+``tags.semver.filters``
+------------------------
 
-  * The source branch scope will default to ``master``.
-  * If a user passes a path to ``giit`` the source branch will be whatever
-    branch the local repository is on.
-  * The source branch can also be selected by the user when passing
-    a git URL to the ``giit`` command.
-* ``tag``:
+If a project uses sematic versioning the semver filter can be used.
 
-  * A default ``giit`` will run the step for each tag on the repository
-    in this scope.
+For example (in ``giit.json``)::
 
-As a default all steps default to only run in the ``branch``
-scope. This can be change with the ``scope`` step attribute.
+        "tags.semver.filters": [
+            ">=0.1.1", "<0.3.0"
+        ]
 
-Step built-in variables
+We use https://python-semanticversion.readthedocs.io/en/latest/ you
+can find more examples of requirement specifications there.
+
+``tags.semver.relaxed``
 -----------------------
 
-When defining a step ``giit`` makes a number of variables available.
+If a project uses "kind-of" semver, like ``urllib3`` which has
+versions such as ``1.20`` you can set the semver filter in relaxed
+mode and still use the filters.
 
-As an example in the following we can customize the output location
-of ``sphinx-build`` like this::
+For example (in ``giit.json``)::
+
+    "tags.semver.relaxed": true
+
+``workingtree``
+---------------
+
+The ``workingtree`` filter is useful for quickly iterating on stuff.
+It is similar to the ``source_branch`` filter. In that if ``giit`` is
+invoked with a path, then that path will be the ``workingtree`` this
+allows you to run ``giit`` without commit'ing pushing changes.
+
+For example (in ``giit.json``)::
+
+    "workingtree": true
+
+Context and variables
+=====================
+
+In the ``urllib3`` example you may have noticed what we used the
+``${build_path}`` and ``${source_path}`` in the ``json`` configuration.
+
+These denote variables that will be substituted when running the
+tasks. The following variables are always available:
+
+* ``build_path``: This points to the directory where the command
+  is expected to output any artifacts produced by the command. It is
+  up to the ``giit.json`` author to ensure this happens.
+
+* ``source_path``: This is the path to where the current git
+  repository is checked out.
+
+* ``checkout``: This is the checkout of that was used.
+
+* ``name``: This is a shorter version of checkout. E.g. for branches
+  if the checkout is ``origin/master`` the name will be ``master``.
+  Also if the ``checkout`` contains ``/`` that may result in
+  unwanted sub-directories. In the ``name`` we replace ``/`` with ``_``.
+  So if a branch is called ``origin/bug/543`` the name will be ``bug_543``.
+
+* ``scope``: This can be one of three values. Either ``tag``,
+  ``branch`` or ``workingtree``.
+
+Example
+-------
+
+Here we will use the ``${name}`` variable to output documentation
+for the different tags to different folders::
 
     {
         "docs": {
-            "type": "python",
+            "branches.regex.filters": [
+                "origin/master"
+            ],
+            "tags.semver.filters": [
+                ">=1.20"
+            ],
+            "tags.semver.relaxed": true,
             "scripts": [
-                "sphinx-build -b html . ${build_path}"
-            ]
-            ...
+                "sphinx-build -b html . ${build_path}/${name}"
+            ],
+            "python_path": "${source_path}/src",
+            "cwd": "${source_path}/docs",
+            "requirements": "${source_path}/docs/requirements.txt"
         }
-        ...
     }
 
-In the above ``${build_path}`` will be substituted for the default
-``giit`` build path or a user specified one.
+User variables
+--------------
 
-The following built-in variables are available:
+In some cases we want to define our own variables according to some
+simple rules.
 
-* ``build_path``: The path where the produced output should go.
-* ``source_path``: The path to the repository
-* ``name``: Identifier depending on the scope e.g. branch name or
-   tag name.
-* ``scope``: The scope we are in.
-
-Step user variables
---------------------
-
-The user can define variables using the ``variables`` attribute.
+This is done using the ``variables`` attribute.
 User variables are define using the following syntax::
 
     scope:remote_branch:variable_name
 
 Where ``scope`` and ``remote_branch`` are optional.
 
-This can be used to customize e.g. the ``build_path``. Consider
+This can be used to customize e.g. the output of a command. Consider
 the following example::
 
     {
-        "sphinx": {
-            "type": "python",
+        "docs": {
+            ...
             "scripts": [
                 "sphinx-build -b html . ${output_path}"
             ],
-            ...
             "variables": {
                 "branch:origin/master:output_path": "${build_path}/docs/latest",
                 "branch:output_path": "${build_path}/sphinx/${name}",
@@ -225,7 +281,7 @@ the following example::
         }
     }
 
-When calling ``sphinx-build`` we use the user defined ``output_path``
+When calling ``giit docs ...`` we use the user defined ``output_path``
 variable.
 
 Let walk though the different values ``output_path`` can take.
@@ -251,28 +307,8 @@ Lets see how this could look (``build_path`` is ``/tmp/project``)::
     Branch new_idea -----> /tmp/project/sphinx/new_idea
     Workingtree ---------> /tmp/project/workingtree
 
-``clean`` step
-..............
 
-The ``clean`` step just remove the ``build_path``.
 
-``python`` step
-...............
-
-The ``python`` step supports the following attributes:
-
-* Mandatory ``scripts``: A list of commands to execute
-* Optional ``cwd``: The path where commands will be executed
-* Optional ``requirements``: Path to a ``pip`` requirements file containing
-  dependencies to be installed. If specified a virtualenv will
-  created.
-* Optional ``pip_packages``: A list of ``pip`` packages to install. If
-  specified a virtualenv will created.
-* Optional ``scope``: A list of ``scope`` names for which the step will run.
-* Optional ``allow_failure``: A boolean indicating whether we
-  allow the scripts to fail.
-* Optional ``python_path``: Setting the python path before running the
-  scripts.
 
 ``giit`` command line arguments
 ===============================
@@ -298,35 +334,33 @@ Sets the build path (i.e. where the output artifacts/data) will be generated/
 built. This argument is available in the ``giit.json`` as the ``${build_path}``
 variable.
 
-Option: ``--data_path``
+Option: ``--giit_path``
 -----------------------
 
 This path is where the ``giit`` tool will store configurations, virtualenvs
 clones created while running the tool. It also serves as a cache, to speed up
 builds.
 
-Option: ``--remote_branch``
+Option: ``--config_branch``
 ---------------------------
 
-Specifies the source branch to use. The default is ``origin/master``, however if you
-need to build a different branch this is one way of doing it.
+Specifies the a branch where the ``giit.json`` file will be take from.
 
-Option: ``--json_config``
+Option: ``--config_path``
 -------------------------
 
 Sets the path to where the ``giit.json`` file.
 
+Option ``-v`` / ``--verbose``
+------------------------------
 
-Factories and Dependency Injection
-----------------------------------
-
-Testability is a key feature of any modern software library and one of the key
-techniques for writing testable code is dependency injection (DI).
-
-In Python, DI is relatively simple to implement due to the dynamic nature of the
-language.
-
-Git branches
-------------
+Allows the verbosity level of the tool to be increased
+generating more debug information on the command line.
 
 
+The ``clean`` step
+==================
+
+This step is always defined, in addition to the steps defined in
+the ``giit.json`` file. The ``clean`` step just remove the
+``build_path``.
