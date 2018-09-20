@@ -85,43 +85,21 @@ def validate_dict(config):
 
     config = config_schema.validate(config)
 
-    if config["no_git"]:
-        try:
-            # We should have no filters setup
-            branches_schema = schema.Schema(default_branches)
-            branches_schema.validate(config["branches"])
+    # At least one of the filters should be specified.
+    # filters = ["workingtree", "tags", "branches"]
 
-            # We should have no filters setup
-            tags_schema = schema.Schema(default_tags)
-            tags_schema.validate(config["tags"])
+    # filters_in_config = len(set(filters) & set(config.keys()))
 
-            workingtree_schema = schema.Schema(False)
-            workingtree_schema.validate(config["workingtree"])
+    # if config["no_git"]:
+    #     if filters_in_config > 0:
+    #         raise RuntimeError("You cannot specify any of the git filters {}"
+    #                            " with the no_git option.".format(filters))
+    # else:
 
-        except Exception as e:
-
-            log = logging.getLogger("giit.config")
-            log.exception(e)
-
-            raise RuntimeError("Invalid filter specified with the 'no_git' "
-                               "option. Remove 'workingtree', 'tags' and "
-                               "'branches' filters.")
-
-            # At least one of the filters should be specified.
-            # filters = ["workingtree", "tags", "branches"]
-
-            # filters_in_config = len(set(filters) & set(config.keys()))
-
-            # if config["no_git"]:
-            #     if filters_in_config > 0:
-            #         raise RuntimeError("You cannot specify any of the git filters {}"
-            #                            " with the no_git option.".format(filters))
-            # else:
-
-            #     if filters_in_config == 0:
-            #         raise RuntimeError("You must specify at least one of the "
-            #                            "following filters in your "
-            #                            "giit.json: {}".format(filters))
+    #     if filters_in_config == 0:
+    #         raise RuntimeError("You must specify at least one of the "
+    #                            "following filters in your "
+    #                            "giit.json: {}".format(filters))
 
     return config
 

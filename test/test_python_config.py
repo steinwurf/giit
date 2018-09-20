@@ -23,15 +23,6 @@ def test_python_config_master(datarecorder):
     datarecorder.record(data=config)
 
 
-def test_python_config_master_upload(datarecorder):
-
-    config = read_config(
-        'test/data/urllib3_master_giit.json', step="upload")
-
-    datarecorder.recording_path = 'test/data/recordings/urllib3_master_upload_giit.json'
-    datarecorder.record(data=config)
-
-
 def test_python_config_source(datarecorder):
 
     config = read_config(

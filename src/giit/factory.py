@@ -176,38 +176,20 @@ def require_workingtree_generator(factory):
         config=copy.deepcopy(config), build_path=build_path)
 
 
-def require_no_git_generator(factory):
-
-    git_repository = factory.require(name='git_repository')
-    command = factory.require(name='command')
-    config = factory.require(name='config')
-    build_path = factory.require(name='build_path')
-
-    return giit.tasks.NoGitGenerator(
-        git_repository=git_repository, command=command,
-        config=copy.deepcopy(config), build_path=build_path)
-
-
 def require_task_generator(factory):
 
     task_generator = giit.tasks.TaskFactory()
 
     config = factory.require(name='config')
 
-    if config["no_git"]:
+    branch_generator = factory.require(name='branch_generator')
+    task_generator.add_generator(branch_generator)
 
-        no_git_generator = factory.require(name='no_git_generator')
-        task_generator.add_generator(no_git_generator)
-    else:
+    tag_generator = factory.require(name='tag_generator')
+    task_generator.add_generator(tag_generator)
 
-        branch_generator = factory.require(name='branch_generator')
-        task_generator.add_generator(branch_generator)
-
-        tag_generator = factory.require(name='tag_generator')
-        task_generator.add_generator(tag_generator)
-
-        workingtree_generator = factory.require(name='workingtree_generator')
-        task_generator.add_generator(workingtree_generator)
+    workingtree_generator = factory.require(name='workingtree_generator')
+    task_generator.add_generator(workingtree_generator)
 
     return task_generator
 
@@ -306,6 +288,4 @@ def build_factory():
     factory.provide_function(
         name='workingtree_generator', function=require_workingtree_generator)
 
-    factory.provide_function(
-        name='no_git_generator', function=require_no_git_generator)
     return factory

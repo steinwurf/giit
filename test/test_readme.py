@@ -17,11 +17,6 @@ def test_urllib3_master(testdirectory):
 
     print(testdirectory.run(cmd))
 
-    cmd = ['giit', 'upload', url,
-           '--config_path', config_file, '-v']
-
-    print(testdirectory.run(cmd))
-
 
 def _test_urllib3_tags(testdirectory):
 
