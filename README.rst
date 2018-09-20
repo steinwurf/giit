@@ -29,6 +29,20 @@ live in the root of the repository.
 Let's say we want to generate the Sphinx documentation for a specific
 repository.
 
+Installation
+------------
+
+``giit`` is a Python package so you can ``pip install`` it. If you just want to
+try it out use a virtualenv or similar::
+
+    $ virtualenv giit
+    $ source giit/bin/activate
+
+Now install the ``giit`` package::
+
+    $ pip install giit
+
+
 Example: ``urllib3``
 --------------------
 
@@ -36,9 +50,9 @@ Example: ``urllib3``
 
     {
         "docs": {
-            "branches": {
-                "regex_filter": ["origin/master"]
-            },
+            "branches.regex.filters": [
+                "origin/master"
+            ],
             "scripts": [
                 "sphinx-build -b html . ${build_path}"
             ],
@@ -55,11 +69,16 @@ Lets build the ``urllib3`` Sphinx documentation
 
 You should now seem something like::
 
-    Lets go!
+    Lets go: docs
+    Building into: /tmp/giit/data/build/urllib3-b1919a
+    Using git version: 2.17.1
     Using git repository: https://github.com/urllib3/urllib3.git
-    Running: git clone in /tmp/giit/data/clones/urllib3-b1919a
-    Building into: /tmp/giit/build/urllib3-b1919a
-    Python: sphinx-build -b html . /tmp/giit/build/urllib3-b1919a
+    Running: git clone into /tmp/giit/data/clones/urllib3-b1919a
+    Using giit.json from path ./giit.json
+    Tasks generated 1
+    Running task [1/1]: scope 'branch' name 'master' checkout 'origin/master'
+    Python: sphinx-build -b html . /tmp/giit/data/build/urllib3-b1919a
+
 
 If you visit ``/tmp/giit/build/urllib3-b1919a`` with your web browser
 you should be able to see the ``urllib3`` Sphinx documentation.
@@ -94,290 +113,165 @@ The following outlines the rules:
    In this case ``giit`` will try to find a ``giit.json`` at
    ``../path/to/repo/giit.json``.
 
-``giit`` scopes
-===============
+Filters and tasks
+=================
 
-It is possible to customize the behavior of ``giit`` using scopes. A scope
-basically specifies how the steps specified will run. There are
-three scopes:
+As we saw in the ``urllib3`` example a single task is generated for building
+the ``origin/master`` branch. We can generate more tasks by setting up more
+filter.
 
-``branch`` scope
-----------------
+Here are the available options:
 
-The ``branch`` scope is the default enabled scope.
+``branches.regex.filters``
+--------------------------
 
-When the ``branch`` scope is activated. ``giit`` will run steps for one
-specific branch available on the repository called the ``source_branch``.
+This is a list of regular expressions that will be matched against the branch
+name. If the regular expression matches a task will be generated.
 
-The ``source_branch`` can either be explicitly specified or implicitly
-using the following rules:
+For example (in ``giit.json``)::
 
-1. The user explicitly specifies the ``source_branch`` with the
-    ``--source_branch`` option.
+        "branches.regex.filters": [
+            "origin/master",
+            "(\d+\.\d+.\d+)-LTS"
+        ]
 
-2. The ``source_branch`` can also be implicitly defined:
 
-    1. If ``giit`` is invoked with a path to a local repository. The
-        current branch of that repository is used as the ``source_branch``
+``branches.source_branch``
+--------------------------
 
-    2. If ``giit`` is invoked with a URL the ``source_branch`` will
-        default to master.
+When invoking ``giit`` with a path to a repository e.g.:
+``giit docs ../path/repo``. ``giit`` can be instructed to build the
+remote tracking branch currently checkout out in ``../path/repo``.
 
-The source branch will always refer to the remote branch. This means
-that even if two people are working on the same branch they will only
-be able to see their results after pushing. This avoids tricky race
-conditions, where it is unclear from what changes a branch is built.
+This is useful in continuous integration systems.
 
-``workingtree`` scope
----------------------
-If this scoped is enabled ``giit`` will run the specified
-steps in a local already checkout repository.
+For example (in ``giit.json``)::
 
-``tags`` scope
----------------
+        "branches.source_branch": true
 
-Works similar to the ``branch`` scope but steps run for the specified
-tags only.
+``tags.regex.filters``
+--------------------------
 
-If the ``tags`` scope is enabled the default behaviour is to run steps
-for all tags on a repository. This is not always meaningful and
-therefore we can specify tag filters in the ``giit.json`` to restrict
-which tags are selected.
+This is a list of regular expressions that will be matched against
+the tag name. If the regular expression matches a task will be
+generated.
 
-Enabling scopes
-----------------
+For example (in ``giit.json``)::
 
-Scopes can either be implicitly enabled or explicitly. Multiple scopes can be
-enabled at the same time. We will describe how this works when describing the
-command-line arguments supported by ``giit``.
+        "tags.regex.filters": [
+            "(\d+\.\d+.\d+)"
+        ]
 
-Explicitly enabling scopes
-..........................
+``tags.semver.filters``
+------------------------
 
-Scopes are explicitly enabled by passing the ``--scope`` option.
+If a project uses sematic versioning the semver filter can be used.
 
-1. Enable the ``workingtree`` scope by passing ``--scope workingtree``.
-   Can only be enabled if ``giit`` is invoked with a path.
+For example (in ``giit.json``)::
 
-2. Enable the ``branch`` scope by passing ``--scope branch``.
+        "tags.semver.filters": [
+            ">=0.1.1", "<0.3.0"
+        ]
 
-3. Enable the ``tag`` scope by passing ``--scope tag``.
+We use https://python-semanticversion.readthedocs.io/en/latest/ you
+can find more examples of requirement specifications there.
 
-Implicitly enabling scopes
-..........................
-
-If scopes are not explicitly defined. The default behavior of ``giit``
-depends on whether a repository path or URL was used. As mentioned
-above ``giit`` can either be invoked with a repository URL or a path
-to an existing repository.
-
-* In case of an URL the ``branch`` scope is implicitly enabled. The default
-  branch to build is the ``master``. This can be changed with the
-  ``--source_branch`` option
-
-* In case of a path all three scopes are enabled.
-
-
-As default ``giit`` will behave differently depending
-on whether you pass a URL or a path to it.
-
-1. If you pass an URL to ``giit`` it will enable the  the ``master`` branch.
-
-2. If you pass a path it will run command on the workingtree.
-
-Examples
----------
-
-The following examples show different ways to invoked ``giit`` and the
-expected outcome (in all examples we assume the ``giit.json`` is in the
-root of the repository, so we can omit the ``--json_config`` option).
-
-Building changes in the local directory
-.......................................
-
-::
-
-    giit ../../path --workingtree --json_config ../../path
-
-Scopes enabled: ``branch``.
-
-Building the branch on a repository already checked out
-.......................................................
-
-This is useful in CI systems, where the CI system performs the checkout
-for us. To build the corresponding branch we just say.
-
-::
-
-    giit ../../path --scope branch
-
-Scopes enabled: ``branch``.
-
-Note, that ``giit`` will look for the branch on the remote. So this
-requires that all changes have been pushed.
-
-Building branch and tags
-........................
-
-We can easily extend the command to also build the tags.
-
-::
-
-    giit ../../path --scope branch --scope tags
-
-
-Command-line arguments
-----------------------
-
-When invoking ``giit`` there are two mandatory arguments::
-
-    giit STEP REPOSITORY
-
-* ``STEP`` selects the step defined in the ``giit.json`` to execute.
-
-* ``REPOSITORY`` is a repository URL or a path on the file system to a
-   repository
-
-As default ``giit`` will behave differently depending
-on whether you pass a URL or a path to it.
-
-1. If you pass an URL to ``giit`` it will enable the  the ``master`` branch.
-
-2. If you pass a path it will run command on the workingtree.
-
-
-In addition to the two mandatory arguments there are a number of optional
-options that can customize the ``giit``'s behavior.
-
-* ``--build_path`` this option controls where in the file system the should
-  be produced. This option is passed to the ``giit`` steps such that Python
-  commands etc. can respect it (notice how it was used to control the build
-  output of the ``urllib3`` example).
-
-* ``--giit_path`` this option controls where ``giit`` will store all it's
-  state. Clones of repositories, meta data etc.
-
-* ``--json_config`` this option allows the path to the ``giit.json`` file to
-  be specified.
-
-* ``-v`` / ``--verbose`` allows the verbosity level of the tool to be increased
-  generating more debug information on the command line.
-
-
-
-
-
-``giit.json`` steps
-===================
-
-The ``giit.json`` is where the different steps are defined. Let's
-walk though the different attributes which can be used.
-
-Defining steps
---------------
-
-The different steps define the behavior we can invoke, in
-the following ``giit.json`` we define three steps::
-
-    {
-        "docs": {
-            ...
-        },
-        "landing_page": {
-            ...
-        },
-        "publish": {
-            ...
-        }
-    }
-
-Step type
-----------
-
-Each step will have a type. The type defines the behavior and
-attributes available in the step.
-
-Currently supported are ``python``, ``sftp`` and ``push``.
-
-Step scope
-----------
-
-If enabled a step will run in a number of different "scopes":
-
-* ``workingtree``:
-
-  * If a user passes a path to the ``giit`` command e.g.
-    ``giit docs ../dev/project/docs`` then the ``workingtree`` scope will
-    be enabled.
-  * The step will run once with the variable ``source_path`` set to
-    local path.
-  * This allows a user to run steps without having to first
-    push to the remote git repository.
-* ``branch``:
-
-  * The source branch scope will default to ``master``.
-  * If a user passes a path to ``giit`` the source branch will be whatever
-    branch the local repository is on.
-  * The source branch can also be selected by the user when passing
-    a git URL to the ``giit`` command.
-* ``tag``:
-
-  * A default ``giit`` will run the step for each tag on the repository
-    in this scope.
-
-As a default all steps default to only run in the ``branch``
-scope. This can be change with the ``scope`` step attribute.
-
-Step built-in variables
+``tags.semver.relaxed``
 -----------------------
 
-When defining a step ``giit`` makes a number of variables available.
+If a project uses "kind-of" semver, like ``urllib3`` which has
+versions such as ``1.20`` you can set the semver filter in relaxed
+mode and still use the filters.
 
-As an example in the following we can customize the output location
-of ``sphinx-build`` like this::
+For example (in ``giit.json``)::
+
+    "tags.semver.relaxed": true
+
+``workingtree``
+---------------
+
+The ``workingtree`` filter is useful for quickly iterating on stuff.
+It is similar to the ``source_branch`` filter. In that if ``giit`` is
+invoked with a path, then that path will be the ``workingtree`` this
+allows you to run ``giit`` without commit'ing pushing changes.
+
+For example (in ``giit.json``)::
+
+    "workingtree": true
+
+Context and variables
+=====================
+
+In the ``urllib3`` example you may have noticed what we used the
+``${build_path}`` and ``${source_path}`` in the ``json`` configuration.
+
+These denote variables that will be substituted when running the
+tasks. The following variables are always available:
+
+* ``build_path``: This points to the directory where the command
+  is expected to output any artifacts produced by the command. It is
+  up to the ``giit.json`` author to ensure this happens.
+
+* ``source_path``: This is the path to where the current git
+  repository is checked out.
+
+* ``checkout``: This is the checkout of that was used.
+
+* ``name``: This is a shorter version of checkout. E.g. for branches
+  if the checkout is ``origin/master`` the name will be ``master``.
+  Also if the ``checkout`` contains ``/`` that may result in
+  unwanted sub-directories. In the ``name`` we replace ``/`` with ``_``.
+  So if a branch is called ``origin/bug/543`` the name will be ``bug_543``.
+
+* ``scope``: This can be one of three values. Either ``tag``,
+  ``branch`` or ``workingtree``.
+
+Example
+-------
+
+Here we will use the ``${name}`` variable to output documentation
+for the different tags to different folders::
 
     {
         "docs": {
-            "type": "python",
+            "branches.regex.filters": [
+                "origin/master"
+            ],
+            "tags.semver.filters": [
+                ">=1.20"
+            ],
+            "tags.semver.relaxed": true,
             "scripts": [
-                "sphinx-build -b html . ${build_path}"
-            ]
-            ...
+                "sphinx-build -b html . ${build_path}/${name}"
+            ],
+            "python_path": "${source_path}/src",
+            "cwd": "${source_path}/docs",
+            "requirements": "${source_path}/docs/requirements.txt"
         }
-        ...
     }
 
-In the above ``${build_path}`` will be substituted for the default
-``giit`` build path or a user specified one.
+User variables
+--------------
 
-The following built-in variables are available:
+In some cases we want to define our own variables according to some
+simple rules.
 
-* ``build_path``: The path where the produced output should go.
-* ``source_path``: The path to the repository
-* ``name``: Identifier depending on the scope e.g. branch name or
-   tag name.
-* ``scope``: The scope we are in.
-
-Step user variables
---------------------
-
-The user can define variables using the ``variables`` attribute.
+This is done using the ``variables`` attribute.
 User variables are define using the following syntax::
 
     scope:remote_branch:variable_name
 
 Where ``scope`` and ``remote_branch`` are optional.
 
-This can be used to customize e.g. the ``build_path``. Consider
+This can be used to customize e.g. the output of a command. Consider
 the following example::
 
     {
-        "sphinx": {
-            "type": "python",
+        "docs": {
+            ...
             "scripts": [
                 "sphinx-build -b html . ${output_path}"
             ],
-            ...
             "variables": {
                 "branch:origin/master:output_path": "${build_path}/docs/latest",
                 "branch:output_path": "${build_path}/sphinx/${name}",
@@ -387,7 +281,7 @@ the following example::
         }
     }
 
-When calling ``sphinx-build`` we use the user defined ``output_path``
+When calling ``giit docs ...`` we use the user defined ``output_path``
 variable.
 
 Let walk though the different values ``output_path`` can take.
@@ -413,28 +307,8 @@ Lets see how this could look (``build_path`` is ``/tmp/project``)::
     Branch new_idea -----> /tmp/project/sphinx/new_idea
     Workingtree ---------> /tmp/project/workingtree
 
-``clean`` step
-..............
 
-The ``clean`` step just remove the ``build_path``.
 
-``python`` step
-...............
-
-The ``python`` step supports the following attributes:
-
-* Mandatory ``scripts``: A list of commands to execute
-* Optional ``cwd``: The path where commands will be executed
-* Optional ``requirements``: Path to a ``pip`` requirements file containing
-  dependencies to be installed. If specified a virtualenv will
-  created.
-* Optional ``pip_packages``: A list of ``pip`` packages to install. If
-  specified a virtualenv will created.
-* Optional ``scope``: A list of ``scope`` names for which the step will run.
-* Optional ``allow_failure``: A boolean indicating whether we
-  allow the scripts to fail.
-* Optional ``python_path``: Setting the python path before running the
-  scripts.
 
 ``giit`` command line arguments
 ===============================
@@ -467,110 +341,26 @@ This path is where the ``giit`` tool will store configurations, virtualenvs
 clones created while running the tool. It also serves as a cache, to speed up
 builds.
 
-Option: ``--remote_branch``
+Option: ``--config_branch``
 ---------------------------
 
-Specifies the source branch to use. The default is ``origin/master``, however if you
-need to build a different branch this is one way of doing it.
+Specifies the a branch where the ``giit.json`` file will be take from.
 
-Option: ``--json_config``
+Option: ``--config_path``
 -------------------------
 
 Sets the path to where the ``giit.json`` file.
 
+Option ``-v`` / ``--verbose``
+------------------------------
 
-Factories and Dependency Injection
-----------------------------------
-
-Testability is a key feature of any modern software library and one of the key
-techniques for writing testable code is dependency injection (DI).
-
-In Python, DI is relatively simple to implement due to the dynamic nature of the
-language.
-
-Git branches
-------------
+Allows the verbosity level of the tool to be increased
+generating more debug information on the command line.
 
 
-``giit`` uses a ``giit.json`` file to describe the different steps::
+The ``clean`` step
+==================
 
-    {
-        "docs": [{
-            "branches": [
-                "regex_filter": [
-                    "master"
-                    "(\d+\.\d+.\d+)-LTS",
-                    "${source_branch}"
-                ]
-            ],
-            "tags": {
-                "regex_filter" : ["(\d+\.\d+.\d+)"],
-                "semver_filter" : [">2.0.0"],
-            ],
-            "workingtree": True,
-            "python_path": "${source_path}/src",
-            "requirements": "${source_path}/docs/requirements.txt"
-            "variables": {
-                "branch:master:output_path": "${build_path}/docs/latest",
-                "branch:output_path": "${build_path}/sphinx/${name}",
-                "tag:output_path": "${build_path}/docs/${name}",
-                "workingtree:output_path": "${build_path}/workingtree/sphinx"
-            },
-            "cwd": "${source_path}/docs",
-            "scripts": [
-                "sphinx-build -b html . ${type}/${output_path}"
-            ],
-        }]
-    }
-
-    {
-        "docs": [{
-            "branches": [
-                "regex_filter": [
-                    "master"
-                    "(\d+\.\d+.\d+)-LTS",
-                    "${source_branch}"
-                ]
-            ],
-            "tags": {
-                "regex_filter" : ["(\d+\.\d+.\d+)"],
-                "semver_filter" : [">2.0.0"],
-            ],
-            "workingtree": True,
-            "python_path": "${source_path}/src",
-            "requirements": "${source_path}/docs/requirements.txt"
-            "variables": {
-                "branch:master:output_path": "${build_path}/docs/latest",
-                "branch:output_path": "${build_path}/sphinx/${name}",
-                "tag:output_path": "${build_path}/docs/${name}",
-                "workingtree:output_path": "${build_path}/workingtree/sphinx"
-            },
-            "cwd": "${source_path}/docs",
-            "scripts": [
-                "sphinx-build -b html . ${build_path}/docs/latest"
-            ],
-            "tag:<2.0.0:scripts": [
-                "sphinx-build-2 -b html . ${build_path}/docs/${name}"
-            ],
-        }]
-    }
-
-
-
-    {
-    "docs": {
-        "filter:branch:regex": [
-            "origin/master"
-        ],
-        "tag.semver.filter": [
-            ">=1.20"
-        ],
-        "tag:semver:relaxed": true,
-        "scripts": [
-            "sphinx-build -b html . ${build_path}/${name}"
-        ],
-        "python_path": "${source_path}/src",
-        "cwd": "${source_path}/docs",
-        "requirements": "${source_path}/docs/requirements.txt"
-    }
-}
+This step is always defined, in addition to the steps defined in
+the ``giit.json`` file. The ``clean`` step just remove the
+``build_path``.
