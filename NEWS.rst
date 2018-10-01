@@ -10,6 +10,7 @@ Latest
 * Patch: Fix using checkout in variable reader.
 * Patch: Improve logging output.
 * Minor: Added verbose flag to produce more logging on stdout
+* Patch: Using absolute path for build_path, giit_path and config_path
 
 
 3.0.0
