@@ -26,11 +26,17 @@ class Build(object):
         self.step = step
         self.repository = repository
         self.factory = factory
-        self.build_path = build_path
-        self.giit_path = giit_path
-        self.config_path = config_path
+        self.build_path = self._expand_path(path=build_path)
+        self.giit_path = self._expand_path(path=giit_path)
+        self.config_path = self._expand_path(path=config_path)
         self.config_branch = config_branch
         self.verbose = verbose
+
+    def _expand_path(self, path):
+        if path:
+            return os.path.abspath(os.path.expanduser(path))
+        else:
+            return path
 
     def run(self):
 
