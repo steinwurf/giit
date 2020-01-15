@@ -89,9 +89,6 @@ class GitRepository(object):
         # The remote branches are in a list of "remote/branch"
         match = []
         for remote_branch in remote_branches:
-            #print("REMOTE {}".format(remote_branch))
-            #print("CURRENT {}".format(current))
-
             # Some branch names contain / e.g.
             # origin/bug/567
 
@@ -131,9 +128,13 @@ class GitRepository(object):
         self.log.info("Using git version: %s",
                       ".".join([str(i) for i in self.git.version()]))
 
-        # Get the URL to the repository
-        git_url = self.git_url()
-        self.log.info("Using git repository: %s", git_url)
+        # Update the repository
+        if os.path.isdir(self.repository):
+            clone_repo = self.repository
+        else:
+            clone_repo = self.git_url()
+
+        self.log.info("Using git repository: %s", clone_repo)
 
         repository_path = self.repository_path()
 
@@ -146,11 +147,11 @@ class GitRepository(object):
 
         else:
             self.log.info('Running: git clone into %s', repository_path)
-            self.git.clone(repository=git_url, directory=repository_path,
+            self.git.clone(repository=clone_repo, directory=repository_path,
                            cwd=self.clone_path)
 
     def remote_branches(self):
-        """ :return: The re,pte brances specified for the repository """
+        """ :return: The remote branches specified for the repository """
         assert os.path.isdir(self.repository_path())
 
         if self._remote_branches is not None:
@@ -198,32 +199,3 @@ class GitRepository(object):
         # https://stackoverflow.com/a/8888015/1717320
         self.git.reset(branch=checkout, hard=True, cwd=self.repository_path())
 
-    # def load_json_config(self):
-
-    #     if self.workingtree_path:
-    #         json_config = os.path.join(self.workingtree_path, 'giit.json')
-
-    #         self.log.info("Using giit.json from %s workingtree",
-    #                       self.workingtree_path)
-
-    #         with open(json_config, 'r') as config_file:
-    #             return json.load(config_file)
-
-    #     # We only support building branches remote branches. The reason for
-    #     # this it that it makes it easier to know what is the state of a given
-    #     # branch. Two users might be on the same branch but have different
-    #     # changes. Since we only build the remote we force users to push their
-    #     # changes and thereby we have one source of truth of what is on a given
-    #     # branch. Namely what has been pushed to the remote. Lets get the
-    #     # corresponding remote branch
-
-    #     # Make sure we start on the source branch, we may
-    #     # read the giit.json file from here
-    #     self.git.checkout(branch=self.giit_branch, cwd=self.giit_clone_path)
-
-    #     json_config = os.path.join(self.giit_clone_path, 'giit.json')
-
-    #     self.log.info("Using giit.json from %s branch", self.giit_branch)
-
-    #     with open(json_config, 'r') as config_file:
-    #         return json.load(config_file)
