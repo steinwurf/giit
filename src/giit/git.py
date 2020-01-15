@@ -57,12 +57,12 @@ class Git(object):
         args = [self.git_binary, 'pull']
         self.prompt.run(args, cwd=cwd)
 
-    def fetch(self, all, prune, cwd):
+    def fetch(self, repository, all, prune, cwd):
         """
         Runs 'git fetch' in the directory cwd
         """
 
-        args = [self.git_binary, 'fetch']
+        args = [self.git_binary, 'fetch', repository]
 
         if all:
             args.append('--all')
@@ -253,4 +253,11 @@ class Git(object):
         args = [self.git_binary, 'config', '--get', 'remote.origin.url']
         result = self.prompt.run(args, cwd=cwd)
 
-        return result.stdout.strip()
+        url = result.stdout.strip()
+
+        if os.path.isdir(url):
+            # The remote may be a local directory - that has
+            # an actual remote url
+            return self.remote_origin_url(cwd=url)
+        else:
+            return url

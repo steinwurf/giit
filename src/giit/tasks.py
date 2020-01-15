@@ -100,30 +100,6 @@ class GitTask(object):
     def __str__(self):
         return "scope '{scope}' name '{name}' checkout '{checkout}'".format(
             **self.context)
-        # output_path = os.path.join(
-        #     self.output_path, self.checkout_type, self.checkout)
-
-        # sha1 = self.git.current_commit(cwd=cwd)
-
-        # with self.cache:
-        #    pass
-
-        # build_info.output_path = output_path
-        # build_info.repository_path = self.repository_path
-        # build_info.slug = self.checkout
-        # build_info.type = self.checkout_type
-
-        # if self.cache.match(sha1=sha1):
-        #     path = self.cache.path(sha1=sha1)
-
-        #     if path != output_path:
-        #         shutil.copytree(src=path, dst=output_path)
-
-        # else:
-
-        #     self.sphinx.build(build_info=build_info)
-
-        #     self.cache.update(sha1=sha1, path=output_path)
 
 
 class GitBranchGenerator(object):
