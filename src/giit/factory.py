@@ -16,7 +16,7 @@ import giit.git_repository
 import giit.cache
 import giit.virtualenv
 import giit.tasks
-import giit.python_config
+import giit.config
 import giit.python_environment
 import giit.python_command
 import giit.sftp_config
@@ -176,20 +176,35 @@ def require_workingtree_generator(factory):
         config=copy.deepcopy(config), build_path=build_path)
 
 
+def require_no_git_generator(factory):
+
+    command = factory.require(name='command')
+    config = factory.require(name='config')
+    build_path = factory.require(name='build_path')
+
+    return giit.tasks.NoGitGenerator(command=command,
+                                     config=copy.deepcopy(config), build_path=build_path)
+
+
 def require_task_generator(factory):
 
     task_generator = giit.tasks.TaskFactory()
 
     config = factory.require(name='config')
 
-    branch_generator = factory.require(name='branch_generator')
-    task_generator.add_generator(branch_generator)
+    if config['no_git']:
+        no_git = factory.require(name='no_git_generator')
+        task_generator.add_generator(no_git)
 
-    tag_generator = factory.require(name='tag_generator')
-    task_generator.add_generator(tag_generator)
+    else:
+        branch_generator = factory.require(name='branch_generator')
+        task_generator.add_generator(branch_generator)
 
-    workingtree_generator = factory.require(name='workingtree_generator')
-    task_generator.add_generator(workingtree_generator)
+        tag_generator = factory.require(name='tag_generator')
+        task_generator.add_generator(tag_generator)
+
+        workingtree_generator = factory.require(name='workingtree_generator')
+        task_generator.add_generator(workingtree_generator)
 
     return task_generator
 
@@ -202,7 +217,7 @@ def resolve_factory(giit_path, repository):
     factory.provide_value(name='git_binary', value='git')
     factory.provide_value(name='giit_path', value=giit_path)
     factory.provide_value(name='repository', value=repository)
-    #factory.provide_value(name='remote_branch', value=remote_branch)
+    # factory.provide_value(name='remote_branch', value=remote_branch)
 
     factory.provide_function(name='clone_path', function=provide_clone_path)
     factory.provide_function(name='git_url_parser',
@@ -238,7 +253,7 @@ def require_python_environement(factory):
 
 def require_command(factory):
 
-    #config = factory.require(name='config')
+    # config = factory.require(name='config')
     environment = factory.require(name='python_environment')
     prompt = factory.require(name='prompt')
     log = logging.getLogger(name='giit.python_command')
@@ -287,5 +302,8 @@ def build_factory():
 
     factory.provide_function(
         name='workingtree_generator', function=require_workingtree_generator)
+
+    factory.provide_function(
+        name='no_git_generator', function=require_no_git_generator)
 
     return factory

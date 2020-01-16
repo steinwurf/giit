@@ -5,10 +5,10 @@ import hashlib
 import sys
 import re
 import semantic_version
-import giit.python_config
+import giit.config
 
 
-class WorkingtreeTask(object):
+class NoGitTask(object):
 
     def __init__(self, context, config, command):
         self.context = context
@@ -17,14 +17,44 @@ class WorkingtreeTask(object):
 
     def run(self):
 
-        task_config = giit.python_config.fill_dict(
+        task_config = giit.config.fill_dict(
             context=self.context, config=self.config)
 
         self.command.run(config=task_config)
 
     def __str__(self):
-        return "scope '{scope}' name '{name}' checkout '{checkout}'".format(
-            **self.context)
+        return "context: {}, config: {}, command: {}".format(
+            self.context, self.config, self.command)
+
+
+class NoGitGenerator(object):
+
+    def __init__(self, command, config, build_path):
+        """ Create no_git task generator
+
+        :param command: The command to run e.g. giit.python_command.PythonCommand
+        :param config: The config e.g. giit.config.PythonConfig
+        :param build_path: The build path as a string
+        """
+
+        self.command = command
+        self.config = config
+        self.build_path = build_path
+
+    def tasks(self):
+
+        if self.config['no_git'] == False:
+            return []
+
+        context = {
+            'scope': 'no_git',
+            'build_path': self.build_path,
+        }
+
+        task = NoGitTask(
+            config=self.config, context=context, command=self.command)
+
+        return [task]
 
 
 class WorkingtreeGenerator(object):
@@ -34,7 +64,7 @@ class WorkingtreeGenerator(object):
 
         :param git_repository: A giit.git_repository.GitRepository instance
         :param command: The command to run e.g.giit.python_command.PythonCommand
-        :param config: The config e.g. giit.python_config.PythonConfig
+        :param config: The config e.g. giit.config.PythonConfig
         :param build_path: The build path as a string
         """
 
@@ -58,7 +88,7 @@ class WorkingtreeGenerator(object):
                 'source_path': self.git_repository.workingtree_path()
             }
 
-            task = WorkingtreeTask(
+            task = NoGitTask(
                 config=self.config, context=context, command=self.command)
 
             return [task]
@@ -92,7 +122,7 @@ class GitTask(object):
         else:
             raise RuntimeError("Unknown scope {}".format(scope))
 
-        task_config = giit.python_config.fill_dict(
+        task_config = giit.config.fill_dict(
             context=self.context, config=self.config)
 
         self.command.run(config=task_config)
@@ -190,7 +220,7 @@ class GitTagGenerator(object):
 
         :param git_repository: A giit.git_repository.GitRepository instance
         :param command: The command to run e.g.giit.python_command.PythonCommand
-        :param config: The config e.g. giit.python_config.PythonConfig
+        :param config: The config e.g. giit.config.PythonConfig
         :param build_path: The build path as a string
         """
 

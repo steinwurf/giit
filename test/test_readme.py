@@ -1,3 +1,4 @@
+import giit.config
 import os
 
 
@@ -60,39 +61,3 @@ def _test_urllib3_workingtree(testdirectory):
     print(testdirectory.run(cmd))
 
     # ssert 0
-
-
-import giit.python_config
-
-
-def test_expand_dict():
-
-    result = {
-        "branch": {"regex": {"filter": ["origin/master"]}},
-        "tag": {"semver": {"filter": [">=2.0.0"], "relaxed": True}},
-        "other": {"value": {"check": {"this": True}}}
-    }
-
-    # Try some nested keys
-    config = {
-        "branch.regex.filter": ["origin/master"],
-        "tag": {
-            "semver.filter": [">=2.0.0"],
-            "semver.relaxed": True
-        },
-        "other.value": {"check.this": True}
-    }
-
-    assert giit.python_config.expand_dict(config) == result
-
-    # Try flat keys
-    config = {
-        "branch.regex.filter": ["origin/master"],
-        "tag.semver.filter": [">=2.0.0"],
-        "tag.semver.relaxed": True,
-        "other.value": {"check.this": True}
-    }
-
-    print(giit.python_config.expand_dict(config))
-
-    assert giit.python_config.expand_dict(config) == result

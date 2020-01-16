@@ -8,49 +8,80 @@ import logging
 import giit.variables_reader
 
 
-def expand_key(keys, value):
+def _expand_key(keys, value):
+    """ Expands a list of keys and a value into a nested
+    dictionary where the last dictionary contains the value.
+    """
 
     if len(keys) == 0:
         return value
     else:
-        return {keys[0]: expand_key(keys[1:], value)}
+        return {keys[0]: _expand_key(keys[1:], value)}
 
 
-def update_dict(d, u):
-    for k, v in u.items():
-        if isinstance(v, collections.Mapping):
-            d[k] = update_dict(d.get(k, {}), v)
+def _update_dict(dst, src):
+    """ Takes the dictionary src and merges its keys into
+    dst.
+    """
+    for key, value in src.items():
+
+        if isinstance(value, collections.Mapping):
+            # If the value is a dictionary recursively take
+            # key of dst and src and continue the process
+            dst[key] = _update_dict(dst.get(key, {}), value)
+
         else:
-            d[k] = v
-    return d
+            # This process should not overwrite any values
+            assert key not in dst
+            dst[key] = value
+
+    return dst
 
 
-def expand_dict(input_dict):
+def _expand_dict(input):
+    """ Takes an input dictionary and expands all dot keys
+    into nested dictionaries
+    """
 
     output_dict = {}
 
-    for key in input_dict.keys():
+    for key in input.keys():
 
         subkeys = key.split('.')
-        value = input_dict[key]
+        value = input[key]
 
         if isinstance(value, dict):
-            value = expand_dict(value)
+            value = _expand_dict(value)
 
-        result = {subkeys[0]: expand_key(subkeys[1:], value)}
+        result = {subkeys[0]: _expand_key(subkeys[1:], value)}
 
-        update_dict(output_dict, result)
+        _update_dict(output_dict, result)
 
     return output_dict
 
 
-def validate_dict(config):
+def validate_config(config):
+    """ Takes as input a config object and validates it against
+    the giit schema
+    """
 
     # Make sure we do not modify the original dict.
     config = copy.deepcopy(config)
-    config = expand_dict(config)
 
-    # These are useful when defining defaults in the schema
+    # The config is a Python dictionary were we allow
+    # a compressed notation where keys may contain
+    # dots - see README. Lets expand this to a fully nested
+    # dictionary
+    config = _expand_dict(config)
+
+    # Check whether we have any git steps - if not we mark
+    # this config a no_git. The task generator will use this
+    # information and generate a single task for just running
+    # the script.
+    no_git = not any(key in config for key in [
+        'branches', 'tags', 'workingtree'])
+
+    # Lets validate the config
     default_branches = {'regex': {'filters': []},
                         'source_branch': False}
     default_tags = {
@@ -69,7 +100,6 @@ def validate_dict(config):
             schema.Optional("source_branch", default=default_branches["source_branch"]): bool},
         schema.Optional('workingtree', default=False): bool,
         schema.Optional('allow_failure', default=False): bool,
-        schema.Optional('no_git', default=False): bool,
         schema.Optional('pip_packages', default=None): list,
         schema.Optional('tags', default=default_tags): {
             schema.Optional("regex", default=default_tags["regex"]): {
@@ -85,21 +115,8 @@ def validate_dict(config):
 
     config = config_schema.validate(config)
 
-    # At least one of the filters should be specified.
-    # filters = ["workingtree", "tags", "branches"]
-
-    # filters_in_config = len(set(filters) & set(config.keys()))
-
-    # if config["no_git"]:
-    #     if filters_in_config > 0:
-    #         raise RuntimeError("You cannot specify any of the git filters {}"
-    #                            " with the no_git option.".format(filters))
-    # else:
-
-    #     if filters_in_config == 0:
-    #         raise RuntimeError("You must specify at least one of the "
-    #                            "following filters in your "
-    #                            "giit.json: {}".format(filters))
+    # Inject the no_git configuration values
+    config['no_git'] = no_git
 
     return config
 

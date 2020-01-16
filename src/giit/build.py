@@ -9,7 +9,7 @@ import shutil
 
 import giit.logs
 import giit.giit_json
-import giit.python_config
+import giit.config
 
 
 class Build(object):
@@ -143,7 +143,7 @@ class Build(object):
         build_factory = self.factory.build_factory()
 
         # Validate the configuration
-        config = giit.python_config.validate_dict(config=config)
+        config = giit.config.validate_config(config=config)
 
         # Provide the different needed by the factory
         build_factory.provide_value(name='config', value=config)

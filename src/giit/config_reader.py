@@ -1,4 +1,4 @@
-import giit.python_config
+import giit.config
 import giit.variables_reader
 import giit.compat
 

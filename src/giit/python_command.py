@@ -5,7 +5,7 @@ import os
 import sys
 import hashlib
 
-import giit.python_config
+import giit.config
 
 
 class PythonCommand(object):
@@ -24,7 +24,7 @@ class PythonCommand(object):
 
         # Expand the context in the config. The config/command is shared
         # between all the tasks generated.
-        # self.config = giit.python_config.fill_dict(
+        # self.config = giit.config.fill_dict(
         #     context=context, config=self.config)
 
         # self.log.debug("context=%s", context)
