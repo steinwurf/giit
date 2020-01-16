@@ -65,7 +65,7 @@ Example: ``urllib3``
 Lets build the ``urllib3`` Sphinx documentation
 (https://urllib3.readthedocs.io/en/latest/) by running ``giit``::
 
-    giit docs https://github.com/urllib3/urllib3.git --json_config ./giit.json
+    giit docs https://github.com/urllib3/urllib3.git --config_path ./giit.json
 
 You should now seem something like::
 
@@ -118,9 +118,13 @@ Filters and tasks
 
 As we saw in the ``urllib3`` example a single task is generated for building
 the ``origin/master`` branch. We can generate more tasks by setting up more
-filter.
+filters.
 
-Here are the available options:
+As a quick note it is also possible to not specify any filters. In that case
+a single task for running the specified scripts will be gererated (with a
+limited context - see below).
+
+To specify the different filters here are the available options:
 
 ``branches.regex.filters``
 --------------------------
@@ -199,6 +203,12 @@ For example (in ``giit.json``)::
 
     "workingtree": true
 
+No filter
+---------
+
+If you pass no filter e.g. ``tags``, ``branches`` or ``workingtree``, then
+
+
 Context and variables
 =====================
 
@@ -225,6 +235,9 @@ tasks. The following variables are always available:
 
 * ``scope``: This can be one of three values. Either ``tag``,
   ``branch`` or ``workingtree``.
+
+Note, only the ``${build_path}`` variable is available when running without
+any filters.
 
 Example
 -------
