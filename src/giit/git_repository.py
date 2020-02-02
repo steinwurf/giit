@@ -305,3 +305,4 @@ class RemoteRepository(object):
     def _checkout(self, checkout):
         # https://stackoverflow.com/a/8888015/1717320
         self.git.reset(branch=checkout, hard=True, cwd=self.repository_path())
+        self.git.pull(cwd=self.repository_path())
