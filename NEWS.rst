@@ -6,6 +6,8 @@ every change, see the Git log.
 
 Latest
 ------
+* Major: Drop Python 3.4 support.
+* Major: Added support for running scripts without a Git filter.
 * Major: Rewrote steps and filters implementation.
 * Patch: Fix using checkout in variable reader.
 * Patch: Improve logging output.
