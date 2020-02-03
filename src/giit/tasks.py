@@ -23,8 +23,8 @@ class NoGitTask(object):
         self.command.run(config=task_config)
 
     def __str__(self):
-        return "context: {}, config: {}, command: {}".format(
-            self.context, self.config, self.command)
+        return "scope '{scope}'".format(
+            **self.context)
 
 
 class NoGitGenerator(object):
