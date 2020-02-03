@@ -124,9 +124,8 @@ class GitRepository(object):
 
         # Get the updates
         if os.path.isdir(repository_path):
-            self.log.info('Running: git fetch in %s', repository_path)
-            self.git.fetch(repository=self.repository,
-                           cwd=repository_path, all=False, prune=True)
+            self.log.info('Running: git pull in %s', repository_path)
+            self.git.pull(cwd=repository_path)
 
         else:
             self.log.info('Running: git clone into %s', repository_path)
@@ -181,4 +180,5 @@ class GitRepository(object):
     def _checkout(self, checkout):
         # https://stackoverflow.com/a/8888015/1717320
         self.git.reset(branch=checkout, hard=True, cwd=self.repository_path())
-        self.git.pull(cwd=self.repository_path())
+        self.log.debug("GitRepository: on commit %s",
+                       self.git.current_commit(cwd=self.repository_path()))
