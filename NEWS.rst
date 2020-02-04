@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+4.0.0
+-----
 * Major: Drop Python 3.4 support.
 * Major: Added support for running scripts without a Git filter.
 * Major: Rewrote steps and filters implementation.
