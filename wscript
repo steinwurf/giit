@@ -14,7 +14,7 @@ import waflib
 
 top = '.'
 
-VERSION = '4.0.0'
+VERSION = '5.0.0'
 
 from waflib.Build import BuildContext
 

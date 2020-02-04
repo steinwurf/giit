@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+5.0.0
+-----
 * Major: Make giit work for repositories without remotes
 
 4.0.0
