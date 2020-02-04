@@ -41,14 +41,22 @@ class GitRepository(object):
 
     def unique_name(self):
         if os.path.isdir(self.repository):
-            git_url = self.git.remote_origin_url(cwd=self.repository)
+            return self._unique_name_from_dir(self.repository)
         else:
-            git_url = self.repository
+            return self._unique_name_from_url(self.repository)
+
+    def _unique_name_from_url(self, git_url):
 
         git_info = self.git_url_parser.parse(url=git_url)
 
         url_hash = hashlib.sha1(git_url.encode('utf-8')).hexdigest()[:6]
         return git_info.name + '-' + url_hash
+
+    def _unique_name_from_dir(self, directory):
+        """ Get the unique name from the directory contaning the repo """
+        name = os.path.basename(directory)
+        dir_hash = hashlib.sha1(directory.encode('utf-8')).hexdigest()[:6]
+        return name + '-' + dir_hash
 
     def repository_path(self):
         """ :return: The path where we clone the repository """
