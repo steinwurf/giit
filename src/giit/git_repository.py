@@ -17,15 +17,17 @@ class GitRepository(object):
             be made
         :param log: A logging object
         """
-        self.repository = repository
+        if os.path.isdir(repository):
+            self.repository = os.path.abspath(os.path.expanduser(repository))
+        else:
+            self.repository = repository
+
         self.git = git
         self.git_url_parser = git_url_parser
         self.clone_path = os.path.abspath(os.path.expanduser(clone_path))
         self.log = log
 
         # Cache some values
-        self._git_url = None
-        self._unique_name = None
         self._remote_branches = None
 
     def workingtree_path(self):
@@ -33,38 +35,24 @@ class GitRepository(object):
                      return None
         """
         if os.path.isdir(self.repository):
-            return os.path.abspath(os.path.expanduser(self.repository))
+            return self.repository
         else:
             return None
 
-    def git_url(self):
-        """ :return: The Git repository URL """
-        if os.path.isdir(self.repository):
-
-            if self._git_url is None:
-                self._git_url = self.git.remote_origin_url(cwd=self.repository)
-
-            return self._git_url
-        else:
-            return self.repository
-
     def unique_name(self):
-        """ :return: A unique name for this repository """
+        if os.path.isdir(self.repository):
+            git_url = self.git.remote_origin_url(cwd=self.repository)
+        else:
+            git_url = self.repository
 
-        if self._unique_name is not None:
-            return self._unique_name
-
-        # Compute the clone path
-        git_url = self.git_url()
         git_info = self.git_url_parser.parse(url=git_url)
 
         url_hash = hashlib.sha1(git_url.encode('utf-8')).hexdigest()[:6]
-        self._unique_name = git_info.name + '-' + url_hash
-
-        return self._unique_name
+        return git_info.name + '-' + url_hash
 
     def repository_path(self):
         """ :return: The path where we clone the repository """
+
         return os.path.join(self.clone_path, self.unique_name())
 
     def source_branch(self):
@@ -75,7 +63,7 @@ class GitRepository(object):
         return None
         """
 
-        # If we were not passed an URL
+        # If we were  passed an URL
         if not self.workingtree_path():
             return None
 
@@ -89,9 +77,6 @@ class GitRepository(object):
         # The remote branches are in a list of "remote/branch"
         match = []
         for remote_branch in remote_branches:
-            #print("REMOTE {}".format(remote_branch))
-            #print("CURRENT {}".format(current))
-
             # Some branch names contain / e.g.
             # origin/bug/567
 
@@ -131,9 +116,7 @@ class GitRepository(object):
         self.log.info("Using git version: %s",
                       ".".join([str(i) for i in self.git.version()]))
 
-        # Get the URL to the repository
-        git_url = self.git_url()
-        self.log.info("Using git repository: %s", git_url)
+        self.log.info("Using git repository: %s", self.repository)
 
         repository_path = self.repository_path()
 
@@ -141,16 +124,16 @@ class GitRepository(object):
 
         # Get the updates
         if os.path.isdir(repository_path):
-            self.log.info('Running: git fetch in %s', repository_path)
-            self.git.fetch(cwd=repository_path, all=True, prune=True)
+            self.log.info('Running: git pull in %s', repository_path)
+            self.git.pull(cwd=repository_path)
 
         else:
             self.log.info('Running: git clone into %s', repository_path)
-            self.git.clone(repository=git_url, directory=repository_path,
+            self.git.clone(repository=self.repository, directory=repository_path,
                            cwd=self.clone_path)
 
     def remote_branches(self):
-        """ :return: The re,pte brances specified for the repository """
+        """ :return: The remote branches specified for the repository """
         assert os.path.isdir(self.repository_path())
 
         if self._remote_branches is not None:
@@ -197,33 +180,5 @@ class GitRepository(object):
     def _checkout(self, checkout):
         # https://stackoverflow.com/a/8888015/1717320
         self.git.reset(branch=checkout, hard=True, cwd=self.repository_path())
-
-    # def load_json_config(self):
-
-    #     if self.workingtree_path:
-    #         json_config = os.path.join(self.workingtree_path, 'giit.json')
-
-    #         self.log.info("Using giit.json from %s workingtree",
-    #                       self.workingtree_path)
-
-    #         with open(json_config, 'r') as config_file:
-    #             return json.load(config_file)
-
-    #     # We only support building branches remote branches. The reason for
-    #     # this it that it makes it easier to know what is the state of a given
-    #     # branch. Two users might be on the same branch but have different
-    #     # changes. Since we only build the remote we force users to push their
-    #     # changes and thereby we have one source of truth of what is on a given
-    #     # branch. Namely what has been pushed to the remote. Lets get the
-    #     # corresponding remote branch
-
-    #     # Make sure we start on the source branch, we may
-    #     # read the giit.json file from here
-    #     self.git.checkout(branch=self.giit_branch, cwd=self.giit_clone_path)
-
-    #     json_config = os.path.join(self.giit_clone_path, 'giit.json')
-
-    #     self.log.info("Using giit.json from %s branch", self.giit_branch)
-
-    #     with open(json_config, 'r') as config_file:
-    #         return json.load(config_file)
+        self.log.debug("GitRepository: on commit %s",
+                       self.git.current_commit(cwd=self.repository_path()))

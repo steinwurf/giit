@@ -63,14 +63,14 @@ class VirtualEnv(object):
 
         if not os.path.isdir(repo_path):
 
-            log.debug('Cloning {} into {}'.format(URL, repo_path))
+            log.debug('VirtualEnv: Cloning {} into {}'.format(URL, repo_path))
 
             git.clone(repository=URL, directory=repo_path,
                       cwd=clone_path)
 
             git.checkout(branch=VERSION, cwd=repo_path)
 
-        log.debug('Using virtualenv from {}'.format(repo_path))
+        log.debug('VirtualEnv: Using virtualenv from {}'.format(repo_path))
 
         env = dict(os.environ)
         env.update({'PYTHONPATH': repo_path})
