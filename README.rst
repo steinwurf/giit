@@ -312,9 +312,9 @@ Let walk though the different values ``output_path`` can take.
 Lets see how this could look (``build_path`` is ``/tmp/project``)::
 
     Tag 1.0.0 -----------> /tmp/project/docs/1.0.0
-    Tag 1.0.0 -----------> /tmp/project/docs/2.0.0
-    Tag 1.0.0 -----------> /tmp/project/docs/2.1.0
-    Tag 1.0.0 -----------> /tmp/project/docs/3.0.0
+    Tag 2.0.0 -----------> /tmp/project/docs/2.0.0
+    Tag 2.1.0 -----------> /tmp/project/docs/2.1.0
+    Tag 3.0.0 -----------> /tmp/project/docs/3.0.0
     Branch master -------> /tmp/project/docs/latest
     Branch trying_new ---> /tmp/project/sphinx/trying_new
     Branch new_idea -----> /tmp/project/sphinx/new_idea
