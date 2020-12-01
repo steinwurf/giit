@@ -380,7 +380,7 @@ Option: ``--config_path``
 Sets the path to where the ``giit.json`` file.
 
 Option ``--variable``
-------------------------------
+---------------------
 
 Extends the variables set for each step.
 
