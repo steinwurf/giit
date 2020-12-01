@@ -8,12 +8,20 @@ from collections import ChainMap as _ChainMap
 class PundTemplate(string.Template):
     delimiter = '£'
 
-    # Copied from string.Template.safe_substitute
-    def safe_substitute_to_none(self, mapping=string._sentinel_dict, /, **kws):
-        if mapping is string._sentinel_dict:
+    # Copied from string.Template.safe_substitute (tag 3.6)
+    def safe_substitute_to_none(*args, **kws):
+        if not args:
+            raise TypeError("descriptor 'safe_substitute' of 'Template' object "
+                            "needs an argument")
+        self, *args = args  # allow the "self" keyword be passed
+        if len(args) > 1:
+            raise TypeError('Too many positional arguments')
+        if not args:
             mapping = kws
         elif kws:
-            mapping = _ChainMap(kws, mapping)
+            mapping = _ChainMap(kws, args[0])
+        else:
+            mapping = args[0]
 
         # Helper function for .sub()
         def convert(mo):
