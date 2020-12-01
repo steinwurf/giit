@@ -6,7 +6,7 @@ every change, see the Git log.
 
 Latest
 ------
-* Major: Drop support for python2.7.
+* Major: Remove SFTP feature.
 * Major: Introduced optional variables. These work in a similar way as normal
   variables, execpt they will be removed if they doesn't exists and you need to
   use `£` instead of `$` to use them.

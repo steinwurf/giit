@@ -15,9 +15,6 @@ import giit.tasks
 import giit.config
 import giit.python_environment
 import giit.python_command
-import giit.sftp_config
-import giit.sftp_transfer
-import giit.sftp_command
 import giit.push_config
 import giit.push_command
 
