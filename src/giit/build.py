@@ -1,10 +1,6 @@
-import click
 import tempfile
-import hashlib
 import os
 import logging
-import json
-import sys
 import shutil
 
 import giit.logs
@@ -21,6 +17,7 @@ class Build(object):
                  giit_path=None,
                  config_path=None,
                  config_branch=None,
+                 variables=[],
                  verbose=False):
 
         self.step = step
@@ -30,6 +27,7 @@ class Build(object):
         self.giit_path = self._expand_path(path=giit_path)
         self.config_path = self._expand_path(path=config_path)
         self.config_branch = config_branch
+        self.extra_variables = variables
         self.verbose = verbose
 
     def _expand_path(self, path):
@@ -144,6 +142,11 @@ class Build(object):
 
         # Validate the configuration
         config = giit.config.validate_config(config=config)
+
+        for key, value in self.extra_variables:
+            if key not in config['variables']:
+                log.debug("Adding extra varible '%s': %s", key, value)
+                config['variables'][key] = value
 
         # Provide the different needed by the factory
         build_factory.provide_value(name='config', value=config)

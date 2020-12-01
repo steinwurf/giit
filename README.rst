@@ -269,7 +269,9 @@ User variables
 In some cases we want to define our own variables according to some
 simple rules.
 
-This is done using the ``variables`` attribute.
+This is done either using the ``variables`` attribute in the json or by using
+the ``--variable [name] [value]`` command line argument.
+
 User variables are define using the following syntax::
 
     scope:remote_branch:variable_name
@@ -321,6 +323,19 @@ Lets see how this could look (``build_path`` is ``/tmp/project``)::
     Workingtree ---------> /tmp/project/workingtree
 
 
+Optional Variables
+==================
+In some cases you may want to have optional variables. These can be specified
+in a similar way as with non optional variables, the only difference is that you
+need to use the `£` character instead of the `$`character.
+If the variable doesn't exists it simply be removed.
+
+
+Escaping Variable Replacements
+==============================
+If you want to use either `$` or `£` as characters in the giit configuration file,
+you need to escape them. This is done using `$$` or `££` respctively.
+
 
 
 ``giit`` command line arguments
@@ -363,6 +378,11 @@ Option: ``--config_path``
 -------------------------
 
 Sets the path to where the ``giit.json`` file.
+
+Option ``--variable``
+------------------------------
+
+Extends the variables set for each step.
 
 Option ``-v`` / ``--verbose``
 ------------------------------
