@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import os
 import io
 import re
@@ -95,7 +98,7 @@ setup(
     keywords=('giit'),
     packages=find_packages(where='src', exclude=['test']),
     package_dir={"": "src"},
-    install_requires=['click', 'paramiko', 'semantic_version',
+    install_requires=['click', 'semantic_version',
                       'colorama', 'schema', 'six'],
 
 )

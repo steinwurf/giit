@@ -1,5 +1,6 @@
-import os
-import mock
+#!/usr/bin/env python
+# encoding: utf-8
+
 import json
 import giit.config
 
@@ -18,18 +19,18 @@ def test_python_config_master(datarecorder):
 
     config = _read_config(
         'test/data/urllib3_master_giit.json', step="docs")
-
-    datarecorder.recording_path = 'test/data/recordings/urllib3_master_giit.json'
-    datarecorder.record(data=config)
+    datarecorder.record_data(
+        data=config,
+        recording_file='test/data/recordings/urllib3_master_giit.json')
 
 
 def test_python_config_source(datarecorder):
 
     config = _read_config(
         'test/data/urllib3_source_branch_giit.json', step="docs")
-
-    datarecorder.recording_path = 'test/data/recordings/urllib3_source_branch_giit.json'
-    datarecorder.record(data=config)
+    datarecorder.record_data(
+        data=config,
+        recording_file='test/data/recordings/urllib3_source_branch_giit.json')
 
 
 def test_python_config_tags(datarecorder):
@@ -37,8 +38,9 @@ def test_python_config_tags(datarecorder):
     config = _read_config(
         'test/data/urllib3_tags_giit.json', step="docs")
 
-    datarecorder.recording_path = 'test/data/recordings/urllib3_tags_giit.json'
-    datarecorder.record(data=config)
+    datarecorder.record_data(
+        data=config,
+        recording_file='test/data/recordings/urllib3_tags_giit.json')
 
 
 def test_python_config_tags_fill(datarecorder):
@@ -56,8 +58,9 @@ def test_python_config_tags_fill(datarecorder):
 
     config = giit.config.fill_dict(context=context, config=config)
 
-    datarecorder.recording_path = 'test/data/recordings/urllib3_tags_giit_fill.json'
-    datarecorder.record(data=config)
+    datarecorder.record_data(
+        data=config,
+        recording_file='test/data/recordings/urllib3_tags_giit_fill.json')
 
 
 def test_expand_key():

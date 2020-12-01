@@ -1,6 +1,8 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import os
 import hashlib
-import json
 
 
 class GitRepository(object):

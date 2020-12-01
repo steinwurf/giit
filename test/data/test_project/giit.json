@@ -36,16 +36,6 @@
             "workingtree:output_path": "${build_path}/workingtree/landingpage"
         }
     },
-    "publish": {
-        "type": "sftp",
-        "hostname": "files.build.com",
-        "username": "giit",
-        "remote_path": "/tmp/www/docs/",
-        "local_path": "${build_path}/docs",
-        "exclude_patterns": [
-            "${build_path}/workingtree/*"
-        ]
-    },
     "gh_pages": {
         "type": "push",
         "target_branch": "gh-pages",

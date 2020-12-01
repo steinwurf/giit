@@ -1,8 +1,10 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import mock
 import os
 import sys
 
-import giit
 import giit.virtualenv as venv
 
 

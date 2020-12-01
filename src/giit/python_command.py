@@ -1,11 +1,7 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # encoding: utf-8
 
 import os
-import sys
-import hashlib
-
-import giit.config
 
 
 class PythonCommand(object):

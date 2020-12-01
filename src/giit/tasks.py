@@ -1,8 +1,6 @@
-import json
-import os
-import shutil
-import hashlib
-import sys
+#!/usr/bin/env python
+# encoding: utf-8
+
 import re
 import semantic_version
 import giit.config

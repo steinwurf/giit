@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 class FileInfo(object):
 
     def __init__(self, local_file, remote_file):

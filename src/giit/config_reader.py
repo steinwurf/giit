@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import giit.config
 import giit.variables_reader
 import giit.compat

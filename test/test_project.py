@@ -1,6 +1,7 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import logging
-import shutil
-import os
 import mock
 
 import giit.build
@@ -93,10 +94,6 @@ class FakeBuild(giit.build.Build):
     def build_factory(self, build_type):
 
         factory = super(FakeBuild, self).build_factory(build_type)
-
-        if build_type == 'sftp':
-            self.sftp = mock.Mock()
-            factory.provide_value(name='sftp', value=self.sftp, override=True)
 
         if build_type == 'push':
 
@@ -201,35 +198,6 @@ def _test_project(testdirectory, caplog):
 
     assert build_dir.contains_file('landing_page/add-giit/landing.txt')
     assert build_dir.contains_file('workingtree/landingpage/landing.txt')
-
-    # Run the "publish" step
-
-    build = FakeBuild(
-        fake_git_repository=project_dir.path(),
-        fake_git_branch=giit_branch,
-        step='publish', repository=project_dir.path(),
-        build_path=build_dir.path(), giit_path=giit_dir.path())
-
-    build.run()
-
-    build.sftp.connect.assert_called_once_with(
-        hostname="files.build.com", username="giit")
-
-    # We don't use os.path.join here since this is not what the
-    # variable substitution would do when taking the value from
-    # giit.json
-    #
-    # Note, to future testing geeks. It would probably be better
-    # to mock out at the paramiko.SSHClient() point instead.
-    # Since, then we would include a bit more of our own functionality
-    # in this integration test
-    local_path = build_dir.path() + u'/docs'
-    remote_path = u'/tmp/www/docs/'
-    exclude_patterns = [build_dir.path() + u'/workingtree/*']
-
-    build.sftp.transfer.assert_called_once_with(
-        local_path=local_path, remote_path=remote_path,
-        exclude_patterns=exclude_patterns)
 
     # Run the "gh_pages" step
 

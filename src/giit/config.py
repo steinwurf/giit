@@ -1,9 +1,11 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import os
 import schema
 import six
 import copy
-import collections
-import logging
+from collections import Mapping
 
 import giit.variables_reader
 
@@ -25,7 +27,7 @@ def _update_dict(dst, src):
     """
     for key, value in src.items():
 
-        if isinstance(value, collections.Mapping):
+        if isinstance(value, Mapping):
             # If the value is a dictionary recursively take
             # key of dst and src and continue the process
             dst[key] = _update_dict(dst.get(key, {}), value)

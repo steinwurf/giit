@@ -1,10 +1,7 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# encoding: utf-8
 
 import os
-import fnmatch
-import paramiko
-import shutil
 
 import giit.fileinfo
 import giit.filelist

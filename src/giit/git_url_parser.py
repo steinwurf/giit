@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # encoding: utf-8
 
 import re
@@ -62,11 +62,10 @@ class GitUrlParser(object):
 
         result = self.parser.match(url)
 
-        protocol=result.group('protocol')
-        host=result.group('host')
-        path=result.group('path')
+        protocol = result.group('protocol')
+        host = result.group('host')
+        path = result.group('path')
         owner, name = path.split('/')
 
-        return GitUrl(protocol=protocol, host=host, path=path, 
-          owner=owner, name=name)
-                      
+        return GitUrl(protocol=protocol, host=host, path=path,
+                      owner=owner, name=name)

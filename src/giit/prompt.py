@@ -1,10 +1,12 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import os
 import subprocess
 import time
 import logging
 
 from . import compat
-from . import check_output
 from . import run_result
 from . import run_error
 

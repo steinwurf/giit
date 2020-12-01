@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 # String used when printing a RunResult
 run_string = """RunResult
 command:\n{}

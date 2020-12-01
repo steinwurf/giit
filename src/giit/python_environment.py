@@ -1,5 +1,6 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # encoding: utf-8
+
 import sys
 import hashlib
 import os
