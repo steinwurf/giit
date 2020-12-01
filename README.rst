@@ -327,15 +327,15 @@ Optional Variables
 ==================
 In some cases you may want to have optional variables. These can be specified
 in a similar way as with non optional variables, the only difference is that you
-need to use the `£` character instead of the `$`character.
+need to use the ``£`` character instead of the ``$`` character.
 If the variable doesn't exists it simply be removed.
 
 
 Escaping Variable Replacements
 ==============================
-If you want to use either `$` or `£` as characters in the giit configuration file,
-you need to escape them. This is done using `$$` or `££` respctively.
-
+If you want to use either ``$`` or ``£`` as characters in the giit configuration
+file, you need to escape them.
+This is done using ``$$`` or ``££`` respectively.
 
 
 ``giit`` command line arguments

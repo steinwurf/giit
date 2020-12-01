@@ -68,6 +68,7 @@ setup(
     version=VERSION,
     description=("Wrapper git to automate running scripts."),
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     url='https://github.com/steinwurf/',
     author='Steinwurf ApS',
     author_email='contact@steinwurf.com',

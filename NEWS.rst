@@ -6,11 +6,11 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Patch: Really fix readme.
 
 6.0.1
 -----
-* Patch: fix readme.
+* Patch: Fix readme.
 
 6.0.0
 -----
