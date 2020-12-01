@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 from giit.git_url_parser import GitUrlParser
 
 

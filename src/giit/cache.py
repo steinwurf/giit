@@ -1,10 +1,8 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import json
 import os
-import shutil
-import hashlib
-import sys
-
-from . import run_error
 
 
 class Cache(object):

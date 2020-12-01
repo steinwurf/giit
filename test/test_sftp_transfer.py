@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import fnmatch
 import mock
-import shutil
 
 import giit.fileinfo
 import giit.filelist

@@ -1,6 +1,8 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import mock
 import os
-
 import giit.python_environment
 
 

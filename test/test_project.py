@@ -1,6 +1,7 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import logging
-import shutil
-import os
 import mock
 
 import giit.build

@@ -1,6 +1,7 @@
-import os
+#!/usr/bin/env python
+# encoding: utf-8
+
 import mock
-import logging
 
 import giit.factory
 

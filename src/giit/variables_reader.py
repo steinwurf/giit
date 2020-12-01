@@ -1,5 +1,7 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import string
-import os
 from collections import ChainMap as _ChainMap
 
 

@@ -1,4 +1,6 @@
-import giit
+#!/usr/bin/env python
+# encoding: utf-8
+
 from giit.cache import Cache
 
 

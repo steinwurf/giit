@@ -1,9 +1,11 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import os
 import schema
 import six
 import copy
 import collections
-import logging
 
 import giit.variables_reader
 

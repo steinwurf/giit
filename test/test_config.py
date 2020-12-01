@@ -1,5 +1,6 @@
-import os
-import mock
+#!/usr/bin/env python
+# encoding: utf-8
+
 import json
 import giit.config
 
