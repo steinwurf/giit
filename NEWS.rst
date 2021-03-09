@@ -6,7 +6,11 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Minor: Support other default branch names than master.
+* Minor: Change the order of task generated so that working directory is always
+  built first. This allows the giit run to fail quicker since it's usually the
+  current code which has errors.
+* Patch: Fix some spelling errors.
 
 6.0.2
 -----

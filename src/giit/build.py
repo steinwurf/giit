@@ -148,7 +148,7 @@ class Build(object):
 
         for key, value in self.extra_variables:
             if key not in config['variables']:
-                log.debug("Adding extra varible '%s': %s", key, value)
+                log.debug("Adding extra variable '%s': %s", key, value)
                 config['variables'][key] = value
 
         # Provide the different needed by the factory

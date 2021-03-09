@@ -72,6 +72,17 @@ class Git(object):
 
         self.prompt.run(args, cwd=cwd)
 
+    def default_branch(self, cwd):
+        """
+        Returns the default branch, this is usually master or main.
+        """
+        args = [self.git_binary, 'symbolic-ref', '--short HEAD']
+
+        result = self.prompt.run(args, cwd=cwd)
+
+        self.log.debug("default_branch=%s", result)
+        return result
+
     def current_branch(self, cwd):
         """
         Uses git.branch(...) but only returns the current one

@@ -15,13 +15,13 @@ def _read_config(json_path, step):
     return giit.config.validate_config(config=config)
 
 
-def test_python_config_master(datarecorder):
+def test_python_config_default_branch(datarecorder):
 
     config = _read_config(
-        'test/data/urllib3_master_giit.json', step="docs")
+        'test/data/urllib3_main_giit.json', step="docs")
     datarecorder.record_data(
         data=config,
-        recording_file='test/data/recordings/urllib3_master_giit.json')
+        recording_file='test/data/recordings/urllib3_main_giit.json')
 
 
 def test_python_config_source(datarecorder):
