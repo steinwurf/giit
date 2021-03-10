@@ -142,6 +142,11 @@ class GitRepository(object):
             self.git.clone(repository=self.repository, directory=repository_path,
                            cwd=self.clone_path)
 
+    def default_branch(self):
+        """ :return: The default branch for the repository """
+        assert os.path.isdir(self.repository_path())
+        return self.git.default_branch(cwd=self.repository_path())
+
     def remote_branches(self):
         """ :return: The remote branches specified for the repository """
         assert os.path.isdir(self.repository_path())

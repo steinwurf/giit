@@ -5,7 +5,7 @@ import os
 import schema
 import six
 import copy
-from collections import Mapping
+from collections.abc import Mapping
 
 import giit.variables_reader
 

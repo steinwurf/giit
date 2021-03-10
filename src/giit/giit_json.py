@@ -29,7 +29,7 @@ class GiitJson(object):
         if self.git_repository.workingtree_path():
             return self._from_workingtree()
         else:
-            return self._from_master()
+            return self._from_default_branch()
 
     def _from_path(self):
         self.log.info("Using giit.json from path %s",
@@ -62,11 +62,11 @@ class GiitJson(object):
         with open(config_path, 'r') as config_file:
             return json.load(config_file)
 
-    def _from_master(self):
-        self.log.info("Using giit.json from branch origin/master")
-
+    def _from_default_branch(self):
+        default_branch = self.git_repository.default_branch()
+        self.log.info(f"Using giit.json from default branch origin/{default_branch}")
         self.git_repository.checkout_branch(
-            remote_branch="origin/master")
+            remote_branch=f"origin/{default_branch}")
 
         config_path = os.path.join(
             self.git_repository.repository_path(), 'giit.json')

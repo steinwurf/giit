@@ -1,7 +1,7 @@
 {
     "docs": {
         "branches.regex.filters": [
-            "origin/master"
+            "origin/main"
         ],
         "tags.semver.filters": [
             ">=1.20"

@@ -3,7 +3,7 @@
   "branches": {
     "regex": {
       "filters": [
-        "origin/master"
+        "origin/main"
       ]
     },
     "source_branch": false

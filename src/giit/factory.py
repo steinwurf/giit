@@ -190,14 +190,14 @@ def require_task_generator(factory):
         task_generator.add_generator(no_git)
 
     else:
+        workingtree_generator = factory.require(name='workingtree_generator')
+        task_generator.add_generator(workingtree_generator)
+
         branch_generator = factory.require(name='branch_generator')
         task_generator.add_generator(branch_generator)
 
         tag_generator = factory.require(name='tag_generator')
         task_generator.add_generator(tag_generator)
-
-        workingtree_generator = factory.require(name='workingtree_generator')
-        task_generator.add_generator(workingtree_generator)
 
     return task_generator
 
@@ -234,11 +234,11 @@ def cache_factory(giit_path, unique_name):
     return factory
 
 
-def require_python_environement(factory):
+def require_python_environment(factory):
 
     prompt = factory.require(name='prompt')
     virtualenv = factory.require(name='virtualenv')
-    log = logging.getLogger(name='giit.python_environement')
+    log = logging.getLogger(name='giit.python_environment')
 
     return giit.python_environment.PythonEnvironment(
         prompt=prompt, virtualenv=virtualenv, log=log)
@@ -265,7 +265,7 @@ def build_factory():
         name='prompt', function=require_prompt)
 
     factory.provide_function(
-        name='python_environment', function=require_python_environement)
+        name='python_environment', function=require_python_environment)
 
     factory.provide_function(
         name='command', function=require_command)

@@ -4,9 +4,9 @@
 import os
 
 
-def test_urllib3_master(testdirectory):
+def test_urllib3_main(testdirectory):
 
-    config_file = testdirectory.copy_file('test/data/urllib3_master_giit.json')
+    config_file = testdirectory.copy_file('test/data/urllib3_main_giit.json')
 
     url = 'https://github.com/urllib3/urllib3.git'
 
@@ -62,4 +62,4 @@ def _test_urllib3_workingtree(testdirectory):
 
     print(testdirectory.run(cmd))
 
-    # ssert 0
+#     assert 0
