@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+6.1.0
+-----
 * Minor: Support other default branch names than master.
 * Minor: Change the order of tasks so that working directory is always
   built first. Then branches, followed by tags in ascending order.
