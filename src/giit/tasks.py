@@ -274,7 +274,7 @@ class GitTagGenerator(object):
         for semver_filter in semver_filters:
 
             spec = semantic_version.Spec(semver_filter)
-
+            print(tag)
             if spec.match(semantic_version.Version(tag, partial=semver_relaxed)):
                 return True
 

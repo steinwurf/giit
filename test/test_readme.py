@@ -21,7 +21,7 @@ def test_urllib3_main(testdirectory):
     print(testdirectory.run(cmd))
 
 
-def test_urllib3_tags(testdirectory):
+def _test_urllib3_tags(testdirectory):
 
     config_file = testdirectory.copy_file('test/data/urllib3_tags_giit.json')
 
@@ -38,7 +38,7 @@ def test_urllib3_tags(testdirectory):
     print(testdirectory.run(cmd))
 
 
-def test_urllib3_workingtree(testdirectory):
+def _test_urllib3_workingtree(testdirectory):
 
     config_file = testdirectory.copy_file(
         'test/data/urllib3_source_branch_giit.json')
