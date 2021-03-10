@@ -7,9 +7,10 @@ every change, see the Git log.
 Latest
 ------
 * Minor: Support other default branch names than master.
-* Minor: Change the order of task generated so that working directory is always
-  built first. This allows the giit run to fail quicker since it's usually the
-  current code which has errors.
+* Minor: Change the order of tasks so that working directory is always
+  built first. Then branches, followed by tags in ascending order.
+  Building the working directory first allows the giit run to fail quicker since
+  most issues are in the working directory.
 * Patch: Fix some spelling errors.
 
 6.0.2

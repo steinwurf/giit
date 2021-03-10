@@ -190,14 +190,14 @@ def require_task_generator(factory):
         task_generator.add_generator(no_git)
 
     else:
+        workingtree_generator = factory.require(name='workingtree_generator')
+        task_generator.add_generator(workingtree_generator)
+
         branch_generator = factory.require(name='branch_generator')
         task_generator.add_generator(branch_generator)
 
         tag_generator = factory.require(name='tag_generator')
         task_generator.add_generator(tag_generator)
-
-        workingtree_generator = factory.require(name='workingtree_generator')
-        task_generator.add_generator(workingtree_generator)
 
     return task_generator
 
