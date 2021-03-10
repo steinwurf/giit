@@ -1,0 +1,13 @@
+{
+    "docs": {
+        "branches.regex.filters": [
+            "origin/main"
+        ],
+        "scripts": [
+            "sphinx-build -b html . ${build_path}"
+        ],
+        "python_path": "${source_path}/src",
+        "cwd": "${source_path}/docs",
+        "requirements": "${source_path}/docs/requirements.txt"
+    }
+}
