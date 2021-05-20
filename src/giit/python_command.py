@@ -5,7 +5,6 @@ import os
 
 
 class PythonCommand(object):
-
     def __init__(self, environment, prompt, log):
         """
         :param config: A PythonConfig object
@@ -31,24 +30,24 @@ class PythonCommand(object):
         # that is OK if allow_failure is true
         try:
             env = self.environment.from_requirements(
-                requirements=config['requirements'],
-                pip_packages=config['pip_packages'])
+                requirements=config["requirements"], pip_packages=config["pip_packages"]
+            )
 
             if config["python_path"]:
-                if 'PYTHONPATH' in env:
-                    env['PYTHONPATH'] = os.path.pathsep.join(
-                        [config["python_path"], env['PYTHONPATH']])
+                if "PYTHONPATH" in env:
+                    env["PYTHONPATH"] = os.path.pathsep.join(
+                        [config["python_path"], env["PYTHONPATH"]]
+                    )
                 else:
-                    env['PYTHONPATH'] = config["python_path"]
+                    env["PYTHONPATH"] = config["python_path"]
 
             for script in config["scripts"]:
-                self.log.info('Python: %s', script)
-                self.prompt.run(command=script, cwd=config["cwd"],
-                                env=env)
+                self.log.info("Python: %s", script)
+                self.prompt.run(command=script, cwd=config["cwd"], env=env)
 
         except Exception:
 
             if config["allow_failure"]:
-                self.log.exception('PythonCommand')
+                self.log.exception("PythonCommand")
             else:
                 raise

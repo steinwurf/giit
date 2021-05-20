@@ -10,13 +10,13 @@ from setuptools import setup, find_packages
 
 cwd = os.path.abspath(os.path.dirname(__file__))
 
-with io.open(os.path.join(cwd, 'README.rst'), encoding='utf-8') as fd:
+with io.open(os.path.join(cwd, "README.rst"), encoding="utf-8") as fd:
     long_description = fd.read()
 
 
 def file_find_version(filepath):
 
-    with io.open(filepath, encoding='utf-8') as fd:
+    with io.open(filepath, encoding="utf-8") as fd:
 
         VERSION = None
 
@@ -34,7 +34,9 @@ def file_find_version(filepath):
             \d\.\d\.\d  #    Match digit.digit.digit e.g. 1.2.3
         )                # End of group
         '
-        """, re.VERBOSE)
+        """,
+            re.VERBOSE,
+        )
 
         for line in fd:
 
@@ -47,16 +49,14 @@ def file_find_version(filepath):
             break
 
         else:
-            sys.exit('No VERSION variable defined in {} - aborting!'.format(
-                filepath))
+            sys.exit("No VERSION variable defined in {} - aborting!".format(filepath))
 
     return VERSION
 
 
 def find_version():
 
-    wscript_VERSION = file_find_version(
-        filepath=os.path.join(cwd, 'wscript'))
+    wscript_VERSION = file_find_version(filepath=os.path.join(cwd, "wscript"))
 
     return wscript_VERSION
 
@@ -64,42 +64,40 @@ def find_version():
 VERSION = find_version()
 
 setup(
-    name='giit',
+    name="giit",
     version=VERSION,
     description=("Wrapper git to automate running scripts."),
     long_description=long_description,
-    long_description_content_type='text/x-rst',
-    url='https://github.com/steinwurf/',
-    author='Steinwurf ApS',
-    author_email='contact@steinwurf.com',
+    long_description_content_type="text/x-rst",
+    url="https://github.com/steinwurf/",
+    author="Steinwurf ApS",
+    author_email="contact@steinwurf.com",
     license='BSD 3-clause "New" or "Revised" License',
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Environment :: Plugins',
-        'Environment :: Web Environment',
-        'Framework :: Sphinx :: Extension',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
-        'Natural Language :: English',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python',
-        'Topic :: Documentation :: Sphinx',
-        'Topic :: Documentation',
-        'Topic :: Software Development :: Documentation',
-        'Topic :: Text Processing',
-        'Topic :: Utilities',
+        "Development Status :: 5 - Production/Stable",
+        "Environment :: Plugins",
+        "Environment :: Web Environment",
+        "Framework :: Sphinx :: Extension",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: BSD License",
+        "Natural Language :: English",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python",
+        "Topic :: Documentation :: Sphinx",
+        "Topic :: Documentation",
+        "Topic :: Software Development :: Documentation",
+        "Topic :: Text Processing",
+        "Topic :: Utilities",
     ],
     entry_points={
-        'console_scripts': ['giit=giit.__main__:cli'],
+        "console_scripts": ["giit=giit.__main__:cli"],
     },
-    keywords=('giit'),
-    packages=find_packages(where='src', exclude=['test']),
+    keywords=("giit"),
+    packages=find_packages(where="src", exclude=["test"]),
     package_dir={"": "src"},
-    install_requires=['click', 'semantic_version',
-                      'colorama', 'schema', 'six'],
-
+    install_requires=["click", "semantic_version", "colorama", "schema", "six"],
 )

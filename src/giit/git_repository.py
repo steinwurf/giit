@@ -6,9 +6,8 @@ import hashlib
 
 
 class GitRepository(object):
-
     def __init__(self, repository, git, git_url_parser, clone_path, log):
-        """ Create a new instance.
+        """Create a new instance.
 
         :param repository: The repository either as an URL or path to a
             local repository
@@ -33,8 +32,8 @@ class GitRepository(object):
         self._remote_branches = None
 
     def workingtree_path(self):
-        """ :return: The path to the workingtree if there is not workingtree
-                     return None
+        """:return: The path to the workingtree if there is not workingtree
+        return None
         """
         if os.path.isdir(self.repository):
             return self.repository
@@ -51,22 +50,22 @@ class GitRepository(object):
 
         git_info = self.git_url_parser.parse(url=git_url)
 
-        url_hash = hashlib.sha1(git_url.encode('utf-8')).hexdigest()[:6]
-        return git_info.name + '-' + url_hash
+        url_hash = hashlib.sha1(git_url.encode("utf-8")).hexdigest()[:6]
+        return git_info.name + "-" + url_hash
 
     def _unique_name_from_dir(self, directory):
-        """ Get the unique name from the directory contaning the repo """
+        """Get the unique name from the directory contaning the repo"""
         name = os.path.basename(directory)
-        dir_hash = hashlib.sha1(directory.encode('utf-8')).hexdigest()[:6]
-        return name + '-' + dir_hash
+        dir_hash = hashlib.sha1(directory.encode("utf-8")).hexdigest()[:6]
+        return name + "-" + dir_hash
 
     def repository_path(self):
-        """ :return: The path where we clone the repository """
+        """:return: The path where we clone the repository"""
 
         return os.path.join(self.clone_path, self.unique_name())
 
     def source_branch(self):
-        """ The source branch.
+        """The source branch.
 
         When passing a path to giit the source branch will be the branch
         currently checked out for that path. When passing an URL to giit we
@@ -103,28 +102,29 @@ class GitRepository(object):
                 "remote branches were found in "
                 "the repository: %s.\nYou probably just need to "
                 "push the branch you are working on:\n\n"
-                "\tgit push -u origin %s\n" % (current, remote_branches,
-                                               current))
+                "\tgit push -u origin %s\n" % (current, remote_branches, current)
+            )
 
             return None
 
         if matches > 1:
             raise RuntimeError(
-                "Several remote branches %s for %s" % (remote_branches, current))
+                "Several remote branches %s for %s" % (remote_branches, current)
+            )
 
         remote = match[0]
-        self.log.debug('source branch %s' % remote)
+        self.log.debug("source branch %s" % remote)
         return remote
 
     def clone(self):
-        """ Clones the repository.
-        """
+        """Clones the repository."""
 
         if not os.path.isdir(self.clone_path):
             os.makedirs(self.clone_path)
 
-        self.log.info("Using git version: %s",
-                      ".".join([str(i) for i in self.git.version()]))
+        self.log.info(
+            "Using git version: %s", ".".join([str(i) for i in self.git.version()])
+        )
 
         self.log.info("Using git repository: %s", self.repository)
 
@@ -134,39 +134,41 @@ class GitRepository(object):
 
         # Get the updates
         if os.path.isdir(repository_path):
-            self.log.info('Running: git pull in %s', repository_path)
+            self.log.info("Running: git pull in %s", repository_path)
             self.git.pull(cwd=repository_path)
 
         else:
-            self.log.info('Running: git clone into %s', repository_path)
-            self.git.clone(repository=self.repository, directory=repository_path,
-                           cwd=self.clone_path)
+            self.log.info("Running: git clone into %s", repository_path)
+            self.git.clone(
+                repository=self.repository,
+                directory=repository_path,
+                cwd=self.clone_path,
+            )
 
     def default_branch(self):
-        """ :return: The default branch for the repository """
+        """:return: The default branch for the repository"""
         assert os.path.isdir(self.repository_path())
         return self.git.default_branch(cwd=self.repository_path())
 
     def remote_branches(self):
-        """ :return: The remote branches specified for the repository """
+        """:return: The remote branches specified for the repository"""
         assert os.path.isdir(self.repository_path())
 
         if self._remote_branches is not None:
             return self._remote_branches
 
-        self._remote_branches = self.git.remote_branches(
-            cwd=self.repository_path())
+        self._remote_branches = self.git.remote_branches(cwd=self.repository_path())
 
         return self._remote_branches
 
     def tags(self):
-        """ :return: The tags specified for the repository """
+        """:return: The tags specified for the repository"""
         assert os.path.isdir(self.repository_path())
 
         return self.git.tags(cwd=self.repository_path())
 
     def checkout_branch(self, remote_branch):
-        """ Checkout a specific branch.
+        """Checkout a specific branch.
 
         The branch must be a remote-tracking branch.
         """
@@ -175,25 +177,30 @@ class GitRepository(object):
         remotes = self.remote_branches()
 
         if remote_branch not in remotes:
-            raise RuntimeError("No remote branch %s. These branches exits "
-                               "in the repository %s" % (remote_branch, remotes))
+            raise RuntimeError(
+                "No remote branch %s. These branches exits "
+                "in the repository %s" % (remote_branch, remotes)
+            )
 
         self._checkout(checkout=remote_branch)
 
     def checkout_tag(self, tag):
-        """ Checkout a specific tag."""
+        """Checkout a specific tag."""
 
         # Check if the tag exists
         tags = self.tags()
 
         if tag not in tags:
-            raise RuntimeError("No tag %s. These tags exits "
-                               "in the repository %s" % (tag, tags))
+            raise RuntimeError(
+                "No tag %s. These tags exits " "in the repository %s" % (tag, tags)
+            )
 
         self._checkout(checkout=tag)
 
     def _checkout(self, checkout):
         # https://stackoverflow.com/a/8888015/1717320
         self.git.reset(branch=checkout, hard=True, cwd=self.repository_path())
-        self.log.debug("GitRepository: on commit %s",
-                       self.git.current_commit(cwd=self.repository_path()))
+        self.log.debug(
+            "GitRepository: on commit %s",
+            self.git.current_commit(cwd=self.repository_path()),
+        )

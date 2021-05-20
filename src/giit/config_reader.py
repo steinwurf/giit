@@ -7,16 +7,16 @@ import giit.compat
 
 
 class ConfigReader(object):
-
     def __init__(self, config, context):
-        """ Create a new config reader.
+        """Create a new config reader.
 
         :param config: Config object containing the config
         :param context: Dict containing the context
         """
         self.config = config
         self.variables = giit.variables_reader.VariablesReader(
-            variables=config['variables'], context=context)
+            variables=config["variables"], context=context
+        )
 
     def __getattr__(self, attribute):
 

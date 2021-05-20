@@ -6,9 +6,8 @@ import re
 
 
 class Git(object):
-
     def __init__(self, git_binary, prompt, log):
-        """ Construct a new Git instance.
+        """Construct a new Git instance.
 
         :param git_binary: A string containing the path to a git executable.
         :param ctx: A Waf Context instance.
@@ -26,18 +25,18 @@ class Git(object):
             If the output looks like "git version 1.8.1.msysgit.1"
             we just extract the integers i.e. (1.8.1.1)
         """
-        args = [self.git_binary, 'version']
+        args = [self.git_binary, "version"]
         result = self.prompt.run(args)
 
-        int_list = [int(s) for s in re.findall('\\d+', result.stdout)]
+        int_list = [int(s) for s in re.findall("\\d+", result.stdout)]
         return tuple(int_list)
 
-    def current_commit(self, cwd, ref='HEAD'):
+    def current_commit(self, cwd, ref="HEAD"):
         """
         Runs 'git rev-parse HEAD' parse and return the commit id (SHA1) of the
         commit currently checked out into the working copy.
         """
-        args = [self.git_binary, 'rev-parse', ref]
+        args = [self.git_binary, "rev-parse", ref]
         result = self.prompt.run(args, cwd=cwd)
 
         return result.stdout.strip()
@@ -46,7 +45,7 @@ class Git(object):
         """
         Runs 'git clone <repository> <directory>' in the directory cwd.
         """
-        args = [self.git_binary, 'clone', repository, directory]
+        args = [self.git_binary, "clone", repository, directory]
         self.prompt.run(args, cwd=cwd)
 
     def pull(self, cwd):
@@ -54,7 +53,7 @@ class Git(object):
         Runs 'git pull' in the directory cwd
         """
 
-        args = [self.git_binary, 'pull']
+        args = [self.git_binary, "pull"]
         self.prompt.run(args, cwd=cwd)
 
     def fetch(self, repository, all, prune, cwd):
@@ -62,13 +61,13 @@ class Git(object):
         Runs 'git fetch' in the directory cwd
         """
 
-        args = [self.git_binary, 'fetch', repository]
+        args = [self.git_binary, "fetch", repository]
 
         if all:
-            args.append('--all')
+            args.append("--all")
 
         if prune:
-            args.append('--prune')
+            args.append("--prune")
 
         self.prompt.run(args, cwd=cwd)
 
@@ -76,7 +75,7 @@ class Git(object):
         """
         Returns the default branch, this is usually master or main.
         """
-        args = [self.git_binary, 'symbolic-ref', '--short HEAD']
+        args = [self.git_binary, "symbolic-ref", "--short HEAD"]
 
         result = self.prompt.run(args, cwd=cwd)
 
@@ -105,10 +104,10 @@ class Git(object):
         Runs 'git branch' and returns the current branch and a list of
         additional branches
         """
-        args = [self.git_binary, 'branch']
+        args = [self.git_binary, "branch"]
 
         if remote:
-            args.append('-r')
+            args.append("-r")
 
         result = self.prompt.run(args, cwd=cwd)
 
@@ -121,13 +120,13 @@ class Git(object):
 
     def _parse_branch_remote(self, result):
 
-        branch = result.stdout.split('\n')
-        branch = [b.strip() for b in branch if b != '']
+        branch = result.stdout.split("\n")
+        branch = [b.strip() for b in branch if b != ""]
 
         parsed = []
 
         for b in branch:
-            if 'origin/HEAD ->' in b:
+            if "origin/HEAD ->" in b:
                 continue
 
             parsed.append(b.strip())
@@ -136,31 +135,31 @@ class Git(object):
 
     def _parse_branch_local(self, result):
 
-        branch = result.stdout.split('\n')
-        branch = [b.strip() for b in branch if b != '']
+        branch = result.stdout.split("\n")
+        branch = [b.strip() for b in branch if b != ""]
 
-        current = ''
+        current = ""
         others = []
 
         for b in branch:
-            if b.startswith('*'):
+            if b.startswith("*"):
                 current = b[1:].strip()
             else:
                 others.append(b)
 
-        if current == '':
-            raise RuntimeError('Failed to locate current branch')
+        if current == "":
+            raise RuntimeError("Failed to locate current branch")
 
         return current, others
 
     def reset(self, hard, branch, cwd):
-        args = [self.git_binary, 'reset']
+        args = [self.git_binary, "reset"]
 
         if hard:
-            args.append('--hard')
+            args.append("--hard")
 
         args.append(branch)
-        args.append('--')
+        args.append("--")
 
         self.prompt.run(args, cwd=cwd)
 
@@ -178,10 +177,9 @@ class Git(object):
         # * (no branch)
         # * (detached from waf-1.9.7)
         # * (HEAD detached at waf-1.9.7)
-        return current.startswith('(') and current.endswith(')')
+        return current.startswith("(") and current.endswith(")")
 
-    def checkout(self, branch, cwd, force=False, worktree=None,
-                 orphan=False):
+    def checkout(self, branch, cwd, force=False, worktree=None, orphan=False):
         """
         Runs 'git checkout branch'
         """
@@ -189,16 +187,16 @@ class Git(object):
         args = [self.git_binary]
 
         if worktree:
-            args.append('--work-tree')
+            args.append("--work-tree")
             args.append(worktree)
 
-        args.append('checkout')
+        args.append("checkout")
 
         if orphan:
-            args.append('--orphan')
+            args.append("--orphan")
 
         if force:
-            args.append('--force')
+            args.append("--force")
 
         args.append(branch)
 
@@ -209,27 +207,27 @@ class Git(object):
         Returns true if the repository in directory cwd contains the
         .gitmodules file.
         """
-        return os.path.isfile(os.path.join(cwd, '.gitmodules'))
+        return os.path.isfile(os.path.join(cwd, ".gitmodules"))
 
     def sync_submodules(self, cwd):
         """
         Runs 'git submodule sync' in the directory cwd
         """
-        args = [self.git_binary, 'submodule', 'sync']
+        args = [self.git_binary, "submodule", "sync"]
         self.prompt.run(args, cwd=cwd)
 
     def init_submodules(self, cwd):
         """
         Runs 'git submodule init' in the directory cwd
         """
-        args = [self.git_binary, 'submodule', 'init']
+        args = [self.git_binary, "submodule", "init"]
         self.prompt.run(args, cwd=cwd)
 
     def update_submodules(self, cwd):
         """
         Runs 'git submodule update' in the directory cwd
         """
-        args = [self.git_binary, 'submodule', 'update']
+        args = [self.git_binary, "submodule", "update"]
         self.prompt.run(args, cwd=cwd)
 
     def pull_submodules(self, cwd):
@@ -248,11 +246,11 @@ class Git(object):
 
         :param cwd: The current working directory as a string
         """
-        args = [self.git_binary, 'tag', '-l']
+        args = [self.git_binary, "tag", "-l"]
         result = self.prompt.run(args, cwd=cwd)
 
-        tags = result.stdout.split('\n')
-        return [t for t in tags if t != '']
+        tags = result.stdout.split("\n")
+        return [t for t in tags if t != ""]
 
     def remote_origin_url(self, cwd):
         """
@@ -261,7 +259,7 @@ class Git(object):
 
         :param cwd: The current working directory as a string
         """
-        args = [self.git_binary, 'config', '--get', 'remote.origin.url']
+        args = [self.git_binary, "config", "--get", "remote.origin.url"]
         result = self.prompt.run(args, cwd=cwd)
 
         url = result.stdout.strip()

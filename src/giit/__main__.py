@@ -11,16 +11,26 @@ import giit.factory
 
 
 @click.command()
-@click.option('--build_path')
-@click.option('--giit_path')
-@click.option('--config_branch')
-@click.option('--config_path')
-@click.option('variables', '--variable', nargs=2, type=click.Tuple([str, str]), multiple=True)
-@click.option('-v', '--verbose', is_flag=True)
-@click.argument('step')
-@click.argument('repository')
-def cli(step, repository, build_path, giit_path, config_branch, config_path,
-        variables, verbose):
+@click.option("--build_path")
+@click.option("--giit_path")
+@click.option("--config_branch")
+@click.option("--config_path")
+@click.option(
+    "variables", "--variable", nargs=2, type=click.Tuple([str, str]), multiple=True
+)
+@click.option("-v", "--verbose", is_flag=True)
+@click.argument("step")
+@click.argument("repository")
+def cli(
+    step,
+    repository,
+    build_path,
+    giit_path,
+    config_branch,
+    config_path,
+    variables,
+    verbose,
+):
 
     build = giit.build.Build(
         step=step,
@@ -31,7 +41,8 @@ def cli(step, repository, build_path, giit_path, config_branch, config_path,
         config_branch=config_branch,
         config_path=config_path,
         variables=variables,
-        verbose=verbose)
+        verbose=verbose,
+    )
 
     try:
         build.run()

@@ -7,12 +7,12 @@ import sys
 import giit.prompt
 
 
-URL = 'https://github.com/pypa/virtualenv.git'
-VERSION = '15.1.0'
+URL = "https://github.com/pypa/virtualenv.git"
+VERSION = "15.1.0"
 
 
 class VirtualEnv(object):
-    """ Simple object which can be used to work within a virtualenv.
+    """Simple object which can be used to work within a virtualenv.
 
 
     venv = VirtualEnv.create(cwd='/tmp', runner=command.run, name=None)
@@ -32,8 +32,7 @@ class VirtualEnv(object):
 
         if not os.path.isdir(path):
 
-            args = ['python', '-m', 'virtualenv', path,
-                    '--no-site-packages']
+            args = ["python", "-m", "virtualenv", path, "--no-site-packages"]
 
             self.prompt.run(command=args)
 
@@ -41,12 +40,12 @@ class VirtualEnv(object):
         env = dict(os.environ)
 
         # Make sure the virtualenv Python executable is first in PATH
-        if sys.platform == 'win32':
-            python_path = os.path.join(path, 'Scripts')
+        if sys.platform == "win32":
+            python_path = os.path.join(path, "Scripts")
         else:
-            python_path = os.path.join(path, 'bin')
+            python_path = os.path.join(path, "bin")
 
-        env['PATH'] = os.path.pathsep.join([python_path, env['PATH']])
+        env["PATH"] = os.path.pathsep.join([python_path, env["PATH"]])
 
         return env
 
@@ -60,17 +59,16 @@ class VirtualEnv(object):
 
         if not os.path.isdir(repo_path):
 
-            log.debug('VirtualEnv: Cloning {} into {}'.format(URL, repo_path))
+            log.debug("VirtualEnv: Cloning {} into {}".format(URL, repo_path))
 
-            git.clone(repository=URL, directory=repo_path,
-                      cwd=clone_path)
+            git.clone(repository=URL, directory=repo_path, cwd=clone_path)
 
             git.checkout(branch=VERSION, cwd=repo_path)
 
-        log.debug('VirtualEnv: Using virtualenv from {}'.format(repo_path))
+        log.debug("VirtualEnv: Using virtualenv from {}".format(repo_path))
 
         env = dict(os.environ)
-        env.update({'PYTHONPATH': repo_path})
+        env.update({"PYTHONPATH": repo_path})
 
         p = giit.prompt.Prompt(env=env)
 
@@ -78,7 +76,6 @@ class VirtualEnv(object):
 
 
 class NameToPathAdapter(object):
-
     def __init__(self, virtualenv, virtualenv_root_path):
         self.virtualenv = virtualenv
         self.virtualenv_root_path = virtualenv_root_path
