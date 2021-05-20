@@ -1,7 +1,6 @@
-Test:
+name: Tests
 on: [push, pull_request]
 jobs:
-  # Builds performed in docker
   waf:
     strategy:
       fail-fast: false
