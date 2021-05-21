@@ -5,7 +5,7 @@ jobs:
     strategy:
       fail-fast: false
     runs-on: [self-hosted, docker]
-    name: Pyflakes Syntax Check
+    name: Flake8 Syntax Check
     container:
       image: python:3.9.5
       options: --user 0:0
@@ -17,7 +17,7 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v2
       - name: Check python syntax
-        uses: lgeiger/pyflakes-action@master
+        uses: cclauss/Find-Python-syntax-errors-action@master
   # Pip performed in docker
   pip:
     strategy:
