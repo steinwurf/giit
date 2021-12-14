@@ -49,7 +49,7 @@ def build(bld):
     # Create a virtualenv in the build folder and build universal wheel
     # Make sure the virtualenv Python module is in path
 
-    with bld.create_virtualenv() as venv:
+    with bld.create_venv() as venv:
         venv.run(cmd="pip install wheel")
         venv.run(cmd="python setup.py bdist_wheel --universal", cwd=bld.path)
 
@@ -82,7 +82,7 @@ def _find_wheel(ctx):
 def upload(bld):
     """Upload the built wheel to PyPI (the Python Package Index)"""
 
-    with bld.create_virtualenv() as venv:
+    with bld.create_venv() as venv:
         venv.run(cmd="pip install twine")
 
         wheel = _find_wheel(ctx=bld)
@@ -92,7 +92,7 @@ def upload(bld):
 
 def _pytest(bld):
 
-    with bld.create_virtualenv() as venv:
+    with bld.create_venv() as venv:
 
         venv.run("pip install pytest pytest-testdirectory mock")
         venv.run("pip install pytest-datarecorder")
