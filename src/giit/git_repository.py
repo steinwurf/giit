@@ -3,6 +3,7 @@
 
 import os
 import hashlib
+import shutil
 
 
 class GitRepository(object):
@@ -141,7 +142,7 @@ class GitRepository(object):
             except:
                 self.log.debug("git pull failed, deleting and cloning")
                 self.log.debug("Removing %s", repository_path)
-                os.rmdir(repository_path)
+                shutil.rmtree(repository_path)
 
         self.log.info("Running: git clone into %s", repository_path)
         self.git.clone(
