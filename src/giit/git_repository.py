@@ -135,22 +135,16 @@ class GitRepository(object):
 
         # Get the updates
         if os.path.isdir(repository_path):
-            try:
-                self.log.info("Running: git pull in %s", repository_path)
-                self.git.pull(cwd=repository_path)
-                return
-            except:
-                self.log.debug("git pull failed, deleting and cloning")
-                self.log.debug("Removing %s", repository_path)
-                os.chmod(repository_path, 0o777)
-                shutil.rmtree(repository_path)
+            self.log.info("Running: git pull in %s", repository_path)
+            self.git.pull(cwd=repository_path)
 
-        self.log.info("Running: git clone into %s", repository_path)
-        self.git.clone(
-            repository=self.repository,
-            directory=repository_path,
-            cwd=self.clone_path,
-        )
+        else:
+            self.log.info("Running: git clone into %s", repository_path)
+            self.git.clone(
+                repository=self.repository,
+                directory=repository_path,
+                cwd=self.clone_path,
+            )
 
     def default_branch(self):
         """:return: The default branch for the repository"""
