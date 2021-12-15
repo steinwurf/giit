@@ -7,7 +7,6 @@ import giit.config
 
 
 class NoGitTask(object):
-
     def __init__(self, context, config, command):
         self.context = context
         self.config = config
@@ -15,20 +14,17 @@ class NoGitTask(object):
 
     def run(self):
 
-        task_config = giit.config.fill_dict(
-            context=self.context, config=self.config)
+        task_config = giit.config.fill_dict(context=self.context, config=self.config)
 
         self.command.run(config=task_config)
 
     def __str__(self):
-        return "scope '{scope}'".format(
-            **self.context)
+        return "scope '{scope}'".format(**self.context)
 
 
 class NoGitGenerator(object):
-
     def __init__(self, command, config, build_path):
-        """ Create no_git task generator
+        """Create no_git task generator
 
         :param command: The command to run e.g. giit.python_command.PythonCommand
         :param config: The config e.g. giit.config.PythonConfig
@@ -41,24 +37,22 @@ class NoGitGenerator(object):
 
     def tasks(self):
 
-        if self.config['no_git'] == False:
+        if self.config["no_git"] == False:
             return []
 
         context = {
-            'scope': 'no_git',
-            'build_path': self.build_path,
+            "scope": "no_git",
+            "build_path": self.build_path,
         }
 
-        task = NoGitTask(
-            config=self.config, context=context, command=self.command)
+        task = NoGitTask(config=self.config, context=context, command=self.command)
 
         return [task]
 
 
 class WorkingtreeGenerator(object):
-
     def __init__(self, git_repository, command, config, build_path):
-        """ Create a tag generator.
+        """Create a tag generator.
 
         :param git_repository: A giit.git_repository.GitRepository instance
         :param command: The command to run e.g.giit.python_command.PythonCommand
@@ -73,21 +67,20 @@ class WorkingtreeGenerator(object):
 
     def tasks(self):
 
-        if self.config['workingtree'] == False:
+        if self.config["workingtree"] == False:
             return []
 
         if self.git_repository.workingtree_path():
 
             context = {
-                'scope': 'workingtree',
-                'name': 'workingtree',
-                'checkout': 'workingtree',
-                'build_path': self.build_path,
-                'source_path': self.git_repository.workingtree_path()
+                "scope": "workingtree",
+                "name": "workingtree",
+                "checkout": "workingtree",
+                "build_path": self.build_path,
+                "source_path": self.git_repository.workingtree_path(),
             }
 
-            task = NoGitTask(
-                config=self.config, context=context, command=self.command)
+            task = NoGitTask(config=self.config, context=context, command=self.command)
 
             return [task]
 
@@ -97,7 +90,6 @@ class WorkingtreeGenerator(object):
 
 
 class GitTask(object):
-
     def __init__(self, git_repository, config, context, command):
         self.git_repository = git_repository
         self.config = config
@@ -106,34 +98,31 @@ class GitTask(object):
 
     def run(self):
 
-        checkout = self.context['checkout']
-        scope = self.context['scope']
+        checkout = self.context["checkout"]
+        scope = self.context["scope"]
 
-        if scope == 'branch':
-            self.git_repository.checkout_branch(
-                remote_branch=checkout)
+        if scope == "branch":
+            self.git_repository.checkout_branch(remote_branch=checkout)
 
-        elif scope == 'tag':
-            self.git_repository.checkout_tag(
-                tag=checkout)
+        elif scope == "tag":
+            self.git_repository.checkout_tag(tag=checkout)
 
         else:
             raise RuntimeError("Unknown scope {}".format(scope))
 
-        task_config = giit.config.fill_dict(
-            context=self.context, config=self.config)
+        task_config = giit.config.fill_dict(context=self.context, config=self.config)
 
         self.command.run(config=task_config)
 
     def __str__(self):
         return "scope '{scope}' name '{name}' checkout '{checkout}'".format(
-            **self.context)
+            **self.context
+        )
 
 
 class GitBranchGenerator(object):
-
     def __init__(self, git_repository, command, config, build_path):
-        """ Create a branch generator.
+        """Create a branch generator.
 
         :param git_repository: A giit.git_repository.GitRepository instance
         :param repository_path: Path to where the repository is.
@@ -162,7 +151,7 @@ class GitBranchGenerator(object):
             # is available in the different steps. It is typically used
             # to control where in the build directory the output of
             # a command should go.
-            if branch.startswith('origin/'):
+            if branch.startswith("origin/"):
                 name = re.sub("^origin/", "", branch)
             else:
                 name = branch
@@ -171,24 +160,26 @@ class GitBranchGenerator(object):
             name = name.replace("/", "_")
 
             context = {
-                'scope': 'branch',
-                'name': name,
-                'checkout': branch,
-                'build_path': self.build_path,
-                'source_path': self.git_repository.repository_path()
+                "scope": "branch",
+                "name": name,
+                "checkout": branch,
+                "build_path": self.build_path,
+                "source_path": self.git_repository.repository_path(),
             }
 
-            task = GitTask(git_repository=self.git_repository,
-                           context=context,
-                           config=self.config,
-                           command=self.command)
+            task = GitTask(
+                git_repository=self.git_repository,
+                context=context,
+                config=self.config,
+                command=self.command,
+            )
 
             tasks.append(task)
 
         return tasks
 
     def _match_branch(self, branch):
-        """ Checks the branch name against the filters.
+        """Checks the branch name against the filters.
 
         :return: True if the branch matches the filter otherwise False
         """
@@ -212,9 +203,8 @@ class GitBranchGenerator(object):
 
 
 class GitTagGenerator(object):
-
     def __init__(self, git_repository, command, config, build_path):
-        """ Create a tag generator.
+        """Create a tag generator.
 
         :param git_repository: A giit.git_repository.GitRepository instance
         :param command: The command to run e.g.giit.python_command.PythonCommand
@@ -239,24 +229,26 @@ class GitTagGenerator(object):
                 continue
 
             context = {
-                'scope': 'tag',
-                'name': tag,
-                'checkout': tag,
-                'build_path': self.build_path,
-                'source_path': self.git_repository.repository_path()
+                "scope": "tag",
+                "name": tag,
+                "checkout": tag,
+                "build_path": self.build_path,
+                "source_path": self.git_repository.repository_path(),
             }
 
-            task = GitTask(git_repository=self.git_repository,
-                           context=context,
-                           config=self.config,
-                           command=self.command)
+            task = GitTask(
+                git_repository=self.git_repository,
+                context=context,
+                config=self.config,
+                command=self.command,
+            )
 
             tasks.append(task)
 
         return tasks
 
     def _match_tag(self, tag):
-        """ Checks the tag name against the filters.
+        """Checks the tag name against the filters.
 
         :return: True if the tag matches the filter otherwise False
         """
@@ -281,8 +273,9 @@ class GitTagGenerator(object):
 
 
 class TaskFactory(object):
-
-    def __init__(self, ):
+    def __init__(
+        self,
+    ):
         self.generators = []
 
     def add_generator(self, generator):

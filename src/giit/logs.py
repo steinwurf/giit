@@ -8,11 +8,11 @@ import logging
 
 def setup_logging(giit_path, verbose):
 
-    logger = logging.getLogger('giit')
+    logger = logging.getLogger("giit")
     logger.setLevel(logging.DEBUG)
 
     # Create file handler which logs even debug messages
-    logfile = os.path.join(giit_path, 'giit.log')
+    logfile = os.path.join(giit_path, "giit.log")
     fh = logging.FileHandler(logfile)
     fh.setLevel(logging.DEBUG)
 
@@ -22,10 +22,11 @@ def setup_logging(giit_path, verbose):
 
     # Create formatter and add it to the handlers
     fh_formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     fh.setFormatter(fh_formatter)
 
-    ch_formatter = logging.Formatter('%(message)s')
+    ch_formatter = logging.Formatter("%(message)s")
     ch.setFormatter(ch_formatter)
 
     # Add the handlers to the logger

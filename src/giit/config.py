@@ -11,7 +11,7 @@ import giit.variables_reader
 
 
 def _expand_key(keys, value):
-    """ Expands a list of keys and a value into a nested
+    """Expands a list of keys and a value into a nested
     dictionary where the last dictionary contains the value.
     """
 
@@ -22,7 +22,7 @@ def _expand_key(keys, value):
 
 
 def _update_dict(dst, src):
-    """ Takes the dictionary src and merges its keys into
+    """Takes the dictionary src and merges its keys into
     dst.
     """
     for key, value in src.items():
@@ -41,7 +41,7 @@ def _update_dict(dst, src):
 
 
 def _expand_dict(input):
-    """ Takes an input dictionary and expands all dot keys
+    """Takes an input dictionary and expands all dot keys
     into nested dictionaries
     """
 
@@ -49,7 +49,7 @@ def _expand_dict(input):
 
     for key in input.keys():
 
-        subkeys = key.split('.')
+        subkeys = key.split(".")
         value = input[key]
 
         if isinstance(value, dict):
@@ -63,7 +63,7 @@ def _expand_dict(input):
 
 
 def validate_config(config):
-    """ Takes as input a config object and validates it against
+    """Takes as input a config object and validates it against
     the giit schema
     """
 
@@ -80,58 +80,65 @@ def validate_config(config):
     # this config a no_git. The task generator will use this
     # information and generate a single task for just running
     # the script.
-    no_git = not any(key in config for key in [
-        'branches', 'tags', 'workingtree'])
+    no_git = not any(key in config for key in ["branches", "tags", "workingtree"])
 
     # Lets validate the config
-    default_branches = {'regex': {'filters': []},
-                        'source_branch': False}
+    default_branches = {"regex": {"filters": []}, "source_branch": False}
     default_tags = {
-        'regex': {'filters': []},
-        'semver': {'filters': [], 'relaxed': False}
+        "regex": {"filters": []},
+        "semver": {"filters": [], "relaxed": False},
     }
 
-    config_schema = schema.Schema({
-        'scripts': list,
-        schema.Optional('variables', default={}): dict,
-        schema.Optional('requirements', default=None): six.text_type,
-        schema.Optional('cwd', default=os.getcwd()): six.text_type,
-        schema.Optional('python_path', default=None): six.text_type,
-        schema.Optional('branches', default=default_branches): {
-            schema.Optional("regex", default=default_branches["regex"]): {"filters": list},
-            schema.Optional("source_branch", default=default_branches["source_branch"]): bool},
-        schema.Optional('workingtree', default=False): bool,
-        schema.Optional('allow_failure', default=False): bool,
-        schema.Optional('pip_packages', default=None): list,
-        schema.Optional('tags', default=default_tags): {
-            schema.Optional("regex", default=default_tags["regex"]): {
-                "filters": list
-            },
-            schema.Optional("semver", default=default_tags["semver"]): {
-                "filters": list,
+    config_schema = schema.Schema(
+        {
+            "scripts": list,
+            schema.Optional("variables", default={}): dict,
+            schema.Optional("requirements", default=None): six.text_type,
+            schema.Optional("cwd", default=os.getcwd()): six.text_type,
+            schema.Optional("python_path", default=None): six.text_type,
+            schema.Optional("branches", default=default_branches): {
+                schema.Optional("regex", default=default_branches["regex"]): {
+                    "filters": list
+                },
                 schema.Optional(
-                    "relaxed", default=default_tags["semver"]["relaxed"]): bool
-            }
+                    "source_branch", default=default_branches["source_branch"]
+                ): bool,
+            },
+            schema.Optional("workingtree", default=False): bool,
+            schema.Optional("allow_failure", default=False): bool,
+            schema.Optional("pip_packages", default=None): list,
+            schema.Optional("tags", default=default_tags): {
+                schema.Optional("regex", default=default_tags["regex"]): {
+                    "filters": list
+                },
+                schema.Optional("semver", default=default_tags["semver"]): {
+                    "filters": list,
+                    schema.Optional(
+                        "relaxed", default=default_tags["semver"]["relaxed"]
+                    ): bool,
+                },
+            },
         }
-    })
+    )
 
     config = config_schema.validate(config)
 
     # Inject the no_git configuration values
-    config['no_git'] = no_git
+    config["no_git"] = no_git
 
     return config
 
 
 def fill_dict(context, config):
-    """ Visit all the values in the dict and expand the string """
+    """Visit all the values in the dict and expand the string"""
 
     # Make sure we do not modify the original dicts.
     config = copy.deepcopy(config)
     context = copy.deepcopy(context)
 
     variables = giit.variables_reader.VariablesReader(
-        variables=config['variables'], context=context)
+        variables=config["variables"], context=context
+    )
 
     def visit(data):
 

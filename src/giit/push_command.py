@@ -10,7 +10,6 @@ import giit.copy_directory
 
 
 class PushCommand(object):
-
     def __init__(self, prompt, config, log):
         """
         :param config: A PushConfig object
@@ -21,20 +20,19 @@ class PushCommand(object):
         self.log = log
 
     def run(self, context):
-        """ Run the git push command based on the context
+        """Run the git push command based on the context
 
         :param context: A dict containing the context of the command
         """
 
         self.log.debug("context=%s", context)
 
-        reader = giit.config_reader.ConfigReader(
-            config=self.config, context=context)
+        reader = giit.config_reader.ConfigReader(config=self.config, context=context)
 
         # We allow / to be the root of the remote branch, but
         # we need to handle that a bit carefully. Since the
 
-        temp_path = os.path.join(tempfile.gettempdir(), 'giit_push')
+        temp_path = os.path.join(tempfile.gettempdir(), "giit_push")
 
         if os.path.isdir(temp_path):
             shutil.rmtree(temp_path, ignore_errors=True)
@@ -42,18 +40,17 @@ class PushCommand(object):
         directory = giit.copy_directory.CopyDirectory()
 
         from_path = reader.from_path
-        to_path = self._to_path(
-            repository_path=temp_path, to_path=reader.to_path)
+        to_path = self._to_path(repository_path=temp_path, to_path=reader.to_path)
 
         exclude_patterns = reader.exclude_patterns
 
-        directory.copy(from_path=from_path,
-                       to_path=to_path,
-                       exclude_patterns=exclude_patterns)
+        directory.copy(
+            from_path=from_path, to_path=to_path, exclude_patterns=exclude_patterns
+        )
 
         if reader.nojekyll:
-            nojekyll_path = os.path.join(temp_path, '.nojekyll')
-            open(nojekyll_path, 'a').close()
+            nojekyll_path = os.path.join(temp_path, ".nojekyll")
+            open(nojekyll_path, "a").close()
 
         command = ["git", "init"]
         self.prompt.run(command=command, cwd=temp_path)
@@ -64,21 +61,29 @@ class PushCommand(object):
         commit_name = reader.commit_name
         commit_email = reader.commit_email
 
-        command = ["git", "-c", "user.name='{}'".format(commit_name),
-                   "-c", "user.email='{}'".format(commit_email),
-                   "commit", "-m", "'giit push'"]
+        command = [
+            "git",
+            "-c",
+            "user.name='{}'".format(commit_name),
+            "-c",
+            "user.email='{}'".format(commit_email),
+            "commit",
+            "-m",
+            "'giit push'",
+        ]
         self.prompt.run(command=command, cwd=temp_path)
 
         git_url = reader.git_url
         target_branch = reader.target_branch
 
-        self.log.info("Pushing %s to branch %s", from_path,
-                      target_branch)
+        self.log.info("Pushing %s to branch %s", from_path, target_branch)
 
         command = [
-            'git', 'push', '--force',
+            "git",
+            "push",
+            "--force",
             "{}".format(git_url),
-            'master:{}'.format(target_branch)
+            "master:{}".format(target_branch),
         ]
 
         self.prompt.run(command=command, cwd=temp_path)
@@ -87,21 +92,21 @@ class PushCommand(object):
         if reader.publish_url:
 
             # Remove slash if present
-            publish_url = reader.publish_url.rstrip('/')
+            publish_url = reader.publish_url.rstrip("/")
 
             filelist = giit.filelist.FileList(
-                from_path=temp_path,
-                exclude_patterns=exclude_patterns)
+                from_path=temp_path, exclude_patterns=exclude_patterns
+            )
 
             for filename in filelist:
 
                 # On windows
-                filename = filename.replace('\\', '/')
+                filename = filename.replace("\\", "/")
 
-                if not filename.endswith('index.html'):
+                if not filename.endswith("index.html"):
                     continue
 
-                url = '/'.join([publish_url, filename])
+                url = "/".join([publish_url, filename])
                 self.log.info("Available URL: %s", url)
 
     @staticmethod
@@ -109,7 +114,7 @@ class PushCommand(object):
 
         if os.path.isabs(to_path):
             # Make path relative
-            to_path = '.' + to_path
+            to_path = "." + to_path
 
         path = os.path.join(repository_path, to_path)
         path = os.path.normpath(path)

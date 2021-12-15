@@ -8,9 +8,8 @@ import json
 
 
 class PythonEnvironment(object):
-
     def __init__(self, prompt, virtualenv, log):
-        """ Create new environments for running python commands.
+        """Create new environments for running python commands.
 
         Essentially, if needed, we just create a virtualenv and
         modify the path such that it is found before any system
@@ -25,7 +24,7 @@ class PythonEnvironment(object):
         self.log = log
 
     def from_requirements(self, requirements, pip_packages):
-        """ Create an environment from a requirements file.
+        """Create an environment from a requirements file.
 
         :param requirements: Path to the requirements
         """
@@ -33,7 +32,8 @@ class PythonEnvironment(object):
             return self.from_system()
 
         name = self._environment_name(
-            requirements=requirements, pip_packages=pip_packages)
+            requirements=requirements, pip_packages=pip_packages
+        )
 
         env = self.virtualenv.create_environment(name=name)
 
@@ -44,47 +44,45 @@ class PythonEnvironment(object):
 
         if requirements:
             # Install the requirements
-            command = 'python -m pip install -U -r {}'.format(requirements)
+            command = "python -m pip install -U -r {}".format(requirements)
             self.prompt.run(command=command, env=env)
 
         if pip_packages:
             # Install the pip packages
             pip_packages = " ".join(pip_packages)
-            command = 'python -m pip install -U {}'.format(pip_packages)
+            command = "python -m pip install -U {}".format(pip_packages)
 
             self.prompt.run(command=command, env=env)
 
         return env
 
     def from_system(self):
-        """ :return: The default environment. """
+        """:return: The default environment."""
         return dict(os.environ)
 
     def _environment_name(self, requirements, pip_packages):
-        """ Create an unique name for the environment. """
+        """Create an unique name for the environment."""
 
         # Read the contents of the requirements file, to ensure we
         # generate a new environment if it changes
         if requirements:
-            with open(requirements, 'r') as f:
+            with open(requirements, "r") as f:
                 requirements_content = f.read()
         else:
             requirements_content = ""
 
         # We need to make a hashable name
         info = json.dumps(
-            {'requirements': requirements_content,
-             'pip_packages': pip_packages})
+            {"requirements": requirements_content, "pip_packages": pip_packages}
+        )
 
         # The Python executable
         python = sys.executable
-        python_hash = hashlib.sha1(
-            python.encode('utf-8')).hexdigest()[:6]
+        python_hash = hashlib.sha1(python.encode("utf-8")).hexdigest()[:6]
 
         # The requirements
-        info_hash = hashlib.sha1(
-            info.encode('utf-8')).hexdigest()[:6]
+        info_hash = hashlib.sha1(info.encode("utf-8")).hexdigest()[:6]
 
-        name = 'giit-virtualenv-' + info_hash + '-' + python_hash
+        name = "giit-virtualenv-" + info_hash + "-" + python_hash
 
         return name
