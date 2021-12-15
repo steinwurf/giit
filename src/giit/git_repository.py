@@ -142,6 +142,7 @@ class GitRepository(object):
             except:
                 self.log.debug("git pull failed, deleting and cloning")
                 self.log.debug("Removing %s", repository_path)
+                os.chmod(repository_path, 0o777)
                 shutil.rmtree(repository_path)
 
         self.log.info("Running: git clone into %s", repository_path)
