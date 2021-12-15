@@ -2,11 +2,23 @@
 Introduction
 ============
 
-.. image:: https://ci.appveyor.com/api/projects/status/mld0fa79ox939fex/branch/master?svg=true
-    :target: https://ci.appveyor.com/project/SteinwurfApS/giit
+|PyPi| |Waf Python Tests| |Black| |Flake8| |Pip Install|
 
-.. image:: https://travis-ci.org/steinwurf/giit.svg?branch=master
-    :target: https://travis-ci.org/steinwurf/giit
+.. |PyPi| image:: https://badge.fury.io/py/giit.svg
+    :target: https://badge.fury.io/py/giit
+
+.. |Waf Python Tests| image:: https://github.com/steinwurf/giit/actions/workflows/waf.yml/badge.svg
+   :target: https://github.com/steinwurf/giit/actions/workflows/waf.yml
+
+.. |Flake8| image:: https://github.com/steinwurf/giit/actions/workflows/flake8.yml/badge.svg
+    :target: https://github.com/steinwurf/giit/actions/workflows/flake8.yml
+
+.. |Black| image:: https://github.com/steinwurf/giit/actions/workflows/black.yml/badge.svg
+      :target: https://github.com/steinwurf/giit/actions/workflows/black.yml
+
+.. |Pip Install| image:: https://github.com/steinwurf/giit/actions/workflows/pip.yml/badge.svg
+      :target: https://github.com/steinwurf/giit/actions/workflows/pip.yml
+
 
 The Git Iterator ``giit`` is a small tool for running commands on
 branches and tags of a git repository.

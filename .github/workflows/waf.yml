@@ -5,7 +5,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [Linux, Windows, MacOS_x64]
+        os: [Linux, Windows]
     runs-on: [self-hosted, "${{ matrix.os }}", builder]
     name: ${{ matrix.os }} Test
     env:
