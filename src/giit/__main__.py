@@ -15,6 +15,7 @@ import giit.factory
 @click.option("--giit_path")
 @click.option("--config_branch")
 @click.option("--config_path")
+@click.option("task_filters", "--task_filter", multiple=True)
 @click.option(
     "variables", "--variable", nargs=2, type=click.Tuple([str, str]), multiple=True
 )
@@ -28,6 +29,7 @@ def cli(
     giit_path,
     config_branch,
     config_path,
+    task_filters,
     variables,
     verbose,
 ):
@@ -40,6 +42,7 @@ def cli(
         giit_path=giit_path,
         config_branch=config_branch,
         config_path=config_path,
+        task_filters=task_filters,
         variables=variables,
         verbose=verbose,
     )

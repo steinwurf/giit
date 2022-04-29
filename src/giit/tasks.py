@@ -12,6 +12,9 @@ class NoGitTask(object):
         self.config = config
         self.command = command
 
+    def name(self):
+        return self.context["name"]
+
     def run(self):
 
         task_config = giit.config.fill_dict(context=self.context, config=self.config)
@@ -42,6 +45,7 @@ class NoGitGenerator(object):
 
         context = {
             "scope": "no_git",
+            "name": "no_git",
             "build_path": self.build_path,
         }
 
@@ -113,6 +117,9 @@ class GitTask(object):
         task_config = giit.config.fill_dict(context=self.context, config=self.config)
 
         self.command.run(config=task_config)
+
+    def name(self):
+        return self.context["name"]
 
     def __str__(self):
         return "scope '{scope}' name '{name}' checkout '{checkout}'".format(
