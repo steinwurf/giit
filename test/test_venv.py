@@ -5,22 +5,7 @@ import mock
 import os
 import sys
 
-import giit.virtualenv as venv
-
-
-def test_virtualenv_from_git(testdirectory):
-
-    git = mock.Mock()
-    log = mock.Mock()
-    clone_path = testdirectory.path()
-
-    virtualenv = venv.VirtualEnv.from_git(git=git, clone_path=clone_path, log=log)
-
-    # The following directory should be in the PYTHONPATH of the virtualenv
-    # prompt
-    virtualenv_path = os.path.join(clone_path, venv.VERSION)
-
-    assert virtualenv.prompt.env["PYTHONPATH"] == virtualenv_path
+import giit.venv as venv
 
 
 def test_virtualenv(testdirectory):
@@ -33,9 +18,7 @@ def test_virtualenv(testdirectory):
 
     env = virtualenv.create_environment(path=path)
 
-    prompt.run.assert_called_once_with(
-        command=["python", "-m", "virtualenv", path, "--no-site-packages"]
-    )
+    prompt.run.assert_called_once_with(command=["python", "-m", "venv", path])
 
     # Depending on our platform the path should be modified
     if sys.platform == "win32":

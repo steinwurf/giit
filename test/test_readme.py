@@ -4,7 +4,7 @@
 import os
 
 
-def test_urllib3_main(testdirectory):
+def _test_urllib3_main(testdirectory):
 
     config_file = testdirectory.copy_file("test/data/urllib3_main_giit.json")
 
