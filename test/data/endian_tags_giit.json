@@ -1,12 +1,15 @@
 {
     "docs": {
         "branches.regex.filters": [
-            "origin/main"
+            "origin/master"
         ],
+        "tags.semver.filters": [
+            ">12.0.0,<=12.1.0"
+        ],
+        "tags.semver.relaxed": false,
         "scripts": [
-            "sphinx-build -b html . ${build_path}"
+            "sphinx-build -b html . ${build_path}/${name}"
         ],
-        "python_path": "${source_path}/src",
         "cwd": "${source_path}/docs",
         "requirements": "${source_path}/docs/requirements.txt"
     }

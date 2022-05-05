@@ -4,12 +4,6 @@
 import os
 import sys
 
-import giit.prompt
-
-
-URL = "https://github.com/pypa/virtualenv.git"
-VERSION = "15.1.0"
-
 
 class VirtualEnv(object):
     """Simple object which can be used to work within a virtualenv.
@@ -32,7 +26,7 @@ class VirtualEnv(object):
 
         if not os.path.isdir(path):
 
-            args = ["python", "-m", "virtualenv", path, "--no-site-packages"]
+            args = ["python", "-m", "venv", path]
 
             self.prompt.run(command=args)
 
@@ -48,31 +42,6 @@ class VirtualEnv(object):
         env["PATH"] = os.path.pathsep.join([python_path, env["PATH"]])
 
         return env
-
-    @staticmethod
-    def from_git(git, clone_path, log):
-
-        if not os.path.isdir(clone_path):
-            os.makedirs(clone_path)
-
-        repo_path = os.path.join(clone_path, VERSION)
-
-        if not os.path.isdir(repo_path):
-
-            log.debug("VirtualEnv: Cloning {} into {}".format(URL, repo_path))
-
-            git.clone(repository=URL, directory=repo_path, cwd=clone_path)
-
-            git.checkout(branch=VERSION, cwd=repo_path)
-
-        log.debug("VirtualEnv: Using virtualenv from {}".format(repo_path))
-
-        env = dict(os.environ)
-        env.update({"PYTHONPATH": repo_path})
-
-        p = giit.prompt.Prompt(env=env)
-
-        return VirtualEnv(prompt=p, log=log)
 
 
 class NameToPathAdapter(object):

@@ -6,7 +6,8 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Major: Added support for python 3.10.x, this required a switch from
+  virtualenv to venv for virtual enviroment management.
 
 6.1.0
 -----
