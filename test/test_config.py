@@ -17,33 +17,33 @@ def _read_config(json_path, step):
 
 def test_python_config_default_branch(datarecorder):
 
-    config = _read_config("test/data/urllib3_main_giit.json", step="docs")
+    config = _read_config("test/data/endian_master_giit.json", step="docs")
     datarecorder.record_data(
-        data=config, recording_file="test/data/recordings/urllib3_main_giit.json"
+        data=config, recording_file="test/data/recordings/endian_master_giit.json"
     )
 
 
 def test_python_config_source(datarecorder):
 
-    config = _read_config("test/data/urllib3_source_branch_giit.json", step="docs")
+    config = _read_config("test/data/endian_source_branch_giit.json", step="docs")
     datarecorder.record_data(
         data=config,
-        recording_file="test/data/recordings/urllib3_source_branch_giit.json",
+        recording_file="test/data/recordings/endian_source_branch_giit.json",
     )
 
 
 def test_python_config_tags(datarecorder):
 
-    config = _read_config("test/data/urllib3_tags_giit.json", step="docs")
+    config = _read_config("test/data/endian_tags_giit.json", step="docs")
 
     datarecorder.record_data(
-        data=config, recording_file="test/data/recordings/urllib3_tags_giit.json"
+        data=config, recording_file="test/data/recordings/endian_tags_giit.json"
     )
 
 
 def test_python_config_tags_fill(datarecorder):
 
-    config = _read_config("test/data/urllib3_tags_giit.json", step="docs")
+    config = _read_config("test/data/endian_tags_giit.json", step="docs")
 
     context = {
         "scope": "tag",
@@ -56,7 +56,7 @@ def test_python_config_tags_fill(datarecorder):
     config = giit.config.fill_dict(context=context, config=config)
 
     datarecorder.record_data(
-        data=config, recording_file="test/data/recordings/urllib3_tags_giit_fill.json"
+        data=config, recording_file="test/data/recordings/endian_tags_giit_fill.json"
     )
 
 

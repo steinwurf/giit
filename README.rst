@@ -55,8 +55,8 @@ Now install the ``giit`` package::
     $ pip install giit
 
 
-Example: ``urllib3``
---------------------
+Example: C++ project documentation ``endian``
+---------------------------------------------
 
 ``giit`` uses a ``giit.json`` file to describe the different steps::
 
@@ -68,32 +68,30 @@ Example: ``urllib3``
             "scripts": [
                 "sphinx-build -b html . ${build_path}"
             ],
-            "python_path": "${source_path}/src",
             "cwd": "${source_path}/docs",
             "requirements": "${source_path}/docs/requirements.txt"
         }
     }
 
-Lets build the ``urllib3`` Sphinx documentation
-(https://urllib3.readthedocs.io/en/latest/) by running ``giit``::
+Lets build the ``endian`` Sphinx documentation
+(https://steinwurf-endian.netlify.app/latest/) by running ``giit``::
 
-    giit docs https://github.com/urllib3/urllib3.git --config_path ./giit.json
+    giit docs https://github.com/steinwurf/endian.git --config_path ./giit.json
 
 You should now seem something like::
 
     Lets go: docs
-    Building into: /tmp/giit/data/build/urllib3-b1919a
-    Using git version: 2.17.1
-    Using git repository: https://github.com/urllib3/urllib3.git
-    Running: git clone into /tmp/giit/data/clones/urllib3-b1919a
-    Using giit.json from path ./giit.json
+    Building into: /tmp/giit/data/build/endian-30a816
+    Using git version: 2.34.1
+    Using git repository: https://github.com/steinwurf/endian.git
+    Running: git clone into /tmp/giit/data/clones/endian-30a816
+    Using giit.json from path /tmp/giit_cwd/giit.json
     Tasks generated 1
     Running task [1/1]: scope 'branch' name 'master' checkout 'origin/master'
-    Python: sphinx-build -b html . /tmp/giit/data/build/urllib3-b1919a
+    Python: sphinx-build -b html . /tmp/giit/data/build/endian-30a816
 
-
-If you visit ``/tmp/giit/build/urllib3-b1919a`` with your web browser
-you should be able to see the ``urllib3`` Sphinx documentation.
+If you visit ``/tmp/giit/data/build/endian-30a816`` with your web browser
+you should be able to see the ``endian`` Sphinx documentation.
 
 ``giit.json`` location
 ======================
@@ -108,11 +106,11 @@ The following outlines the rules:
    using ``--config_branch``.
 
 2. If no config path or branch is passed by the user and ``giit`` is
-   invoked with an URL (like in the ``urllib3`` example).
+   invoked with an URL (like in the ``endian`` example).
 
    Example::
 
-        giit docs https://github.com/urllib3/urllib3.git
+        giit docs https://github.com/endian/endian.git
 
    In this case ``giit`` will look at the root of the repository in
    ``origin/master`` branch for a ``giit.json``.
@@ -128,7 +126,7 @@ The following outlines the rules:
 Filters and tasks
 =================
 
-As we saw in the ``urllib3`` example a single task is generated for building
+As we saw in the ``endian`` example a single task is generated for building
 the ``origin/master`` branch. We can generate more tasks by setting up more
 filters.
 
@@ -195,9 +193,8 @@ can find more examples of requirement specifications there.
 ``tags.semver.relaxed``
 -----------------------
 
-If a project uses "kind-of" semver, like ``urllib3`` which has
-versions such as ``1.20`` you can set the semver filter in relaxed
-mode and still use the filters.
+If a project uses "kind-of" semver, such as ``1.20``, you can set the
+semver filter in relaxed mode and still use the filters.
 
 For example (in ``giit.json``)::
 
@@ -224,7 +221,7 @@ If you pass no filter e.g. ``tags``, ``branches`` or ``workingtree``, then
 Context and variables
 =====================
 
-In the ``urllib3`` example you may have noticed what we used the
+In the ``endian`` example you may have noticed what we used the
 ``${build_path}`` and ``${source_path}`` in the ``json`` configuration.
 
 These denote variables that will be substituted when running the
