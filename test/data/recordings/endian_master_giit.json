@@ -3,28 +3,26 @@
   "branches": {
     "regex": {
       "filters": [
-        "origin/main"
+        "origin/master"
       ]
     },
     "source_branch": false
   },
-  "cwd": "/tmp/clone/docs",
+  "cwd": "${source_path}/docs",
   "no_git": false,
   "pip_packages": null,
-  "python_path": "/tmp/clone/src",
-  "requirements": "/tmp/clone/docs/requirements.txt",
+  "python_path": null,
+  "requirements": "${source_path}/docs/requirements.txt",
   "scripts": [
-    "sphinx-build -b html . /tmp/build/1.0.0"
+    "sphinx-build -b html . ${build_path}"
   ],
   "tags": {
     "regex": {
       "filters": []
     },
     "semver": {
-      "filters": [
-        ">=1.20"
-      ],
-      "relaxed": true
+      "filters": [],
+      "relaxed": false
     }
   },
   "variables": {},

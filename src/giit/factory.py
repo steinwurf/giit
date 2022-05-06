@@ -10,7 +10,7 @@ import giit.git
 import giit.git_url_parser
 import giit.git_repository
 import giit.cache
-import giit.virtualenv
+import giit.venv
 import giit.tasks
 import giit.config
 import giit.python_environment
@@ -77,15 +77,12 @@ def require_git_url_parser(factory):
 
 
 def require_virtualenv(factory):
-
-    git = factory.require(name="git")
-    clone_path = factory.require(name="clone_path")
     virtualenv_root_path = factory.require(name="virtualenv_root_path")
     log = logging.getLogger(name="giit.virtualenv")
+    prompt = factory.require(name="prompt")
+    venv = giit.venv.VirtualEnv(prompt=prompt, log=log)
 
-    venv = giit.virtualenv.VirtualEnv.from_git(git=git, clone_path=clone_path, log=log)
-
-    venv = giit.virtualenv.NameToPathAdapter(
+    venv = giit.venv.NameToPathAdapter(
         virtualenv=venv, virtualenv_root_path=virtualenv_root_path
     )
 
