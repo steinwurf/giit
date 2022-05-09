@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+7.1.0
+-----
 * Minor: Added task_filter argument for filtering tasks on the commandline.
 
 7.0.0
