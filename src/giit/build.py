@@ -3,6 +3,7 @@
 
 import tempfile
 import os
+import fnmatch
 import logging
 import shutil
 
@@ -21,6 +22,7 @@ class Build(object):
         giit_path=None,
         config_path=None,
         config_branch=None,
+        task_filters=None,
         variables=[],
         verbose=False,
     ):
@@ -32,6 +34,7 @@ class Build(object):
         self.giit_path = self._expand_path(path=giit_path)
         self.config_path = self._expand_path(path=config_path)
         self.config_branch = config_branch
+        self.task_filters = task_filters
         self.extra_variables = variables
         self.verbose = verbose
 
@@ -137,10 +140,20 @@ class Build(object):
 
         log.info("Tasks generated %d", len(tasks))
 
+        if self.task_filters is not None:
+            log.info("Task filters: %s", ", ".join(self.task_filters))
+            filtered_tasks = []
+            for task in tasks:
+                if any(
+                    fnmatch.fnmatch(task.name(), filter) for filter in self.task_filters
+                ):
+                    filtered_tasks.append(task)
+                else:
+                    log.info("Skipped task: %s", task)
+            tasks = filtered_tasks
+
         for idx, task in enumerate(tasks, 1):
-
             log.info("Running task [%d/%d]: %s", idx, len(tasks), task)
-
             task.run()
 
     def _generate_tasks(self, config, git_repository):

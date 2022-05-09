@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import os
-
 
 def test_endian_master(testdirectory):
 
