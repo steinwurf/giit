@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+7.2.0
+-----
 * Minor: Added support for using virtualenv as fallback for venv.
 
 7.1.1
