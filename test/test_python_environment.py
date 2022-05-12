@@ -9,17 +9,17 @@ import giit.python_environment
 def test_python_environment(testdirectory):
 
     prompt = mock.Mock()
-    virtualenv = mock.Mock()
+    virtual_environment = mock.Mock()
     log = mock.Mock()
     requirements = testdirectory.write_text(
-        filename="requirements.txt", data=u"sphinx", encoding="utf-8"
+        filename="requirements.txt", data="sphinx", encoding="utf-8"
     )
 
     env = {"PATH": "/oki/doki"}
-    virtualenv.create_environment.side_effect = lambda name: env
+    virtual_environment.create_environment.side_effect = lambda name: env
 
     python_environment = giit.python_environment.PythonEnvironment(
-        prompt=prompt, virtualenv=virtualenv, log=log
+        prompt=prompt, virtual_environment=virtual_environment, log=log
     )
 
     venv = python_environment.from_requirements(

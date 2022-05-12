@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 import os
+import sys
 import logging
 import copy
 
@@ -17,6 +18,7 @@ import giit.python_environment
 import giit.python_command
 import giit.push_config
 import giit.push_command
+import giit.name_to_path_adapter
 
 
 class Factory(object):
@@ -76,17 +78,37 @@ def require_git_url_parser(factory):
     return giit.git_url_parser.GitUrlParser()
 
 
-def require_virtualenv(factory):
-    virtualenv_root_path = factory.require(name="virtualenv_root_path")
-    log = logging.getLogger(name="giit.virtualenv")
-    prompt = factory.require(name="prompt")
-    venv = giit.venv.VirtualEnv(prompt=prompt, log=log)
+def require_virtual_environment(factory):
+    root_path = factory.require(name="virtualenv_root_path")
 
-    venv = giit.venv.NameToPathAdapter(
-        virtualenv=venv, virtualenv_root_path=virtualenv_root_path
+    prompt = factory.require(name="prompt")
+    log = logging.getLogger(name="giit.virtual_environment")
+    try:
+        # Check if venv is properly installed - debian based systems
+        # may need to install the python3-venv package for this to work.
+        import ensurepip
+
+        # Silence pyflakes on unused imports
+        assert ensurepip
+
+        virtual_environment = giit.venv.VEnv(prompt=prompt, log=log)
+    except ImportError:
+        if sys.version_info >= (3, 10):
+            raise RuntimeError(
+                "VEnv is required for Python 3.10 or higher. "
+                "Cannot create virtualenv due to missing Python support. "
+                "If on Debian/Ubuntu virtualenv support can be added by "
+                "running 'apt install python3-venv'."
+            )
+        else:
+            log.info("venv not installed, falling back to virtualenv")
+        virtual_environment = giit.virtualenv.VirtualEnv(prompt=prompt, log=log)
+
+    virtual_environment = giit.name_to_path_adapter.NameToPathAdapter(
+        env=virtual_environment, root_path=root_path
     )
 
-    return venv
+    return virtual_environment
 
 
 def require_git_repository(factory):
@@ -244,11 +266,11 @@ def cache_factory(giit_path, unique_name):
 def require_python_environment(factory):
 
     prompt = factory.require(name="prompt")
-    virtualenv = factory.require(name="virtualenv")
+    virtual_environment = factory.require(name="virtual_environment")
     log = logging.getLogger(name="giit.python_environment")
 
     return giit.python_environment.PythonEnvironment(
-        prompt=prompt, virtualenv=virtualenv, log=log
+        prompt=prompt, virtual_environment=virtual_environment, log=log
     )
 
 
@@ -289,7 +311,9 @@ def build_factory():
     factory.provide_function(name="git_url_parser", function=require_git_url_parser)
     factory.provide_function(name="git", function=require_git)
 
-    factory.provide_function(name="virtualenv", function=require_virtualenv)
+    factory.provide_function(
+        name="virtual_environment", function=require_virtual_environment
+    )
 
     factory.provide_function(
         name="require_task_generator", function=require_task_generator
