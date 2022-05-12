@@ -140,7 +140,7 @@ class Build(object):
 
         log.info("Tasks generated %d", len(tasks))
 
-        if self.task_filters is not None:
+        if self.task_filters:
             log.info("Task filters: %s", ", ".join(self.task_filters))
             filtered_tasks = []
             for task in tasks:
