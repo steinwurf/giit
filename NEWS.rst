@@ -6,7 +6,7 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Patch: Fix task_filter incorrectly skipping all tasks.
 
 7.1.0
 -----
