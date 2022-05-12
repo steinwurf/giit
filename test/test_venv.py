@@ -8,15 +8,15 @@ import sys
 import giit.venv as venv
 
 
-def test_virtualenv(testdirectory):
+def test_venv(testdirectory):
 
     prompt = mock.Mock()
     log = mock.Mock()
     path = os.path.join(testdirectory.path(), "venv")
 
-    virtualenv = venv.VirtualEnv(prompt=prompt, log=log)
+    virtual_environment = venv.VEnv(prompt=prompt, log=log)
 
-    env = virtualenv.create_environment(path=path)
+    env = virtual_environment.create_environment(path=path)
 
     prompt.run.assert_called_once_with(command=["python", "-m", "venv", path])
 
@@ -28,19 +28,3 @@ def test_virtualenv(testdirectory):
 
     # We should be first in the PATH environment variable
     assert env["PATH"].startswith(expected_path)
-
-
-def test_virtualenv_name_to_path_adapter(testdirectory):
-
-    virtualenv = mock.Mock()
-    virtualenv_root_path = testdirectory.path()
-
-    adapter = venv.NameToPathAdapter(
-        virtualenv=virtualenv, virtualenv_root_path=virtualenv_root_path
-    )
-
-    adapter.create_environment(name="ok")
-
-    virtualenv_path = os.path.join(virtualenv_root_path, "ok")
-
-    virtualenv.create_environment.assert_called_once_with(path=virtualenv_path)

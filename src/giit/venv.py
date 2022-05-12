@@ -5,11 +5,11 @@ import os
 import sys
 
 
-class VirtualEnv(object):
-    """Simple object which can be used to work within a virtualenv.
+class VEnv(object):
+    """Simple object which can be used to work within a venv.
 
 
-    venv = VirtualEnv.create(cwd='/tmp', runner=command.run, name=None)
+    venv = VEnv.create(cwd='/tmp', runner=command.run, name=None)
 
     It is important to be aware of the cwd parameter, e.g. if you access files
     etc. it will be relative to cwd. So if cwd is the 'build' directory and you
@@ -42,15 +42,3 @@ class VirtualEnv(object):
         env["PATH"] = os.path.pathsep.join([python_path, env["PATH"]])
 
         return env
-
-
-class NameToPathAdapter(object):
-    def __init__(self, virtualenv, virtualenv_root_path):
-        self.virtualenv = virtualenv
-        self.virtualenv_root_path = virtualenv_root_path
-
-    def create_environment(self, name):
-
-        path = os.path.join(self.virtualenv_root_path, name)
-
-        return self.virtualenv.create_environment(path=path)
