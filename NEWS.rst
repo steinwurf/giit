@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+7.2.2
+-----
 * Patch: Use virtualenv from git.
 
 7.2.1
