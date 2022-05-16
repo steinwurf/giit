@@ -6,7 +6,7 @@ every change, see the Git log.
 
 Latest
 ------
-* Patch: Added missing include.
+* Patch: Added missing import.
 
 7.2.0
 -----
