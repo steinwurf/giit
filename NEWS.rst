@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+7.2.1
+-----
 * Patch: Added missing import.
 
 7.2.0
