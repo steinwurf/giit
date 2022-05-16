@@ -82,7 +82,6 @@ def require_git_url_parser(factory):
 def require_virtual_environment(factory):
     root_path = factory.require(name="virtualenv_root_path")
 
-    prompt = factory.require(name="prompt")
     log = logging.getLogger(name="giit.virtual_environment")
     try:
         # Check if venv is properly installed - debian based systems
@@ -92,6 +91,7 @@ def require_virtual_environment(factory):
         # Silence pyflakes on unused imports
         assert ensurepip
 
+        prompt = factory.require(name="prompt")
         virtual_environment = giit.venv.VEnv(prompt=prompt, log=log)
     except ImportError:
         if sys.version_info >= (3, 10):
@@ -103,7 +103,11 @@ def require_virtual_environment(factory):
             )
         else:
             log.info("venv not installed, falling back to virtualenv")
-        virtual_environment = giit.virtualenv.VirtualEnv(prompt=prompt, log=log)
+            git = factory.require(name="git")
+            clone_path = factory.require(name="clone_path")
+            virtual_environment = giit.virtualenv.VirtualEnv.from_git(
+                git=git, clone_path=clone_path, log=log
+            )
 
     virtual_environment = giit.name_to_path_adapter.NameToPathAdapter(
         env=virtual_environment, root_path=root_path
