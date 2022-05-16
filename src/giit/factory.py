@@ -12,6 +12,7 @@ import giit.git_url_parser
 import giit.git_repository
 import giit.cache
 import giit.venv
+import giit.virtualenv
 import giit.tasks
 import giit.config
 import giit.python_environment
