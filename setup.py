@@ -99,5 +99,12 @@ setup(
     keywords=("giit"),
     packages=find_packages(where="src", exclude=["test"]),
     package_dir={"": "src"},
-    install_requires=["click", "semantic_version", "colorama", "schema", "six"],
+    install_requires=[
+        "click",
+        "semantic_version",
+        "colorama",
+        "schema",
+        "six",
+        "virtualenv",
+    ],
 )
