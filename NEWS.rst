@@ -6,7 +6,8 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Major: Depend on virtualenv from pypi.
+  Added virtualenv as a dependency in setup.py.
 
 7.2.2
 -----
