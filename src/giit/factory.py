@@ -11,7 +11,6 @@ import giit.git
 import giit.git_url_parser
 import giit.git_repository
 import giit.cache
-import giit.venv
 import giit.virtualenv
 import giit.tasks
 import giit.config
@@ -83,31 +82,9 @@ def require_virtual_environment(factory):
     root_path = factory.require(name="virtualenv_root_path")
 
     log = logging.getLogger(name="giit.virtual_environment")
-    try:
-        # Check if venv is properly installed - debian based systems
-        # may need to install the python3-venv package for this to work.
-        import ensurepip
+    prompt = factory.require(name="prompt")
 
-        # Silence pyflakes on unused imports
-        assert ensurepip
-
-        prompt = factory.require(name="prompt")
-        virtual_environment = giit.venv.VEnv(prompt=prompt, log=log)
-    except ImportError:
-        if sys.version_info >= (3, 10):
-            raise RuntimeError(
-                "VEnv is required for Python 3.10 or higher. "
-                "Cannot create virtualenv due to missing Python support. "
-                "If on Debian/Ubuntu virtualenv support can be added by "
-                "running 'apt install python3-venv'."
-            )
-        else:
-            log.info("venv not installed, falling back to virtualenv")
-            git = factory.require(name="git")
-            clone_path = factory.require(name="clone_path")
-            virtual_environment = giit.virtualenv.VirtualEnv.from_git(
-                git=git, clone_path=clone_path, log=log
-            )
+    virtual_environment = giit.virtualenv.VirtualEnv(prompt=prompt, log=log)
 
     virtual_environment = giit.name_to_path_adapter.NameToPathAdapter(
         env=virtual_environment, root_path=root_path
