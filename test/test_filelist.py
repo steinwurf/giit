@@ -53,20 +53,20 @@ def mkdir_layout(parent_dir):
     c_dir = parent_dir.mkdir("c")
     d_dir = parent_dir.mkdir("d")
 
-    a_dir.write_text(filename="a.txt", data=u"a", encoding="utf-8")
-    b_dir.write_text(filename="b.txt", data=u"b", encoding="utf-8")
-    c_dir.write_text(filename="c.txt", data=u"c", encoding="utf-8")
-    d_dir.write_text(filename="d.txt", data=u"d", encoding="utf-8")
+    a_dir.write_text(filename="a.txt", data="a", encoding="utf-8")
+    b_dir.write_text(filename="b.txt", data="b", encoding="utf-8")
+    c_dir.write_text(filename="c.txt", data="c", encoding="utf-8")
+    d_dir.write_text(filename="d.txt", data="d", encoding="utf-8")
 
     a_a_dir = a_dir.mkdir("a")
     a_b_dir = a_dir.mkdir("b")
     b_c_dir = b_dir.mkdir("c")
     c_d_dir = c_dir.mkdir("d")
 
-    a_a_dir.write_text(filename="a_a.txt", data=u"a", encoding="utf-8")
-    a_b_dir.write_text(filename="a_b.txt", data=u"b", encoding="utf-8")
-    b_c_dir.write_text(filename="b_c.txt", data=u"c", encoding="utf-8")
-    c_d_dir.write_text(filename="c_d.txt", data=u"d", encoding="utf-8")
+    a_a_dir.write_text(filename="a_a.txt", data="a", encoding="utf-8")
+    a_b_dir.write_text(filename="a_b.txt", data="b", encoding="utf-8")
+    b_c_dir.write_text(filename="b_c.txt", data="c", encoding="utf-8")
+    c_d_dir.write_text(filename="c_d.txt", data="d", encoding="utf-8")
 
     #     .
     # ├── a
@@ -180,7 +180,7 @@ def test_filelist_excludes_config(testdirectory):
 
 def test_filelist(testdirectory):
     a_dir = testdirectory.mkdir("a")
-    a_dir.write_text(filename="a.txt", data=u"a", encoding="utf-8")
+    a_dir.write_text(filename="a.txt", data="a", encoding="utf-8")
 
     filelist = giit.filelist.FileList(
         from_path=testdirectory.path(), exclude_patterns=[]

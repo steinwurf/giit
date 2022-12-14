@@ -135,7 +135,7 @@ def mkdir_project(directory, giit_branch):
 
     project_dir.run(["git", "init"])
 
-    commit_file(directory=project_dir, filename="ok.txt", content=u"hello world")
+    commit_file(directory=project_dir, filename="ok.txt", content="hello world")
 
     project_dir.copy_dir(directory="test/data/test_project/docs")
     project_dir.copy_dir(directory="test/data/test_project/landing_page")

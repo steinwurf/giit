@@ -44,7 +44,7 @@ def test_push_command(testdirectory):
     log = mock.Mock()
 
     build_dir = testdirectory.mkdir("build")
-    build_dir.write_text(filename="hello.txt", data=u"world", encoding="utf-8")
+    build_dir.write_text(filename="hello.txt", data="world", encoding="utf-8")
 
     config["to_path"] = "/"
     config["from_path"] = "${build_path}"
